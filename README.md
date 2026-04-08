@@ -60,5 +60,19 @@ All core mechanics, quests, and rewards can be completely rewritten to fit your 
 3. Place all `.jar` files into your Minecraft `mods` folder.
 4. Launch the game and enjoy!
 
+## 💖 Support the Development
+
+I'm a computer science student, and I develop game mods and software in my free time. If my work has improved your server or modpack, consider supporting my coding journey! Every coffee helps me survive late-night debugging sessions. ☕💻
+
+[![Ko-Fi](https://img.shields.io/badge/Support_me_on_Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/r3ct_)
+
+### 🌟 Memberships & Perks
+Want to get more involved? Check out my Ko-fi memberships for exclusive perks:
+* 🥉 **Iron Supporter:** Behind-the-scenes previews and a special Discord role.
+* 🥈 **Gold Supporter:** Voting power for new features and priority issue reviews.
+* 🥇 **Diamond Supporter:** Name in the Hall of Fame and custom feature requests!
+
+[Join a Tier and support the mod!](https://ko-fi.com/r3ct_/tiers)
+
 ## 📄 License
 This project is available under the [MIT License](LICENSE). Feel free to learn from the code and include it in your modpacks!
