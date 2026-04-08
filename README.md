@@ -55,7 +55,7 @@ All core mechanics, quests, and rewards can be completely rewritten to fit your 
 
 ## 📥 Installation
 
-1. Download the latest release from the releases tab.
+1. Download the latest release from the **[Releases](../../releases)** tab.
 2. Download the required dependencies listed above for your specific mod loader.
 3. Place all `.jar` files into your Minecraft `mods` folder.
 4. Launch the game and enjoy!
