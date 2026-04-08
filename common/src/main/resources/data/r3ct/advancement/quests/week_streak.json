@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:quests/perfect_day",
+  "display": {
+    "icon": { "id": "minecraft:golden_apple" },
+    "title": { "translate": "r3ct.advancement.week_streak.title" },
+    "description": { "translate": "r3ct.advancement.week_streak.desc" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

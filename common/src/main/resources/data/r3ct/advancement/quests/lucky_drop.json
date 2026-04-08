@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:quests/first_quest",
+  "display": {
+    "icon": { "id": "minecraft:diamond" },
+    "title": { "translate": "r3ct.advancement.lucky_drop.title" },
+    "description": { "translate": "r3ct.advancement.lucky_drop.desc" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

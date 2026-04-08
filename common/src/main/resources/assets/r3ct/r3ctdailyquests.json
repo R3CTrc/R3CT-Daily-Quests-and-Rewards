@@ -1,0 +1,21 @@
+{
+  "quests": {
+    "enableQuestRerolling": true,
+    "rerollCostEasy": 1,
+    "rerollCostMedium": 2,
+    "rerollCostHard": 4,
+    "xpPerQuestEasy": 30,
+    "xpPerQuestMedium": 60,
+    "xpPerQuestHard": 90,
+    "xpDailyReward": 90
+  },
+  "streaks": {
+    "perfectDaysForShield": 3,
+    "maxStoredShields": 3
+  },
+  "technical": {
+    "placedBlocksCacheLimit": 10000,
+    "leaderboardUpdateIntervalTicks": 1200,
+    "questRefreshHour": 0
+  }
+}

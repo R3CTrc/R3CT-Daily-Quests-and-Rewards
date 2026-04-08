@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:quests/root",
+  "display": {
+    "icon": { "id": "minecraft:end_portal_frame" },
+    "title": { "translate": "r3ct.advancement.dimension_master.title" },
+    "description": { "translate": "r3ct.advancement.dimension_master.desc" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

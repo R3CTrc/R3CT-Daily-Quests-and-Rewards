@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:rewards/root",
+  "display": {
+    "icon": { "id": "minecraft:shield" },
+    "title": { "translate": "r3ct.advancement.safe_player.title" },
+    "description": { "translate": "r3ct.advancement.safe_player.desc" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

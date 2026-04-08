@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:rewards/week_bonus",
+  "display": {
+    "icon": { "id": "minecraft:nether_star" },
+    "title": { "translate": "r3ct.advancement.cycle_end.title" },
+    "description": { "translate": "r3ct.advancement.cycle_end.desc" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

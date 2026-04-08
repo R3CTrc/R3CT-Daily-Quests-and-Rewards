@@ -1,0 +1,9 @@
+[
+  { "item": "minecraft:coal", "min_amount": 16, "max_amount": 24, "weight": 100 },
+  { "item": "minecraft:iron_ingot", "min_amount": 8, "max_amount": 16, "weight": 100 },
+  { "item": "minecraft:gold_ingot", "min_amount": 8, "max_amount": 16, "weight": 100 },
+  { "item": "minecraft:lapis_lazuli", "min_amount": 4, "max_amount": 16, "weight": 100 },
+  { "item": "minecraft:amethyst_shard", "min_amount": 4, "max_amount": 16, "weight": 100 },
+  { "item": "minecraft:emerald", "min_amount": 4, "max_amount": 8, "weight": 100 },
+  { "item": "minecraft:diamond", "min_amount": 1, "max_amount": 4, "weight": 100 }
+]

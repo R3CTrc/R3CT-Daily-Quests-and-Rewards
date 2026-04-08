@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:rewards/first_reward",
+  "display": {
+    "icon": { "id": "minecraft:emerald" },
+    "title": { "translate": "r3ct.advancement.week_bonus.title" },
+    "description": { "translate": "r3ct.advancement.week_bonus.desc" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:rewards/root",
+  "display": {
+    "icon": { "id": "minecraft:barrel" },
+    "title": { "translate": "r3ct.advancement.first_reward.title" },
+    "description": { "translate": "r3ct.advancement.first_reward.desc" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

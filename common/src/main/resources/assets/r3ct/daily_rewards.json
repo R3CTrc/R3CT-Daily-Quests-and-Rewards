@@ -1,0 +1,43 @@
+{
+  "days_1_to_4": [
+    [
+      { "item": "minecraft:leather", "min_amount": 4, "max_amount": 16, "weight": 100 },
+      { "item": "minecraft:iron_ingot", "min_amount": 4, "max_amount": 8, "weight": 100 },
+      { "item": "minecraft:gold_ingot", "min_amount": 4, "max_amount": 8, "weight": 100 }
+    ],
+    [
+      { "item": "minecraft:cooked_porkchop", "min_amount": 4, "max_amount": 8, "weight": 100 },
+      { "item": "minecraft:cooked_beef", "min_amount": 4, "max_amount": 8, "weight": 100 },
+      { "item": "minecraft:cooked_chicken", "min_amount": 4, "max_amount": 8, "weight": 100 },
+      { "item": "minecraft:cooked_mutton", "min_amount": 4, "max_amount": 8, "weight": 100 }
+    ],
+    [
+      { "item": "r3ct:random_potion", "min_amount": 1, "max_amount": 1, "weight": 100 }
+    ]
+  ],
+  "days_5_to_6": [
+    [
+      { "item": "r3ct:random_disc", "min_amount": 1, "max_amount": 1, "weight": 100 },
+      { "item": "r3ct:random_spawn_egg", "min_amount": 1, "max_amount": 1, "weight": 100 },
+      { "item": "r3ct:random_head", "min_amount": 1, "max_amount": 1, "weight": 100 }
+    ],
+    [
+      { "item": "minecraft:golden_carrot", "min_amount": 4, "max_amount": 8, "weight": 100 },
+      { "item": "minecraft:golden_apple", "min_amount": 2, "max_amount": 4, "weight": 100 }
+    ],
+    [
+      { "item": "r3ct:random_enchanted_book", "min_amount": 1, "max_amount": 1, "weight": 100 }
+    ]
+  ],
+  "day_7": [
+    [
+      { "item": "minecraft:netherite_scrap", "min_amount": 2, "max_amount": 2, "weight": 100 }
+    ],
+    [
+      { "item": "minecraft:enchanted_golden_apple", "min_amount": 1, "max_amount": 1, "weight": 100 }
+    ],
+    [
+      { "item": "r3ct:random_trim_template", "min_amount": 1, "max_amount": 1, "weight": 100 }
+    ]
+  ]
+}

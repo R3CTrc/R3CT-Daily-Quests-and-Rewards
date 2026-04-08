@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:rewards/first_reward",
+  "display": {
+    "icon": { "id": "minecraft:nether_star" },
+    "title": { "translate": "r3ct.advancement.login_veteran.title" },
+    "description": { "translate": "r3ct.advancement.login_veteran.desc" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

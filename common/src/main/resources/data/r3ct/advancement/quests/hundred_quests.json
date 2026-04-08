@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:quests/first_quest",
+  "display": {
+    "icon": { "id": "minecraft:diamond_block" },
+    "title": { "translate": "r3ct.advancement.hundred_quests.title" },
+    "description": { "translate": "r3ct.advancement.hundred_quests.desc" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:quests/root",
+  "display": {
+    "icon": { "id": "minecraft:blue_ice" },
+    "title": { "translate": "r3ct.advancement.time_lord.title" },
+    "description": { "translate": "r3ct.advancement.time_lord.desc" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

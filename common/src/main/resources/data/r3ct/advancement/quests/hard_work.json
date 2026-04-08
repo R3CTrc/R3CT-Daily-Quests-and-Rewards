@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:quests/first_quest",
+  "display": {
+    "icon": { "id": "minecraft:iron_pickaxe" },
+    "title": { "translate": "r3ct.advancement.hard_work.title" },
+    "description": { "translate": "r3ct.advancement.hard_work.desc" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

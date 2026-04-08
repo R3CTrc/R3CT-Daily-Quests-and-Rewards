@@ -1,0 +1,38 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "homepage": "https://r3ct.pl",
+        "sources": "https://github.com/r3ct/quests-mod"
+    },
+    "license": "${license}",
+    "icon": "assets/r3ct/ryb.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.r3ct.quests.R3CT"
+        ],
+        "client": [
+            "com.r3ct.quests.R3CTClient"
+        ],
+        "modmenu": [
+            "com.r3ct.quests.compat.ModMenuIntegration"
+        ]
+    },
+    "mixins": [
+        "r3ct.mixins.json",
+        "r3ct.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "minecraft": "${minecraft_version}",
+        "java": ">=${java_version}",
+        "fabric-api": "*"
+    }
+}

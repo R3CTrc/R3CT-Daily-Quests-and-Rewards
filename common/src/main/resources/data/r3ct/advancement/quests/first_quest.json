@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:quests/root",
+  "display": {
+    "icon": { "id": "minecraft:experience_bottle" },
+    "title": { "translate": "r3ct.advancement.first_quest.title" },
+    "description": { "translate": "r3ct.advancement.first_quest.desc" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

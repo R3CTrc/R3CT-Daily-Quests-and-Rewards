@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:quests/hard_work",
+  "display": {
+    "icon": { "id": "minecraft:clock" },
+    "title": { "translate": "r3ct.advancement.perfect_day.title" },
+    "description": { "translate": "r3ct.advancement.perfect_day.desc" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

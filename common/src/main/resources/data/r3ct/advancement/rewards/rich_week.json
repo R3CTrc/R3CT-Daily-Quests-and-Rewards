@@ -1,0 +1,13 @@
+{
+  "parent": "r3ct:rewards/first_reward",
+  "display": {
+    "icon": { "id": "minecraft:ender_chest" },
+    "title": { "translate": "r3ct.advancement.rich_week.title" },
+    "description": { "translate": "r3ct.advancement.rich_week.desc" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}
