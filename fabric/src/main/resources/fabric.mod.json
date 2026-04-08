@@ -12,7 +12,7 @@
         "sources": "https://github.com/r3ct/quests-mod"
     },
     "license": "${license}",
-    "icon": "assets/r3ct/ryb.png",
+    "icon": "assets/r3ct/icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [
