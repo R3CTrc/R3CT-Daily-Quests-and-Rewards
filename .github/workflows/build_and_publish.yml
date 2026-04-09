@@ -1,0 +1,51 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [ "main" ]
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build Mod
+        run: ./gradlew build
+
+      - name: Upload Artifacts (For Testing)
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: R3CT-Daily-Quests-Builds
+          path: |
+            fabric/build/libs/*.jar
+            neoforge/build/libs/*.jar
+
+      - name: Publish to Modrinth and CurseForge
+        if: github.event_name == 'release'
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: '4NTCjyNQ'
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          curseforge-id: '1508573'
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          fabric-file: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+          neoforge-file: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+
+          version: ${{ github.event.release.tag_name }}
+          changelog: ${{ github.event.release.body }}
