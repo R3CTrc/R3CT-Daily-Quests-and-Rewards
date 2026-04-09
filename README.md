@@ -25,17 +25,6 @@ Keep your players engaged with dynamic tasks, login streaks, and a beautifully i
 
 * **🔄 Cross-Platform:** * Fully native support and identical features for both **Fabric** and **NeoForge**.
 
-## 📖 Documentation
-
-For detailed guides on how to set up quests, rewards, and technical mechanics, visit our official Wiki:
-👉 **[View the Wiki](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki)**
-
-Quick links to popular topics:
-* [📥 Getting Started](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Getting-Started)
-* [⚔️ Customizing Quests](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Quests-Setup)
-* [📅 Setting up Login Rewards](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Rewards)
-* [🖥️ Admin Commands](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Commands-&-Permissions)
-
 ## 🔌 Dependencies & Requirements
 
 To run this mod, you will need to install a few library mods depending on your loader:
@@ -47,6 +36,17 @@ To run this mod, you will need to install a few library mods depending on your l
 
 **For NeoForge:**
 * [Cloth Config API](https://modrinth.com/mod/cloth-config) (Required)
+
+## 📖 Documentation
+
+For detailed guides on how to set up quests, rewards, and technical mechanics, visit our official Wiki:
+👉 **[View the Wiki](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki)**
+
+Quick links to popular topics:
+* [📥 Getting Started](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Getting-Started)
+* [⚔️ Customizing Quests](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Quests-Setup)
+* [📅 Setting up Login Rewards](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Rewards)
+* [🖥️ Admin Commands](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Commands-&-Permissions)
 
 ## ⚙️ Configuration & Customization
 
