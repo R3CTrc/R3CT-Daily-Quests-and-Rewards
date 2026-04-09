@@ -53,14 +53,10 @@ jobs:
           loaders: fabric
           game-versions: 1.21.11
 
-          modrinth-dependencies: |
+          dependencies: |
             fabric-api(required)
             cloth-config(required)
             modmenu(optional)
-          curseforge-dependencies: |
-            fabric-api:required
-            cloth-config:required
-            modmenu:optional
 
           version: ${{ github.event.release.tag_name }}-fabric
           changelog: ${{ github.event.release.body }}
@@ -79,10 +75,8 @@ jobs:
           loaders: neoforge
           game-versions: 1.21.11
 
-          modrinth-dependencies: |
+          dependencies: |
             cloth-config(required)
-          curseforge-dependencies: |
-            cloth-config:required
 
           version: ${{ github.event.release.tag_name }}-neoforge
           changelog: ${{ github.event.release.body }}
