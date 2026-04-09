@@ -49,8 +49,9 @@ jobs:
 
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          fabric-file: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
-          neoforge-file: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          files: |
+            fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+            neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
 
           version: ${{ github.event.release.tag_name }}
           changelog: ${{ github.event.release.body }}
