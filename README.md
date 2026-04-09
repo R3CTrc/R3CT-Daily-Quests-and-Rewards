@@ -4,6 +4,7 @@ A powerful, highly configurable Daily Quests and Login Rewards mod for Minecraft
 Keep your players engaged with dynamic tasks, login streaks, and a beautifully integrated GUI. Built for both Fabric and NeoForge!
 
 ![Minecraft Version](https://img.shields.io/badge/Minecraft-1.21.11-success)
+![Wiki](https://img.shields.io/badge/Documentation-Wiki-blueviolet)
 ![Fabric](https://img.shields.io/badge/Loader-Fabric-orange)
 ![NeoForge](https://img.shields.io/badge/Loader-NeoForge-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
@@ -11,18 +12,29 @@ Keep your players engaged with dynamic tasks, login streaks, and a beautifully i
 ## ✨ Features
 
 * **⚔️ Daily Quests System:** * Generate random daily tasks from customizable pools.
-    * Maintain your Quest Streak by completing tasks daily.
-    * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day!
+  * Maintain your Quest Streak by completing tasks daily.
+  * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day!
 
 * **🎁 Daily Rewards System:** * Claim escalating rewards for consecutive daily logins.
-    * Build up your Reward Streak to earn bonus multipliers.
-    * Includes its own separate Shield System to save your login streak.
+  * Build up your Reward Streak to earn bonus multipliers.
+  * Includes its own separate Shield System to save your login streak.
 
 * **🖥️ Beautiful GUI:** * Fully interactive, clean, and modern menus built directly into Minecraft.
-    * Track your progress easily (Default keys: `G` for Quests, `H` for Rewards).
-    * On-screen HUD to track your active quest progress in real-time. Easily toggle it on or off by pressing the `.` (period) key!
+  * Track your progress easily (Default keys: `G` for Quests, `H` for Rewards).
+  * On-screen HUD to track your active quest progress in real-time. Easily toggle it on or off by pressing the `.` (period) key!
 
 * **🔄 Cross-Platform:** * Fully native support and identical features for both **Fabric** and **NeoForge**.
+
+## 📖 Documentation
+
+For detailed guides on how to set up quests, rewards, and technical mechanics, visit our official Wiki:
+👉 **[View the Wiki](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki)**
+
+Quick links to popular topics:
+* [📥 Getting Started](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Getting-Started)
+* [⚔️ Customizing Quests](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Quests-Setup)
+* [📅 Setting up Login Rewards](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Rewards)
+* [🖥️ Admin Commands](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Commands-&-Permissions)
 
 ## 🔌 Dependencies & Requirements
 
@@ -31,7 +43,7 @@ To run this mod, you will need to install a few library mods depending on your l
 **For Fabric:**
 * [Fabric API](https://modrinth.com/mod/fabric-api) (Required)
 * [Cloth Config API](https://modrinth.com/mod/cloth-config) (Required)
-* [Mod Menu](https://modrinth.com/mod/modmenu) (Recommended - to access in-game settings)
+* [Mod Menu](https://modrinth.com/mod/modmenu) (Recommended)
 
 **For NeoForge:**
 * [Cloth Config API](https://modrinth.com/mod/cloth-config) (Required)
@@ -46,12 +58,12 @@ Players can access the mod settings via **Mod Menu** (on Fabric) or the **Mods t
 * Adjust the X and Y coordinates of the HUD to fit their screen.
 
 ### 2. File Configuration (Server-side / Modpack Creators)
-All core mechanics, quests, and rewards can be completely rewritten to fit your server or modpack. After running the mod once, navigate to the `config/r3ct/` folder. You will find 4 JSON files:
+All core mechanics, quests, and rewards can be completely rewritten. After running the mod once, navigate to the `config/r3ct/` folder:
 
-* **`quests.json`** - Add, remove, or modify the pool of daily quests. Customize their difficulty, objective, name, description, required amount, points, and specific item rewards.
-* **`daily_quest_rewards.json`** - Configure the randomized bonus reward given to players for completing 3 daily quests. Adjust the item types, min/max quantities, and weight (drop chance).
-* **`daily_rewards.json`** - Customize login rewards. Adjust the loot pools for specific day tiers (days 1-4, 5-6, and day 7), including items, amounts, and drop chances.
-* **`r3ctdailyquests.json`** - Tweak the core mechanics and technical rules. Configure quest rerolling costs, XP rewards, streak shield requirements (e.g., how many perfect days give a shield), quest refresh hours, and server optimization limits.
+* **`quests.json`** - Manage the pool of daily tasks. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Quests-Setup)
+* **`daily_quest_rewards.json`** - Configure bonus rewards for finishing 3 quests. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Quest-Rewards)
+* **`daily_rewards.json`** - Customize login streak loot pools. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Rewards)
+* **`r3ctdailyquests.json`** - Tweak core mechanics, reroll costs, and tech rules. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Core-Mechanics)
 
 ## 📥 Installation
 
