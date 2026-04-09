@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -37,21 +39,50 @@ jobs:
             fabric/build/libs/*.jar
             neoforge/build/libs/*.jar
 
-      - name: Publish to Modrinth and CurseForge
+      - name: Publish Fabric to Modrinth and CurseForge
         if: github.event_name == 'release'
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: '4NTCjyNQ'
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
           curseforge-id: '1508573'
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          files: |
-            fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
-            neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          files: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+          loaders: fabric
+          game-versions: 1.21.11
 
-          version: ${{ github.event.release.tag_name }}
+          modrinth-dependencies: |
+            fabric-api(required)
+            cloth-config(required)
+            modmenu(optional)
+          curseforge-dependencies: |
+            fabric-api:required
+            cloth-config:required
+            modmenu:optional
+
+          version: ${{ github.event.release.tag_name }}-fabric
+          changelog: ${{ github.event.release.body }}
+
+      - name: Publish NeoForge to Modrinth and CurseForge
+        if: github.event_name == 'release'
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: '4NTCjyNQ'
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: '1508573'
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+          files: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          loaders: neoforge
+          game-versions: 1.21.11
+
+          modrinth-dependencies: |
+            cloth-config(required)
+          curseforge-dependencies: |
+            cloth-config:required
+
+          version: ${{ github.event.release.tag_name }}-neoforge
           changelog: ${{ github.event.release.body }}
