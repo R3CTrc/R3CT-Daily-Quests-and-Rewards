@@ -47,6 +47,8 @@ jobs:
           curseforge-id: '1508573'
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
           fabric-file: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
           neoforge-file: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
 
