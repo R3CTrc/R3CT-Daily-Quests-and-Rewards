@@ -23,7 +23,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build Mod
-        run: ./gradlew build
+        run: ./gradlew clean build
 
       - name: Upload Artifacts (For Testing)
         if: github.event_name == 'push'

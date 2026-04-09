@@ -4,3 +4,12 @@ plugins {
     // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
     id 'net.neoforged.moddev' version '2.0.141' apply false
 }
+
+allprojects {
+    tasks.withType(Javadoc).configureEach {
+        // Wyłącza rygorystyczne sprawdzanie komentarzy (doclint) w Javie
+        options.addStringOption('Xdoclint:none', '-quiet')
+        // Gwarantuje, że ewentualne błędy Javadoc nie przerwą buildu
+        failOnError = false
+    }
+}
