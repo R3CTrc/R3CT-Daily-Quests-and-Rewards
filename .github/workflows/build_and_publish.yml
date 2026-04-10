@@ -49,11 +49,7 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          files: |
-            fabric/build/libs/*.jar
-            !fabric/build/libs/*-dev.jar
-            !fabric/build/libs/*-sources.jar
-            !fabric/build/libs/*-javadoc.jar
+          files: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
 
           loaders: fabric
           game-versions: |
@@ -62,9 +58,9 @@ jobs:
             26.1.2
 
           dependencies: |
-            fabric-api | required
-            cloth-config | required
-            modmenu | optional
+            fabric-api(required)
+            cloth-config(required)
+            modmenu(optional)
 
           version: ${{ github.event.release.tag_name }}-fabric
           changelog: ${{ github.event.release.body }}
@@ -79,11 +75,7 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          files: |
-            neoforge/build/libs/*.jar
-            !neoforge/build/libs/*-dev.jar
-            !neoforge/build/libs/*-sources.jar
-            !neoforge/build/libs/*-javadoc.jar
+          files: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
 
           loaders: neoforge
           game-versions: |
@@ -92,7 +84,7 @@ jobs:
             26.1.2
 
           dependencies: |
-            cloth-config | required
+            cloth-config(required)
 
           version: ${{ github.event.release.tag_name }}-neoforge
           changelog: ${{ github.event.release.body }}
