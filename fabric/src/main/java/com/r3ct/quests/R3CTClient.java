@@ -2,9 +2,9 @@ package com.r3ct.quests;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -30,21 +30,21 @@ public class R3CTClient implements ClientModInitializer {
 
 		com.r3ct.quests.config.R3CTQuestsConfig.load();
 
-		openRewardsKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+		openRewardsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct.open_rewards",
 				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_H,
 				R3CT_CATEGORY
 		));
 
-		openQuestsKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+		openQuestsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct.open_quests",
 				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_G,
 				R3CT_CATEGORY
 		));
 
-		toggleHudKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+		toggleHudKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct.toggle_hud",
 				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_PERIOD,
@@ -63,7 +63,7 @@ public class R3CTClient implements ClientModInitializer {
 
 				if (client.player != null) {
 					String stateText = minimizedHud ? "§4OFF" : "§aON";
-					client.player.displayClientMessage(
+					client.gui.setOverlayMessage(
 							Component.translatable("r3ct.message.hud_toggle", stateText),
 							true
 					);
@@ -140,8 +140,9 @@ public class R3CTClient implements ClientModInitializer {
 			});
 		});
 
-		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
+		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(R3CT.MOD_ID, "quest_hud"), (guiGraphics, deltaTracker) -> {
 			Minecraft client = Minecraft.getInstance();
+
 			if (client.options.hideGui || client.getDebugOverlay().showDebugScreen() || client.player == null) return;
 
 			if (client.screen != null && !(client.screen instanceof ChatScreen)) return;
@@ -158,6 +159,7 @@ public class R3CTClient implements ClientModInitializer {
 
 			int alpha = 255;
 			if (client.player.isSleeping()) {
+				// Jeśli getSleepTimer świeci się na czerwono, zmień na sleepTimer()
 				float sleepTimer = client.player.getSleepTimer();
 				alpha = 255 - (int) ((sleepTimer / 100.0f) * 255);
 			}
@@ -175,7 +177,8 @@ public class R3CTClient implements ClientModInitializer {
 			if (clientQuestData == null || clientQuestData.activeQuests.isEmpty()) {
 				if (!minimizedHud) {
 					String loadingMsg = "§e" + Component.translatable("r3ct.hud.loading").getString();
-					guiGraphics.drawString(client.font, loadingMsg, virtualWidth - client.font.width(loadingMsg) - xOffset, currentY, baseColor, true);
+					// ZMIANA: drawString -> text
+					guiGraphics.text(client.font, loadingMsg, virtualWidth - client.font.width(loadingMsg) - xOffset, currentY, baseColor, true);
 				}
 				guiGraphics.pose().popMatrix();
 				return;
@@ -183,7 +186,8 @@ public class R3CTClient implements ClientModInitializer {
 
 			if (!minimizedHud) {
 				String title = "§e§l" + Component.translatable("r3ct.quests.header.daily_quests").getString();
-				guiGraphics.drawString(client.font, title, virtualWidth - client.font.width(title) - xOffset, currentY, baseColor, true);
+				// ZMIANA: drawString -> text
+				guiGraphics.text(client.font, title, virtualWidth - client.font.width(title) - xOffset, currentY, baseColor, true);
 			}
 			currentY += 12;
 
@@ -197,7 +201,8 @@ public class R3CTClient implements ClientModInitializer {
 				String mark = done ? "§a" + Component.translatable("r3ct.quests.status.claimed").getString() : "§c" + Component.translatable("r3ct.quests.status.incomplete").getString();
 
 				if (minimizedHud) {
-					guiGraphics.drawString(client.font, mark, virtualWidth - client.font.width(mark) - xOffset, currentY, baseColor, true);
+					// ZMIANA: drawString -> text
+					guiGraphics.text(client.font, mark, virtualWidth - client.font.width(mark) - xOffset, currentY, baseColor, true);
 				} else {
 					String questName;
 					if (q.name != null && !q.name.isEmpty()) {
@@ -215,7 +220,8 @@ public class R3CTClient implements ClientModInitializer {
 					}
 
 					String lineText = diffIndicator + progressColor + questName + " (" + progress + "/" + q.requiredAmount + ") " + mark;
-					guiGraphics.drawString(client.font, lineText, virtualWidth - client.font.width(lineText) - xOffset, currentY, baseColor, true);
+					// ZMIANA: drawString -> text
+					guiGraphics.text(client.font, lineText, virtualWidth - client.font.width(lineText) - xOffset, currentY, baseColor, true);
 				}
 				currentY += 10;
 			}

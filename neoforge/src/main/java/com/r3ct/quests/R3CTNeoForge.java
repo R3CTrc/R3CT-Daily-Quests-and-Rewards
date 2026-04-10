@@ -797,7 +797,8 @@ public class R3CTNeoForge {
             while (ClientModEvents.openQuestsKey.consumeClick()) client.player.connection.sendCommand("rdq quests");
             while (ClientModEvents.toggleHudKey.consumeClick()) {
                 minimizedHud = !minimizedHud;
-                client.player.displayClientMessage(Component.translatable("r3ct.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON"), true);
+                Component message = Component.translatable("r3ct.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON");
+                client.gui.setOverlayMessage(message, true);
             }
         }
 
@@ -835,7 +836,7 @@ public class R3CTNeoForge {
             if (clientQuestData == null || clientQuestData.activeQuests.isEmpty()) {
                 if (!minimizedHud) {
                     String loadingMsg = "§e" + Component.translatable("r3ct.hud.loading").getString();
-                    event.getGuiGraphics().drawString(client.font, loadingMsg, virtualWidth - client.font.width(loadingMsg) - xOffset, currentY, baseColor, true);
+                    event.getGuiGraphics().text(client.font, loadingMsg, virtualWidth - client.font.width(loadingMsg) - xOffset, currentY, baseColor, true);
                 }
                 event.getGuiGraphics().pose().popMatrix();
                 return;
@@ -843,7 +844,7 @@ public class R3CTNeoForge {
 
             if (!minimizedHud) {
                 String title = "§e§l" + Component.translatable("r3ct.quests.header.daily_quests").getString();
-                event.getGuiGraphics().drawString(client.font, title, virtualWidth - client.font.width(title) - xOffset, currentY, baseColor, true);
+                event.getGuiGraphics().text(client.font, title, virtualWidth - client.font.width(title) - xOffset, currentY, baseColor, true);
             }
             currentY += 12;
 
@@ -857,7 +858,7 @@ public class R3CTNeoForge {
                 String mark = done ? "§a" + Component.translatable("r3ct.quests.status.claimed").getString() : "§c" + Component.translatable("r3ct.quests.status.incomplete").getString();
 
                 if (minimizedHud) {
-                    event.getGuiGraphics().drawString(client.font, mark, virtualWidth - client.font.width(mark) - xOffset, currentY, baseColor, true);
+                    event.getGuiGraphics().text(client.font, mark, virtualWidth - client.font.width(mark) - xOffset, currentY, baseColor, true);
                 } else {
                     String questName = (q.name != null && !q.name.isEmpty()) ? Component.translatable(q.name).getString() : Component.translatable(q.description).getString().split(" ")[0];
                     String diffIndicator = (q.difficulty == 0) ? "§2★ " : (q.difficulty == 1 ? "§6★ " : "§4★ ");
@@ -870,7 +871,7 @@ public class R3CTNeoForge {
                     }
 
                     String lineText = diffIndicator + progressColor + questName + " (" + progress + "/" + q.requiredAmount + ") " + mark;
-                    event.getGuiGraphics().drawString(client.font, lineText, virtualWidth - client.font.width(lineText) - xOffset, currentY, baseColor, true);
+                    event.getGuiGraphics().text(client.font, lineText, virtualWidth - client.font.width(lineText) - xOffset, currentY, baseColor, true);
                 }
                 currentY += 10;
             }

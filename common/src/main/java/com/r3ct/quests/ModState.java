@@ -7,6 +7,7 @@ import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.saveddata.SavedDataType;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class ModState extends SavedData {
     );
 
     public static final SavedDataType<ModState> TYPE = new SavedDataType<>(
-            "r3ct_data",
+            Identifier.parse("r3ct_data"),
             ModState::new,
             CODEC,
             DataFixTypes.LEVEL

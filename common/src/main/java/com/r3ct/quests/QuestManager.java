@@ -203,8 +203,8 @@ public class QuestManager {
             QuestManager.grantAdvancement(player, "r3ct:quests/hard_work");
         }
 
-        int amountGiven = q.itemReward.getCount() * multi;
-        ItemStack rewardToGive = q.itemReward.copy();
+        int amountGiven = q.rewardAmount * multi;
+        ItemStack rewardToGive = q.getItemReward();
         rewardToGive.setCount(amountGiven);
 
         if (q.rawRewardId != null && q.rawRewardId.startsWith("r3ct:")) {

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class SlotMixin {
 
     @Inject(method = "clicked", at = @At("HEAD"))
-    private void onMenuClick(int slotId, int button, ClickType clickType, Player player, CallbackInfo ci) {
+    private void onMenuClick(int slotId, int button, ContainerInput clickType, Player player, CallbackInfo ci) {
         if (slotId < 0 || player == null) return;
 
         AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;

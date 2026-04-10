@@ -2,6 +2,7 @@ package com.r3ct.quests;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -54,12 +55,12 @@ public class R3CT implements ModInitializer {
 
 		ConfigLoader.loadAll();
 
-		PayloadTypeRegistry.playS2C().register(OpenRewardsPayload.ID, OpenRewardsPayload.CODEC);
-		PayloadTypeRegistry.playS2C().register(OpenQuestsPayload.ID, OpenQuestsPayload.CODEC);
-		PayloadTypeRegistry.playS2C().register(SyncQuestsPayload.ID, SyncQuestsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(OpenRewardsPayload.ID, OpenRewardsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(OpenQuestsPayload.ID, OpenQuestsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(SyncQuestsPayload.ID, SyncQuestsPayload.CODEC);
 
-		PayloadTypeRegistry.playC2S().register(RequestLeaderboardPayload.ID, RequestLeaderboardPayload.CODEC);
-		PayloadTypeRegistry.playS2C().register(LeaderboardResponsePayload.ID, LeaderboardResponsePayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(RequestLeaderboardPayload.ID, RequestLeaderboardPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(LeaderboardResponsePayload.ID, LeaderboardResponsePayload.CODEC);
 
 		ServerPlayNetworking.registerGlobalReceiver(RequestLeaderboardPayload.ID, (payload, context) -> {
 			context.server().execute(() -> {
@@ -75,7 +76,7 @@ public class R3CT implements ModInitializer {
 			});
 		});
 
-		PayloadTypeRegistry.playC2S().register(RerollQuestPayload.ID, RerollQuestPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(RerollQuestPayload.ID, RerollQuestPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(RerollQuestPayload.ID, (payload, context) -> {
 			context.server().execute(() -> {
 				QuestManager.rerollQuest(context.player(), payload.questIndex());
@@ -213,7 +214,7 @@ public class R3CT implements ModInitializer {
 			}
 		});
 
-		net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+		ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> {
 			String rawDimString = destination.dimension().toString();
 			String dimId = rawDimString.substring(rawDimString.lastIndexOf("/") + 1, rawDimString.length() - 1).trim();
 

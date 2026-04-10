@@ -10,10 +10,6 @@ neoForge {
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
     }
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
-    }
     runs {
         configureEach {
             systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
@@ -45,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    implementation "me.shedaniel.cloth:cloth-config-neoforge:21.11.153"
+    implementation "me.shedaniel.cloth:cloth-config-neoforge:26.1.154"
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

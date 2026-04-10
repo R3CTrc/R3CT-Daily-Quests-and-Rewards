@@ -179,30 +179,16 @@ public class ConfigLoader {
         }
     }
 
-    private static void parseQuestArray(JsonArray array, String dimension) {
+    private static void parseQuestArray(com.google.gson.JsonArray array, String dimension) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
-            JsonObject obj = array.get(i).getAsJsonObject();
+            com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
             int diffInt = obj.get("difficulty").getAsInt();
 
             String itemStr = obj.get("reward_item").getAsString();
+            int rewardAmount = obj.get("reward_amount").getAsInt();
 
-            Item item;
-            if (itemStr.startsWith("r3ct:")) {
-                item = Items.NETHER_STAR;
-            } else {
-                net.minecraft.resources.Identifier itemId = net.minecraft.resources.Identifier.parse(
-                        itemStr.contains(":") ? itemStr : "minecraft:" + itemStr
-                );
-                item = BuiltInRegistries.ITEM.getOptional(itemId).orElse(Items.DIRT);
-            }
-
-            ItemStack rewardStack = new ItemStack(item, obj.get("reward_amount").getAsInt());
-
-            if (itemStr.startsWith("r3ct:")) {
-                rewardStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.translatable("r3ct.item.special_reward"));
-            }
-
+            // Tworzymy Quest z samą liczbą (rewardAmount), a nie z obiektem ItemStack
             Quest q = new Quest(
                     obj.get("id").getAsString(),
                     obj.has("name") ? obj.get("name").getAsString() : "Quest",
@@ -210,7 +196,7 @@ public class ConfigLoader {
                     obj.get("amount").getAsInt(),
                     diffInt,
                     obj.get("points").getAsInt(),
-                    rewardStack,
+                    rewardAmount,
                     dimension,
                     obj.get("action_type").getAsString(),
                     obj.has("target") ? obj.get("target").getAsString() : "any",

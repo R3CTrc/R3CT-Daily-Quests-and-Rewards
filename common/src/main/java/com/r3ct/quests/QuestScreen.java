@@ -1,12 +1,14 @@
 package com.r3ct.quests;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jspecify.annotations.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +28,8 @@ public class QuestScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderTransparentBackground(guiGraphics);
+    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.extractTransparentBackground(guiGraphics);
 
         int leftPos = (this.width - bookWidth) / 2;
         int topPos = (this.height - bookHeight) / 2;
@@ -39,7 +41,7 @@ public class QuestScreen extends Screen {
         guiGraphics.fill(midX - 1, topPos, midX + 1, topPos + bookHeight, 0xFF8D6E63);
 
         int leftTextX = leftPos + 20;
-        guiGraphics.drawString(this.font, "§0§l" + Component.translatable("r3ct.quests.header.daily_quests").getString(), leftTextX, topPos + 20, 0xFF000000, false);
+        guiGraphics.text(this.font, "§0§l" + Component.translatable("r3ct.quests.header.daily_quests").getString(), leftTextX, topPos + 20, 0xFF000000, false);
         guiGraphics.fill(leftTextX, topPos + 33, midX - 20, topPos + 34, 0xFF8D6E63);
 
         int hoveredQuestIndex = -1;
@@ -83,7 +85,7 @@ public class QuestScreen extends Screen {
 
                 String arrow = "⇄";
                 int arrowColor = isBtnHovered ? 0xFFFFFFFF : 0xFFAAAAAA;
-                guiGraphics.drawCenteredString(this.font, arrow, btnX + btnSize / 2, btnY + 4, arrowColor);
+                guiGraphics.centeredText(this.font, arrow, btnX + btnSize / 2, btnY + 4, arrowColor);
             }
 
             if (mouseX >= leftTextX && mouseX <= midX - 10 && mouseY >= qY - 2 && mouseY <= qY + 45) {
@@ -95,7 +97,7 @@ public class QuestScreen extends Screen {
 
             String diffIndicator = (q.difficulty == 0) ? "§2★ " : (q.difficulty == 1 ? "§6★ " : "§4★ ");
             int titleColor = (done && !claimed) ? 0xFF005500 : 0xFF000000;
-            guiGraphics.drawString(this.font, diffIndicator + " §0" + name, leftTextX, qY, titleColor, false);
+            guiGraphics.text(this.font, diffIndicator + " §0" + name, leftTextX, qY, titleColor, false);
 
             int color = done ? 0xFF555555 : (q.difficulty == 0 ? 0xFF00AA00 : (q.difficulty == 1 ? 0xFFFFAA00 : 0xFFAA0000));
             String desc = locDesc + " (" + progress + "/" + q.requiredAmount + ")";
@@ -104,7 +106,7 @@ public class QuestScreen extends Screen {
             List<net.minecraft.util.FormattedCharSequence> lines = this.font.split(Component.literal(desc), maxTextWidth);
 
             for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-                guiGraphics.drawString(this.font, lines.get(lineIdx), leftTextX + 11, qY + 11 + (lineIdx * 10), color, false);
+                guiGraphics.text(this.font, lines.get(lineIdx), leftTextX + 11, qY + 11 + (lineIdx * 10), color, false);
             }
 
             String mark;
@@ -112,13 +114,13 @@ public class QuestScreen extends Screen {
             else if (claimed) mark = "§a" + Component.translatable("r3ct.quests.status.claimed").getString();
             else mark = (time % 1000 < 500) ? "§e" + Component.translatable("r3ct.quests.status.claim").getString() : "§6" + Component.translatable("r3ct.quests.status.claim").getString();
 
-            guiGraphics.drawString(this.font, mark, midX - (this.font.width(mark) + 15), qY + 5, 0xFF000000, false);
+            guiGraphics.text(this.font, mark, midX - (this.font.width(mark) + 15), qY + 5, 0xFF000000, false);
         }
 
         int rightTextX = midX + 25;
         int barW = 160;
 
-        guiGraphics.drawString(this.font, "§0§l" + Component.translatable("r3ct.quests.header.progress").getString(), rightTextX, topPos + 20, 0xFF000000, false);
+        guiGraphics.text(this.font, "§0§l" + Component.translatable("r3ct.quests.header.progress").getString(), rightTextX, topPos + 20, 0xFF000000, false);
         guiGraphics.fill(rightTextX, topPos + 33, leftPos + bookWidth - 25, topPos + 34, 0xFF8D6E63);
 
         int dailyY = topPos + 80;
@@ -140,7 +142,7 @@ public class QuestScreen extends Screen {
         drawRewardStyleBar(guiGraphics, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct.quests.bar.streak").getString(), streakText, streakBarColor, barW, 1, new int[]{});
 
         String qMultiText = data.questStreak >= 7 ? "§6§l" + Component.translatable("r3ct.quests.multiplier.active").getString() : "§0" + Component.translatable("r3ct.quests.multiplier.inactive").getString();
-        guiGraphics.drawString(this.font, qMultiText, rightTextX, streakY + 14, 0xFF000000, false);
+        guiGraphics.text(this.font, qMultiText, rightTextX, streakY + 14, 0xFF000000, false);
 
         int lifeY = topPos + 245;
         int targetPoints = Math.min(data.totalQuestPoints, 200);
@@ -159,14 +161,14 @@ public class QuestScreen extends Screen {
 
         boolean isHovered = mouseX >= arrowX && mouseX <= arrowX + textWidth && mouseY >= arrowY - 2 && mouseY <= arrowY + 10;
         int arrColor = isHovered ? 0xFFFFFFFF : 0xFFAAAAAA;
-        guiGraphics.drawString(this.font, arrowText, arrowX, arrowY, arrColor, true);
+        guiGraphics.text(this.font, arrowText, arrowX, arrowY, arrColor, true);
 
         int trophyX = leftPos + bookWidth - 18;
         int trophyY = topPos + 2;
         boolean trophyHover = mouseX >= trophyX && mouseX <= trophyX + 16 && mouseY >= trophyY && mouseY <= trophyY + 16;
 
         if (trophyHover) guiGraphics.fill(trophyX - 2, trophyY - 2, trophyX + 18, trophyY + 18, 0x44000000);
-        guiGraphics.renderItem(new ItemStack(Items.MOJANG_BANNER_PATTERN), trophyX, trophyY);
+        guiGraphics.item(new ItemStack(Items.MOJANG_BANNER_PATTERN), trophyX, trophyY);
 
         String backText = Component.translatable("r3ct.quests.button.close").getString();
         int backWidth = this.font.width(backText);
@@ -175,7 +177,7 @@ public class QuestScreen extends Screen {
 
         boolean backHover = mouseX >= backX - 2 && mouseX <= backX + backWidth + 2 && mouseY >= backY - 2 && mouseY <= backY + 10;
         int backColor = backHover ? 0xFFFF5555 : 0xFFAAAAAA;
-        guiGraphics.drawString(this.font, backText, backX, backY, backColor, true);
+        guiGraphics.text(this.font, backText, backX, backY, backColor, true);
 
         if (hoveredQuestIndex != -1) {
             renderQuestTooltip(guiGraphics, hoveredQuestIndex, mouseX, mouseY);
@@ -198,7 +200,7 @@ public class QuestScreen extends Screen {
                 String costColor = (data.totalQuestPoints >= cost) ? "§a" : "§c";
                 rTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.reroll.cost").getString() + " " + costColor + cost + " " + Component.translatable("r3ct.unit.points").getString()).getVisualOrderText()));
 
-                guiGraphics.renderTooltip(this.font, rTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+                guiGraphics.tooltip(this.font, rTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
             }
         }
 
@@ -249,11 +251,11 @@ public class QuestScreen extends Screen {
             tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
             tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
             tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
-            guiGraphics.renderTooltip(this.font, tTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+            guiGraphics.tooltip(this.font, tTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
         }
     }
 
-    private void renderPointMilestones(GuiGraphics g, int x, int y, int bWidth, int mouseX, int mouseY) {
+    private void renderPointMilestones(GuiGraphicsExtractor g, int x, int y, int bWidth, int mouseX, int mouseY) {
         int[] thresholds = {50, 100, 150, 200};
         ItemStack[] icons = {new ItemStack(Items.AMETHYST_SHARD), new ItemStack(Items.EMERALD), new ItemStack(Items.DIAMOND), new ItemStack(Items.NETHERITE_SCRAP)};
         String[] amounts = {"§dx32", "§ax16", "§bx8", "§cx4"};
@@ -275,20 +277,20 @@ public class QuestScreen extends Screen {
                 g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, 0x44000000);
             }
 
-            g.renderItem(icons[i], startX, startY);
-            g.drawString(this.font, amounts[i], startX + 18, startY + 4, 0xFF000000, false);
+            g.item(icons[i], startX, startY);
+            g.text(this.font, amounts[i], startX + 18, startY + 4, 0xFF000000, false);
 
             if (claimed) {
                 g.pose().pushMatrix();
                 g.pose().translate(0, 0);
-                g.drawString(this.font, "§a✔", startX + 10, startY + 8, 0xFFFFFFFF, true);
+                g.text(this.font, "§a✔", startX + 10, startY + 8, 0xFFFFFFFF, true);
                 g.pose().popMatrix();
             } else if (canClaim) {
                 g.pose().pushMatrix();
                 g.pose().translate(mX, startY + 22);
                 g.pose().scale(1.5f, 1.5f);
                 String arrow = (time % 1000 < 500) ? "§e↑" : "§6↑";
-                g.drawString(this.font, arrow, -this.font.width("↑") / 2, 0, 0xFF000000, true);
+                g.text(this.font, arrow, -this.font.width("↑") / 2, 0, 0xFF000000, true);
                 g.pose().popMatrix();
             }
         }
@@ -400,7 +402,7 @@ public class QuestScreen extends Screen {
         return false;
     }
 
-    private void renderQuestStreakTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    private void renderQuestStreakTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct.quests.tooltip.streak.title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
@@ -426,18 +428,18 @@ public class QuestScreen extends Screen {
         int reqDays = ConfigLoader.mechanics.streaks.perfectDaysForShield;
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.progress").getString() + " §b" + data.perfectDaysCount + "§f/" + reqDays).getVisualOrderText()));
 
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
 
-    private void renderSimpleTooltip(GuiGraphics guiGraphics, String title, String info, int mouseX, int mouseY) {
+    private void renderSimpleTooltip(GuiGraphicsExtractor guiGraphics, String title, String info, int mouseX, int mouseY) {
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(title).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(info).getVisualOrderText()));
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
 
-    private void renderQuestTooltip(GuiGraphics guiGraphics, int index, int mouseX, int mouseY) {
+    private void renderQuestTooltip(GuiGraphicsExtractor guiGraphics, int index, int mouseX, int mouseY) {
         Quest q = QuestManager.getQuestById(data.activeQuests.get(index));
         if (q == null) return;
 
@@ -448,7 +450,7 @@ public class QuestScreen extends Screen {
                         ConfigLoader.mechanics.quests.xpPerQuestHard;
         int xpReward = baseXp * multi;
 
-        int itemAmount = q.itemReward.getCount() * multi;
+        int itemAmount = q.rewardAmount * multi;
 
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
 
@@ -463,12 +465,12 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.quest.desc").getString() + " §7" + locDesc).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.quest.points").getString() + " §d+" + q.points).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.quest.xp").getString() + " §e+" + xpReward + " §e" + Component.translatable("r3ct.unit.xp").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.reward").getString() + " §a" + itemAmount + "§ax §a" + q.itemReward.getHoverName().getString()).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.reward").getString() + " §a" + itemAmount + "§ax §a" + q.getItemReward().getHoverName().getString()).getVisualOrderText()));
 
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
 
-    private void renderDailyTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    private void renderDailyTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f§l" + Component.translatable("r3ct.quests.tooltip.daily.title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
@@ -489,10 +491,10 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§a- " + Component.translatable("r3ct.quests.item.emerald").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§b- " + Component.translatable("r3ct.quests.item.diamond").getString()).getVisualOrderText()));
 
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
 
-    private void renderLifetimeTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    private void renderLifetimeTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct.quests.tooltip.lifetime.title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
@@ -502,7 +504,7 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getLifetimeTooltipLine(data.totalQuestPoints, 150, "8x " + Component.translatable("r3ct.quests.item.diamond").getString(), "§b").getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getLifetimeTooltipLine(data.totalQuestPoints, 200, "4x " + Component.translatable("r3ct.quests.item.netherite").getString(), "§c").getVisualOrderText()));
 
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
 
     private Component getLifetimeTooltipLine(int current, int target, String reward, String color) {
@@ -511,8 +513,8 @@ public class QuestScreen extends Screen {
         return Component.literal(prefix + Math.min(current, target) + "/" + target + " " + Component.translatable("r3ct.unit.points").getString() + " §8- " + color + reward);
     }
 
-    private void drawRewardStyleBar(GuiGraphics g, int x, int y, float val, int max, String label, String valueText, int color, int bWidth, int tickStep, int[] labelsToDraw) {
-        g.drawString(this.font, "§0" + label + ": " + valueText, x, y - 12, 0xFF000000, false);
+    private void drawRewardStyleBar(GuiGraphicsExtractor g, int x, int y, float val, int max, String label, String valueText, int color, int bWidth, int tickStep, int[] labelsToDraw) {
+        g.text(this.font, "§0" + label + ": " + valueText, x, y - 12, 0xFF000000, false);
         g.fill(x, y, x + bWidth, y + 8, 0xFF373737);
         int w = (int)((Math.min(val, max) / (float)max) * (bWidth - 2));
         if (w > 0) g.fill(x + 1, y + 1, x + 1 + w, y + 7, color | 0xFF000000);
@@ -526,7 +528,7 @@ public class QuestScreen extends Screen {
             int tickX = x + (int)((p / (float)max) * (bWidth - 2));
             g.fill(tickX, y - 2, tickX + 1, y + 10, 0xFFFFFFFF);
             String pStr = String.valueOf(p);
-            g.drawString(this.font, "§0" + pStr, tickX - (this.font.width(pStr) / 2), y + 13, 0xFF000000, false);
+            g.text(this.font, "§0" + pStr, tickX - (this.font.width(pStr) / 2), y + 13, 0xFF000000, false);
         }
     }
 

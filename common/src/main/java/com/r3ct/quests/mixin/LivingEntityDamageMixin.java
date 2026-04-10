@@ -39,7 +39,7 @@ public abstract class LivingEntityDamageMixin {
 
             QuestManager.handleAction(playerVictim, "TAKE_DAMAGE", "any", (int)amount);
 
-            long time = level.getDayTime() % 24000;
+            long time = level.getGameTime() % 24000;
             if (time >= 0 && time < 13000) {
                 QuestManager.handleAction(playerVictim, "TAKE_DAMAGE_DAY", "any", (int)amount);
             }

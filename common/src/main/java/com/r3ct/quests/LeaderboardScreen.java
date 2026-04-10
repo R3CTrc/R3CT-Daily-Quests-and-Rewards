@@ -1,12 +1,13 @@
 package com.r3ct.quests;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class LeaderboardScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderTransparentBackground(guiGraphics);
+    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.extractTransparentBackground(guiGraphics);
 
         int leftPos = (this.width - boardWidth) / 2;
         int topPos = (this.height - boardHeight) / 2;
@@ -40,13 +41,13 @@ public class LeaderboardScreen extends Screen {
         guiGraphics.fill(midX - 1, topPos + 25, midX + 1, topPos + boardHeight - 2, 0xFF1A1A1A);
 
         String title = "§6§l" + Component.translatable(boardType == 0 ? "r3ct.leaderboard.title.quests" : "r3ct.leaderboard.title.rewards").getString();
-        guiGraphics.drawCenteredString(this.font, title, midX, topPos + 8, 0xFFFFFFFF);
+        guiGraphics.centeredText(this.font, title, midX, topPos + 8, 0xFFFFFFFF);
 
         String leftTitle = "§f" + Component.translatable(boardType == 0 ? "r3ct.leaderboard.left.quests" : "r3ct.leaderboard.left.rewards").getString();
         String rightTitle = "§f" + Component.translatable("r3ct.leaderboard.right.streak").getString();
 
-        guiGraphics.drawCenteredString(this.font, leftTitle, leftPos + (boardWidth / 4), topPos + 32, 0xFFFFFFFF);
-        guiGraphics.drawCenteredString(this.font, rightTitle, leftPos + (3 * boardWidth / 4), topPos + 32, 0xFFFFFFFF);
+        guiGraphics.centeredText(this.font, leftTitle, leftPos + (boardWidth / 4), topPos + 32, 0xFFFFFFFF);
+        guiGraphics.centeredText(this.font, rightTitle, leftPos + (3 * boardWidth / 4), topPos + 32, 0xFFFFFFFF);
 
         hoveredEntry = null;
         renderList(guiGraphics, leftList, leftPos + 15, topPos + 50, mouseX, mouseY);
@@ -68,11 +69,11 @@ public class LeaderboardScreen extends Screen {
             tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + rewardsStr + ": §d" + hoveredEntry.totalRewards()).getVisualOrderText()));
             tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + maxRStr + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysStr).getVisualOrderText()));
 
-            guiGraphics.renderTooltip(this.font, tt, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+            guiGraphics.tooltip(this.font, tt, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
 
             ItemStack head = new ItemStack(Items.PLAYER_HEAD);
             head.set(net.minecraft.core.component.DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createUnresolved(hoveredEntry.name()));
-            guiGraphics.renderItem(head, mouseX + 11, mouseY - 14);
+            guiGraphics.item(head, mouseX + 11, mouseY - 14);
         }
 
         String switchText = Component.translatable(boardType == 0 ? "r3ct.leaderboard.button.rewards_next" : "r3ct.leaderboard.button.quests_prev").getString();
@@ -82,7 +83,7 @@ public class LeaderboardScreen extends Screen {
 
         boolean switchHover = mouseX >= switchX && mouseX <= switchX + switchWidth && mouseY >= switchY - 2 && mouseY <= switchY + 10;
         int switchColor = switchHover ? 0xFFFFFFFF : 0xFFAAAAAA;
-        guiGraphics.drawString(this.font, switchText, switchX, switchY, switchColor, true);
+        guiGraphics.text(this.font, switchText, switchX, switchY, switchColor, true);
 
         String backText = Component.translatable("r3ct.leaderboard.button.back").getString();
         int backWidth = this.font.width(backText);
@@ -91,9 +92,9 @@ public class LeaderboardScreen extends Screen {
 
         boolean backHover = mouseX >= backX - 2 && mouseX <= backX + backWidth + 2 && mouseY >= backY - 2 && mouseY <= backY + 10;
         int backColor = backHover ? 0xFFFF5555 : 0xFFAAAAAA;
-        guiGraphics.drawString(this.font, backText, backX, backY, backColor, true);
+        guiGraphics.text(this.font, backText, backX, backY, backColor, true);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
@@ -156,7 +157,7 @@ public class LeaderboardScreen extends Screen {
         return super.keyPressed(event);
     }
 
-    private void renderList(GuiGraphics guiGraphics, List<TopEntry> list, int startX, int startY, int mouseX, int mouseY) {
+    private void renderList(GuiGraphicsExtractor guiGraphics, List<TopEntry> list, int startX, int startY, int mouseX, int mouseY) {
         for (int i = 0; i < list.size(); i++) {
             TopEntry entry = list.get(i);
             int y = startY + (i * 18);
@@ -173,13 +174,13 @@ public class LeaderboardScreen extends Screen {
 
             ItemStack head = new ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
             head.set(net.minecraft.core.component.DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createUnresolved(entry.name()));
-            guiGraphics.renderItem(head, startX, y);
+            guiGraphics.item(head, startX, y);
 
-            guiGraphics.drawString(this.font, "§6" + (i + 1) + ". " + nameColor + entry.name(), startX + 20, y + 4, 0xFFFFFFFF, true);
+            guiGraphics.text(this.font, "§6" + (i + 1) + ". " + nameColor + entry.name(), startX + 20, y + 4, 0xFFFFFFFF, true);
 
             String scoreTxt = valColor + scoreToDisplay;
             int scoreWidth = this.font.width(scoreTxt);
-            guiGraphics.drawString(this.font, scoreTxt, startX + 165 - scoreWidth, y + 4, 0xFFFFFFFF, true);
+            guiGraphics.text(this.font, scoreTxt, startX + 165 - scoreWidth, y + 4, 0xFFFFFFFF, true);
 
             if (mouseX >= startX && mouseX <= startX + 165 && mouseY >= y && mouseY <= y + 16) {
                 hoveredEntry = entry;
