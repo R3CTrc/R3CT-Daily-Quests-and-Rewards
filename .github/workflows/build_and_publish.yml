@@ -2,7 +2,7 @@ name: Build and Publish
 
 on:
   push:
-    branches: [ "26.1.2" ]
+    branches: [ "26.1.x" ]
   release:
     types: [ published ]
 
@@ -56,7 +56,10 @@ jobs:
             !fabric/build/libs/*-javadoc.jar
 
           loaders: fabric
-          game-versions: 26.1.2
+          game-versions: |
+            26.1
+            26.1.1
+            26.1.2
 
           dependencies: |
             fabric-api | required
@@ -83,7 +86,10 @@ jobs:
             !neoforge/build/libs/*-javadoc.jar
 
           loaders: neoforge
-          game-versions: 26.1.2
+          game-versions: |
+            26.1
+            26.1.1
+            26.1.2
 
           dependencies: |
             cloth-config | required
