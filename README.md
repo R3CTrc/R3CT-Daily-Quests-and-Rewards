@@ -1,13 +1,19 @@
 # R3CT Daily Quests & Rewards 🎯
 
-A powerful, highly configurable Daily Quests and Login Rewards mod for Minecraft.
-Keep your players engaged with dynamic tasks, login streaks, and a beautifully integrated GUI. Built for both Fabric and NeoForge!
-
 ![Minecraft Version](https://img.shields.io/badge/Minecraft-1.21.11-success)
 ![Wiki](https://img.shields.io/badge/Documentation-Wiki-blueviolet)
 ![Fabric](https://img.shields.io/badge/Loader-Fabric-orange)
 ![NeoForge](https://img.shields.io/badge/Loader-NeoForge-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
+
+A powerful, highly configurable Daily Quests and Login Rewards mod for Minecraft.
+Keep your players engaged with dynamic tasks, login streaks, and a beautifully integrated GUI. Built for both Fabric and NeoForge!
+
+<div align="center">
+  <img src="./images/icon_nb.png" width="50%" alt="R3CT Mod Icon">
+</div>
+
+---
 
 ## ✨ Features
 
@@ -15,15 +21,35 @@ Keep your players engaged with dynamic tasks, login streaks, and a beautifully i
   * Maintain your Quest Streak by completing tasks daily.
   * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day!
 
+<div align="center">
+  <a href="./images/Quests_Screen.png" target="_blank">
+    <img src="./images/Quests_Screen.png" width="75%" alt="Quests Screen (Click to enlarge)">
+  </a>
+</div>
+
 * **🎁 Daily Rewards System:** * Claim escalating rewards for consecutive daily logins.
   * Build up your Reward Streak to earn bonus multipliers.
   * Includes its own separate Shield System to save your login streak.
+
+<div align="center">
+  <a href="./images/Rewards_Screen.png" target="_blank">
+    <img src="./images/Rewards_Screen.png" width="75%" alt="Rewards Screen (Click to enlarge)">
+  </a>
+</div>
 
 * **🖥️ Beautiful GUI:** * Fully interactive, clean, and modern menus built directly into Minecraft.
   * Track your progress easily (Default keys: `G` for Quests, `H` for Rewards).
   * On-screen HUD to track your active quest progress in real-time. Easily toggle it on or off by pressing the `.` (period) key!
 
+<div align="center">
+  <a href="./images/HUD.png" target="_blank">
+    <img src="./images/HUD.png" width="75%" alt="HUD Screen (Click to enlarge)">
+  </a>
+</div>
+
 * **🔄 Cross-Platform:** * Fully native support and identical features for both **Fabric** and **NeoForge**.
+
+---
 
 ## 🔌 Dependencies & Requirements
 
@@ -32,21 +58,29 @@ To run this mod, you will need to install a few library mods depending on your l
 **For Fabric:**
 * [Fabric API](https://modrinth.com/mod/fabric-api) (Required)
 * [Cloth Config API](https://modrinth.com/mod/cloth-config) (Required)
-* [Mod Menu](https://modrinth.com/mod/modmenu) (Recommended)
+* [Mod Menu](https://modrinth.com/mod/modmenu) (Recommended - to access in-game settings)
 
 **For NeoForge:**
 * [Cloth Config API](https://modrinth.com/mod/cloth-config) (Required)
+
+---
 
 ## 📖 Documentation
 
 For detailed guides on how to set up quests, rewards, and technical mechanics, visit our official Wiki:
 👉 **[View the Wiki](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki)**
 
-Quick links to popular topics:
+<details>
+<summary><b>Click to see popular topics 💡</b></summary>
+
 * [📥 Getting Started](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Getting-Started)
 * [⚔️ Customizing Quests](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Quests-Setup)
 * [📅 Setting up Login Rewards](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Rewards)
 * [🖥️ Admin Commands](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Commands-&-Permissions)
+
+</details>
+
+---
 
 ## ⚙️ Configuration & Customization
 
@@ -65,12 +99,16 @@ All core mechanics, quests, and rewards can be completely rewritten. After runni
 * **`daily_rewards.json`** - Customize login streak loot pools. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Rewards)
 * **`r3ctdailyquests.json`** - Tweak core mechanics, reroll costs, and tech rules. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Core-Mechanics)
 
+---
+
 ## 📥 Installation
 
-1. Download the latest release from the **[Releases](../../releases)** tab.
+1. Download the latest release from the **Versions** tab.
 2. Download the required dependencies listed above for your specific mod loader.
 3. Place all `.jar` files into your Minecraft `mods` folder.
 4. Launch the game and enjoy!
+
+---
 
 ## 💖 Support the Development
 
@@ -85,6 +123,8 @@ Want to get more involved? Check out my Ko-fi memberships for exclusive perks:
 * 🥇 **Diamond Supporter:** Name in the Hall of Fame and custom feature requests!
 
 [Join a Tier and support the mod!](https://ko-fi.com/r3ct_/tiers)
+
+---
 
 ## 📄 License
 This project is available under the [MIT License](LICENSE). Feel free to learn from the code and include it in your modpacks!
