@@ -30,6 +30,19 @@ jobs:
       - name: Build Mod
         run: ./gradlew clean build
 
+      - name: Clean up unnecessary JARs
+        run: |
+          rm -f fabric/build/libs/*-dev.jar
+          rm -f fabric/build/libs/*-sources.jar
+          rm -f fabric/build/libs/*-javadoc.jar
+          rm -f fabric/build/libs/*-plain.jar
+          rm -f fabric/build/libs/*-common.jar
+          rm -f neoforge/build/libs/*-dev.jar
+          rm -f neoforge/build/libs/*-sources.jar
+          rm -f neoforge/build/libs/*-javadoc.jar
+          rm -f neoforge/build/libs/*-plain.jar
+          rm -f neoforge/build/libs/*-common.jar
+
       - name: Upload Artifacts (For Testing)
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
@@ -49,7 +62,7 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          files: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+          files: fabric/build/libs/*.jar
 
           loaders: fabric
           game-versions: |
@@ -75,7 +88,7 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          files: neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          files: neoforge/build/libs/*.jar
 
           loaders: neoforge
           game-versions: |
