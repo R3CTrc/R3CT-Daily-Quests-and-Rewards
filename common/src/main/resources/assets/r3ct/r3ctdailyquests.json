@@ -11,7 +11,8 @@
   },
   "streaks": {
     "perfectDaysForShield": 3,
-    "maxStoredShields": 3
+    "maxStoredShields": 3,
+    "maxStoredRewardShields": 3
   },
   "technical": {
     "placedBlocksCacheLimit": 10000,

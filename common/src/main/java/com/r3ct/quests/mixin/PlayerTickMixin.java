@@ -1,9 +1,9 @@
 package com.r3ct.quests.mixin;
 
-import com.r3ct.quests.ModState;
-import com.r3ct.quests.PlayerData;
-import com.r3ct.quests.Quest;
-import com.r3ct.quests.QuestManager;
+import com.r3ct.quests.data.ModState;
+import com.r3ct.quests.data.PlayerData;
+import com.r3ct.quests.logic.Quest;
+import com.r3ct.quests.logic.QuestManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

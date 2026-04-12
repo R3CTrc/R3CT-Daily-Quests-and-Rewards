@@ -1,5 +1,9 @@
-package com.r3ct.quests;
+package com.r3ct.quests.logic;
 
+import com.r3ct.quests.network.OpenRewardsPayload;
+import com.r3ct.quests.config.ConfigLoader;
+import com.r3ct.quests.data.ModState;
+import com.r3ct.quests.data.PlayerData;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;

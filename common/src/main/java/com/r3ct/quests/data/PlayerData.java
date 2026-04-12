@@ -1,4 +1,4 @@
-package com.r3ct.quests;
+package com.r3ct.quests.data;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;

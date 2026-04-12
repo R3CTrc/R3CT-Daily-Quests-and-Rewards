@@ -1,5 +1,11 @@
-package com.r3ct.quests;
+package com.r3ct.quests.screen;
 
+import com.r3ct.quests.config.ConfigLoader;
+import com.r3ct.quests.data.PlayerData;
+import com.r3ct.quests.logic.Quest;
+import com.r3ct.quests.logic.QuestManager;
+import com.r3ct.quests.network.RequestLeaderboardPayload;
+import com.r3ct.quests.network.RerollQuestPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -330,7 +336,7 @@ public class QuestScreen extends Screen {
 
                 if (!done && ConfigLoader.mechanics.quests.enableQuestRerolling && mX >= btnX && mX <= btnX + btnSize && mY >= btnY && mY <= btnY + btnSize) {
                     if (this.minecraft != null && this.minecraft.player != null) {
-                        com.r3ct.quests.platform.Services.PLATFORM.sendToServer(new com.r3ct.quests.RerollQuestPayload(i));
+                        com.r3ct.quests.platform.Services.PLATFORM.sendToServer(new RerollQuestPayload(i));
                         return true;
                     }
                 }
@@ -339,7 +345,7 @@ public class QuestScreen extends Screen {
                     if (done && !claimed) {
                         if (this.minecraft != null && this.minecraft.player != null) {
                             this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                            this.minecraft.player.connection.sendCommand("rdq claimquest " + i);
+                            this.minecraft.player.connection.sendCommand("daily claimquest " + i);
                             return true;
                         }
                     }
@@ -364,7 +370,7 @@ public class QuestScreen extends Screen {
                     if (canClaim) {
                         if (this.minecraft != null && this.minecraft.player != null) {
                             this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                            this.minecraft.player.connection.sendCommand("rdq claimpoints " + t);
+                            this.minecraft.player.connection.sendCommand("daily claimpoints " + t);
                             return true;
                         }
                     }
@@ -379,7 +385,7 @@ public class QuestScreen extends Screen {
             if (mX >= arrowX && mX <= arrowX + textWidth && mY >= arrowY - 2 && mY <= arrowY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN, 1.0F));
-                    this.minecraft.player.connection.sendCommand("rdq rewards");
+                    this.minecraft.player.connection.sendCommand("daily rewards");
                     return true;
                 }
             }
@@ -416,14 +422,14 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct.quests.tooltip.streak.freeze_title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freeze_desc1").getString()).getVisualOrderText()));
+        int reqDays = ConfigLoader.mechanics.streaks.perfectDaysForShield;
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freeze_desc1", reqDays).getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
-        int maxShields = ConfigLoader.mechanics.streaks.maxStoredShields;
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freezes").getString() + " §b" + data.availableFreezes + "§f/" + maxShields).getVisualOrderText()));
+        int maxQuestShields = ConfigLoader.mechanics.streaks.maxStoredQuestShields;
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freezes").getString() + " §b" + data.availableFreezes + "§f/" + maxQuestShields).getVisualOrderText()));
 
-        int reqDays = ConfigLoader.mechanics.streaks.perfectDaysForShield;
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.progress").getString() + " §b" + data.perfectDaysCount + "§f/" + reqDays).getVisualOrderText()));
 
         guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);

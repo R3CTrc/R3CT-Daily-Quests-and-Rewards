@@ -1,5 +1,10 @@
-package com.r3ct.quests;
+package com.r3ct.quests.logic;
 
+import com.r3ct.quests.network.SyncQuestsPayload;
+import com.r3ct.quests.config.ConfigLoader;
+import com.r3ct.quests.data.ModState;
+import com.r3ct.quests.data.PlayerData;
+import com.r3ct.quests.item.ModItems;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -389,18 +394,10 @@ public class QuestManager {
 
             if (data.perfectDaysCount >= ConfigLoader.mechanics.streaks.perfectDaysForShield) {
                 data.perfectDaysCount = 0;
-
-                if (data.availableFreezes < ConfigLoader.mechanics.streaks.maxStoredShields) {
-                    data.availableFreezes++;
-                    player.sendSystemMessage(Component.translatable("r3ct.message.quests.shield_earned"));
-                } else {
-                    player.sendSystemMessage(Component.translatable("r3ct.message.quests.shield_limit_reached"));
-                }
-
-                if (data.availableFreezes >= 3) {
-                    QuestManager.grantAdvancement(player, "r3ct:quests/hamster");
-                }
-            } else {
+                QuestManager.giveOrDrop(player, new ItemStack(ModItems.QUEST_SHIELD));
+                player.sendSystemMessage(Component.translatable("r3ct.message.quests.shield_item_received"));
+            }
+            else {
                 player.sendSystemMessage(Component.translatable("r3ct.message.quests.perfect_day", "§b" + data.perfectDaysCount));
             }
         }

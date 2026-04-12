@@ -1,5 +1,6 @@
 package com.r3ct.quests.mixin;
 
+import com.r3ct.quests.logic.QuestManager;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +17,7 @@ public abstract class PiglinBarterMixin {
             if (ownerUUID != null) {
                 net.minecraft.server.level.ServerPlayer player = (net.minecraft.server.level.ServerPlayer) level.getPlayerByUUID(ownerUUID);
                 if (player != null) {
-                    com.r3ct.quests.QuestManager.handleAction(player, "TRADE", "minecraft:piglin", 1);
+                    QuestManager.handleAction(player, "TRADE", "minecraft:piglin", 1);
                 }
             }
         }

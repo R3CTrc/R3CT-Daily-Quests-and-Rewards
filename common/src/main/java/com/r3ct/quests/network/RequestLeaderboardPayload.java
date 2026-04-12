@@ -1,4 +1,4 @@
-package com.r3ct.quests;
+package com.r3ct.quests.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

@@ -40,14 +40,6 @@ neoForge {
     }
 }
 
-repositories {
-    maven { url "https://maven.shedaniel.me/" }
-}
-
-dependencies {
-    implementation "me.shedaniel.cloth:cloth-config-neoforge:21.11.153"
-}
-
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 // Implement mcgradleconventions loader attribute
