@@ -1,7 +1,17 @@
 package com.r3ct.quests;
 
+import com.r3ct.quests.config.ConfigLoader;
+import com.r3ct.quests.data.ModState;
+import com.r3ct.quests.data.PlayerData;
+import com.r3ct.quests.data.TopEntry;
+import com.r3ct.quests.item.ModItems;
+import com.r3ct.quests.logic.Quest;
+import com.r3ct.quests.logic.QuestManager;
+import com.r3ct.quests.logic.RewardManager;
+import com.r3ct.quests.network.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
@@ -10,15 +20,21 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -52,6 +68,22 @@ public class R3CT implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Starting R3CT Daily Quests system!");
+
+		com.r3ct.quests.item.ModItems.register();
+
+		ResourceKey<CreativeModeTab> R3CT_TAB_KEY = ResourceKey.create(
+				Registries.CREATIVE_MODE_TAB,
+				Identifier.parse("r3ct:main_tab")
+		);
+		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, R3CT_TAB_KEY, FabricCreativeModeTab.builder()
+				.title(Component.translatable("itemGroup.r3ct.main_tab"))
+				.icon(() -> new ItemStack(ModItems.QUEST_SHIELD))
+				.displayItems((context, output) -> {
+					output.accept(ModItems.QUEST_SHIELD);
+					output.accept(ModItems.REWARD_SHIELD);
+				})
+				.build()
+		);
 
 		ConfigLoader.loadAll();
 
@@ -167,7 +199,7 @@ public class R3CT implements ModInitializer {
 					MutableComponent rewardMsg = Component.translatable("r3ct.message.rewards.new_reward")
 							.append(Component.translatable("r3ct.message.click_here")
 									.withStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent.RunCommand("/rdq rewards"))
+											.withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
 											.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu")))
 									)
 							);
@@ -178,7 +210,7 @@ public class R3CT implements ModInitializer {
 					MutableComponent questMsg = Component.translatable("r3ct.message.quests.new_quests")
 							.append(Component.translatable("r3ct.message.click_here")
 									.withStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent.RunCommand("/rdq quests"))
+											.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
 											.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
 									)
 							);
@@ -191,7 +223,7 @@ public class R3CT implements ModInitializer {
 					MutableComponent reminderMsg = Component.translatable("r3ct.message.quests.remaining", "§e" + remainingQuests)
 							.append(Component.translatable("r3ct.message.click_here")
 									.withStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent.RunCommand("/rdq quests"))
+											.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
 											.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
 									)
 							);
@@ -245,7 +277,7 @@ public class R3CT implements ModInitializer {
 				return true;
 			};
 
-			dispatcher.register(Commands.literal("rdq")
+			dispatcher.register(Commands.literal("daily")
 					.then(Commands.literal("reload")
 							.requires(isOp)
 							.executes(context -> {
@@ -555,11 +587,9 @@ public class R3CT implements ModInitializer {
 								}
 
 								if (data.rewardDay == 7) {
-									data.availableRewardFreezes++;
-									player.sendSystemMessage(Component.translatable("r3ct.message.rewards.shield_earned"));
-									if (data.availableRewardFreezes >= 3) {
-										QuestManager.grantAdvancement(player, "r3ct:rewards/shield_collector");
-									}
+									QuestManager.grantAdvancement(player, "r3ct:rewards/rich_week");
+									QuestManager.giveOrDrop(player, new ItemStack(ModItems.REWARD_SHIELD));
+									player.sendSystemMessage(Component.translatable("r3ct.message.rewards.shield_item_received"));
 								}
 
 								data.lastRewardDate = today.toString();
@@ -959,7 +989,7 @@ public class R3CT implements ModInitializer {
 		MutableComponent rewardMsg = Component.translatable("r3ct.message.rewards.new_reward")
 				.append(Component.translatable("r3ct.message.click_here")
 						.withStyle(Style.EMPTY
-								.withClickEvent(new ClickEvent.RunCommand("/rdq rewards"))
+								.withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
 								.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu")))
 						)
 				);
@@ -968,7 +998,7 @@ public class R3CT implements ModInitializer {
 		MutableComponent questMsg = Component.translatable("r3ct.message.quests.new_quests")
 				.append(Component.translatable("r3ct.message.click_here")
 						.withStyle(Style.EMPTY
-								.withClickEvent(new ClickEvent.RunCommand("/rdq quests"))
+								.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
 								.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
 						)
 				);

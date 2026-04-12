@@ -57,11 +57,10 @@ To run this mod, you will need to install a few library mods depending on your l
 
 **For Fabric:**
 * [Fabric API](https://modrinth.com/mod/fabric-api) (Required)
-* [Cloth Config API](https://modrinth.com/mod/cloth-config) (Required)
-* [Mod Menu](https://modrinth.com/mod/modmenu) (Recommended - to access in-game settings)
+* [Mod Menu](https://modrinth.com/mod/modmenu) (Optional - to access in-game settings)
 
 **For NeoForge:**
-* [Cloth Config API](https://modrinth.com/mod/cloth-config) (Required)
+* Nothing!
 
 ---
 

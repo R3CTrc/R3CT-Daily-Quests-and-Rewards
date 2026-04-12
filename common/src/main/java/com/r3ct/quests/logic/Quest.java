@@ -1,4 +1,4 @@
-package com.r3ct.quests;
+package com.r3ct.quests.logic;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;

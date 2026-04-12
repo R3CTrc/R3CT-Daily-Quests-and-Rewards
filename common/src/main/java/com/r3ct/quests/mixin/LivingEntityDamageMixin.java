@@ -1,6 +1,6 @@
 package com.r3ct.quests.mixin;
 
-import com.r3ct.quests.QuestManager;
+import com.r3ct.quests.logic.QuestManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;

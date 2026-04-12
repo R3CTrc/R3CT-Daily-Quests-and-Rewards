@@ -72,7 +72,6 @@ jobs:
 
           dependencies: |
             fabric-api(required)
-            cloth-config(required)
             modmenu(optional)
 
           version: ${{ github.event.release.tag_name }}-fabric
@@ -95,9 +94,6 @@ jobs:
             26.1
             26.1.1
             26.1.2
-
-          dependencies: |
-            cloth-config(required)
 
           version: ${{ github.event.release.tag_name }}-neoforge
           changelog: ${{ github.event.release.body }}

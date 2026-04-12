@@ -1,5 +1,18 @@
 package com.r3ct.quests;
 
+import com.r3ct.quests.config.ConfigLoader;
+import com.r3ct.quests.data.ModState;
+import com.r3ct.quests.data.PlayerData;
+import com.r3ct.quests.data.TopEntry;
+import com.r3ct.quests.item.ModItems;
+import com.r3ct.quests.logic.Quest;
+import com.r3ct.quests.logic.QuestManager;
+import com.r3ct.quests.logic.RewardManager;
+import com.r3ct.quests.network.*;
+import com.r3ct.quests.screen.LeaderboardScreen;
+import com.r3ct.quests.screen.QuestScreen;
+import com.r3ct.quests.screen.R3CTConfigScreen;
+import com.r3ct.quests.screen.RewardScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -64,41 +77,12 @@ public class R3CTNeoForge {
     public R3CTNeoForge(IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
         Constants.LOG.info("Starting R3CT Daily Quests system!");
         ConfigLoader.loadAll();
-
         modEventBus.addListener(this::registerPayloads);
+        modEventBus.addListener(this::onRegister);
         NeoForge.EVENT_BUS.register(this);
 
-        modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class, (client, parent) -> createConfigScreen(parent));
-    }
-
-    private net.minecraft.client.gui.screens.Screen createConfigScreen(net.minecraft.client.gui.screens.Screen parent) {
-        me.shedaniel.clothconfig2.api.ConfigBuilder builder = me.shedaniel.clothconfig2.api.ConfigBuilder.create()
-                .setParentScreen(parent)
-                .setTitle(Component.translatable("r3ct.config.title"));
-
-        me.shedaniel.clothconfig2.api.ConfigCategory general = builder.getOrCreateCategory(Component.translatable("r3ct.config.category.hud"));
-        me.shedaniel.clothconfig2.api.ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-
-        general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("r3ct.config.entry.enable_hud"), com.r3ct.quests.config.R3CTQuestsConfig.getInstance().enableHud)
-                .setDefaultValue(true)
-                .setSaveConsumer(newValue -> com.r3ct.quests.config.R3CTQuestsConfig.getInstance().enableHud = newValue)
-                .build());
-
-        general.addEntry(entryBuilder.startIntField(Component.translatable("r3ct.config.entry.hud_x"), com.r3ct.quests.config.R3CTQuestsConfig.getInstance().hudXOffset)
-                .setDefaultValue(10)
-                .setSaveConsumer(newValue -> com.r3ct.quests.config.R3CTQuestsConfig.getInstance().hudXOffset = newValue)
-                .build());
-
-        general.addEntry(entryBuilder.startIntField(Component.translatable("r3ct.config.entry.hud_y"), com.r3ct.quests.config.R3CTQuestsConfig.getInstance().hudYOffset)
-                .setDefaultValue(70)
-                .setSaveConsumer(newValue -> com.r3ct.quests.config.R3CTQuestsConfig.getInstance().hudYOffset = newValue)
-                .build());
-
-        builder.setSavingRunnable(() -> {
-            com.r3ct.quests.config.R3CTQuestsConfig.save();
-        });
-
-        return builder.build();
+        modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
+                (client, parent) -> new R3CTConfigScreen(parent));
     }
 
     private void registerPayloads(final RegisterPayloadHandlersEvent event) {
@@ -137,6 +121,26 @@ public class R3CTNeoForge {
                     QuestManager.rerollQuest(player, payload.questIndex());
                 }
             });
+        });
+    }
+
+    private void onRegister(net.neoforged.neoforge.registries.RegisterEvent event) {
+
+        if (event.getRegistryKey().equals(net.minecraft.core.registries.Registries.ITEM)) {
+            com.r3ct.quests.item.ModItems.register();
+        }
+
+        event.register(net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB, helper -> {
+            helper.register(net.minecraft.resources.Identifier.parse("r3ct:main_tab"),
+                    net.minecraft.world.item.CreativeModeTab.builder()
+                            .title(net.minecraft.network.chat.Component.translatable("itemGroup.r3ct.main_tab"))
+                            .icon(() -> new net.minecraft.world.item.ItemStack(com.r3ct.quests.item.ModItems.QUEST_SHIELD))
+                            .displayItems((context, output) -> {
+                                output.accept(com.r3ct.quests.item.ModItems.QUEST_SHIELD);
+                                output.accept(com.r3ct.quests.item.ModItems.REWARD_SHIELD);
+                            })
+                            .build()
+            );
         });
     }
 
@@ -227,7 +231,7 @@ public class R3CTNeoForge {
                 MutableComponent rewardMsg = Component.translatable("r3ct.message.rewards.new_reward")
                         .append(Component.translatable("r3ct.message.click_here")
                                 .withStyle(Style.EMPTY
-                                        .withClickEvent(new ClickEvent.RunCommand("/rdq rewards"))
+                                        .withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
                                         .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu")))
                                 )
                         );
@@ -238,7 +242,7 @@ public class R3CTNeoForge {
                 MutableComponent questMsg = Component.translatable("r3ct.message.quests.new_quests")
                         .append(Component.translatable("r3ct.message.click_here")
                                 .withStyle(Style.EMPTY
-                                        .withClickEvent(new ClickEvent.RunCommand("/rdq quests"))
+                                        .withClickEvent(new ClickEvent.RunCommand("/daily quests"))
                                         .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
                                 )
                         );
@@ -251,7 +255,7 @@ public class R3CTNeoForge {
                 MutableComponent reminderMsg = Component.translatable("r3ct.message.quests.remaining", "§e" + remainingQuests)
                         .append(Component.translatable("r3ct.message.click_here")
                                 .withStyle(Style.EMPTY
-                                        .withClickEvent(new ClickEvent.RunCommand("/rdq quests"))
+                                        .withClickEvent(new ClickEvent.RunCommand("/daily quests"))
                                         .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
                                 )
                         );
@@ -503,7 +507,7 @@ public class R3CTNeoForge {
             return true;
         };
 
-        event.getDispatcher().register(Commands.literal("rdq")
+        event.getDispatcher().register(Commands.literal("daily")
                 .then(Commands.literal("reload").requires(isOp).executes(context -> {
                     ConfigLoader.loadAll();
                     context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.reload.success"), true);
@@ -618,9 +622,8 @@ public class R3CTNeoForge {
                     if (data.totalCollected >= 50) QuestManager.grantAdvancement(player, "r3ct:rewards/login_veteran");
                     if (data.rewardDay == 7) {
                         QuestManager.grantAdvancement(player, "r3ct:rewards/rich_week");
-                        data.availableRewardFreezes++;
-                        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.shield_earned"));
-                        if (data.availableRewardFreezes >= 3) QuestManager.grantAdvancement(player, "r3ct:rewards/shield_collector");
+                        QuestManager.giveOrDrop(player, new ItemStack(ModItems.REWARD_SHIELD));
+                        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.shield_item_received"));
                     }
 
                     data.lastRewardDate = today.toString();
@@ -750,8 +753,8 @@ public class R3CTNeoForge {
                 data.questRewardsClaimed, data.claimedPointRewards
         ));
 
-        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.new_reward").append(Component.translatable("r3ct.message.click_here").withStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/rdq rewards")).withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu"))))));
-        player.sendSystemMessage(Component.translatable("r3ct.message.quests.new_quests").append(Component.translatable("r3ct.message.click_here").withStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/rdq quests")).withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu"))))));
+        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.new_reward").append(Component.translatable("r3ct.message.click_here").withStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/daily rewards")).withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu"))))));
+        player.sendSystemMessage(Component.translatable("r3ct.message.quests.new_quests").append(Component.translatable("r3ct.message.click_here").withStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/daily quests")).withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu"))))));
         for (Component msg : freezeMessages) player.sendSystemMessage(msg);
     }
 
@@ -793,8 +796,8 @@ public class R3CTNeoForge {
             Minecraft client = Minecraft.getInstance();
             if (client.player == null) return;
 
-            while (ClientModEvents.openRewardsKey.consumeClick()) client.player.connection.sendCommand("rdq rewards");
-            while (ClientModEvents.openQuestsKey.consumeClick()) client.player.connection.sendCommand("rdq quests");
+            while (ClientModEvents.openRewardsKey.consumeClick()) client.player.connection.sendCommand("daily rewards");
+            while (ClientModEvents.openQuestsKey.consumeClick()) client.player.connection.sendCommand("daily quests");
             while (ClientModEvents.toggleHudKey.consumeClick()) {
                 minimizedHud = !minimizedHud;
                 Component message = Component.translatable("r3ct.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON");

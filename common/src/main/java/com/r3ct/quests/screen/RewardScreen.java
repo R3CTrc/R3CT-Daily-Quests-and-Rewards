@@ -1,5 +1,8 @@
-package com.r3ct.quests;
+package com.r3ct.quests.screen;
 
+import com.r3ct.quests.data.PlayerData;
+import com.r3ct.quests.config.ConfigLoader;
+import com.r3ct.quests.network.RequestLeaderboardPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -333,7 +336,8 @@ public class RewardScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.streak.freeze_desc1").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes).getVisualOrderText()));
+        int maxRewardShields = ConfigLoader.mechanics.streaks.maxStoredRewardShields;
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
 
         guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
@@ -399,7 +403,7 @@ public class RewardScreen extends Screen {
             if (event.x() >= arrowX && event.x() <= arrowX + textWidth && event.y() >= arrowY - 2 && event.y() <= arrowY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN, 1.0F));
-                    this.minecraft.player.connection.sendCommand("rdq quests");
+                    this.minecraft.player.connection.sendCommand("daily quests");
                     return true;
                 }
             }
@@ -414,7 +418,7 @@ public class RewardScreen extends Screen {
                 if (isMouseOverSlot(event.x(), event.y(), slotX, slotY) && i == data.rewardDay && !juzDzisiajOdebrane) {
                     if (Minecraft.getInstance().player != null) {
                         Minecraft.getInstance().player.playSound(net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
-                        Minecraft.getInstance().player.connection.sendCommand("rdq claimreward");
+                        Minecraft.getInstance().player.connection.sendCommand("daily claimreward");
                         return true;
                     }
                 }
@@ -442,7 +446,7 @@ public class RewardScreen extends Screen {
                     if (canClaim) {
                         if (this.minecraft != null && this.minecraft.player != null) {
                             this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                            this.minecraft.player.connection.sendCommand("rdq claimbonus " + t);
+                            this.minecraft.player.connection.sendCommand("daily claimbonus " + t);
                             return true;
                         }
                     }

@@ -1,5 +1,15 @@
 package com.r3ct.quests;
 
+import com.r3ct.quests.data.PlayerData;
+import com.r3ct.quests.logic.Quest;
+import com.r3ct.quests.logic.QuestManager;
+import com.r3ct.quests.network.LeaderboardResponsePayload;
+import com.r3ct.quests.network.OpenQuestsPayload;
+import com.r3ct.quests.network.OpenRewardsPayload;
+import com.r3ct.quests.network.SyncQuestsPayload;
+import com.r3ct.quests.screen.LeaderboardScreen;
+import com.r3ct.quests.screen.QuestScreen;
+import com.r3ct.quests.screen.RewardScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -53,10 +63,10 @@ public class R3CTClient implements ClientModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (openRewardsKey.consumeClick()) {
-				if (client.player != null) client.player.connection.sendCommand("rdq rewards");
+				if (client.player != null) client.player.connection.sendCommand("daily rewards");
 			}
 			while (openQuestsKey.consumeClick()) {
-				if (client.player != null) client.player.connection.sendCommand("rdq quests");
+				if (client.player != null) client.player.connection.sendCommand("daily quests");
 			}
 			while (toggleHudKey.consumeClick()) {
 				minimizedHud = !minimizedHud;

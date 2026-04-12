@@ -1,5 +1,7 @@
-package com.r3ct.quests;
+package com.r3ct.quests.screen;
 
+import com.r3ct.quests.data.TopEntry;
+import com.r3ct.quests.network.RequestLeaderboardPayload;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -128,7 +130,7 @@ public class LeaderboardScreen extends Screen {
             if (mX >= backX - 2 && mX <= backX + backWidth + 2 && mY >= backY - 2 && mY <= backY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                    this.minecraft.player.connection.sendCommand(boardType == 0 ? "rdq quests" : "rdq rewards");
+                    this.minecraft.player.connection.sendCommand(boardType == 0 ? "daily quests" : "daily rewards");
                     return true;
                 }
             }
@@ -140,7 +142,7 @@ public class LeaderboardScreen extends Screen {
     public boolean keyPressed(KeyEvent event) {
         if (event.key() == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
             if (this.minecraft != null && this.minecraft.player != null) {
-                this.minecraft.player.connection.sendCommand(this.boardType == 0 ? "rdq quests" : "rdq rewards");
+                this.minecraft.player.connection.sendCommand(this.boardType == 0 ? "daily quests" : "daily rewards");
             }
             return true;
         }
