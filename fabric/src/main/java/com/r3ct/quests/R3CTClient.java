@@ -169,7 +169,6 @@ public class R3CTClient implements ClientModInitializer {
 
 			int alpha = 255;
 			if (client.player.isSleeping()) {
-				// Jeśli getSleepTimer świeci się na czerwono, zmień na sleepTimer()
 				float sleepTimer = client.player.getSleepTimer();
 				alpha = 255 - (int) ((sleepTimer / 100.0f) * 255);
 			}
@@ -187,7 +186,6 @@ public class R3CTClient implements ClientModInitializer {
 			if (clientQuestData == null || clientQuestData.activeQuests.isEmpty()) {
 				if (!minimizedHud) {
 					String loadingMsg = "§e" + Component.translatable("r3ct.hud.loading").getString();
-					// ZMIANA: drawString -> text
 					guiGraphics.text(client.font, loadingMsg, virtualWidth - client.font.width(loadingMsg) - xOffset, currentY, baseColor, true);
 				}
 				guiGraphics.pose().popMatrix();
@@ -196,7 +194,6 @@ public class R3CTClient implements ClientModInitializer {
 
 			if (!minimizedHud) {
 				String title = "§e§l" + Component.translatable("r3ct.quests.header.daily_quests").getString();
-				// ZMIANA: drawString -> text
 				guiGraphics.text(client.font, title, virtualWidth - client.font.width(title) - xOffset, currentY, baseColor, true);
 			}
 			currentY += 12;
@@ -211,7 +208,6 @@ public class R3CTClient implements ClientModInitializer {
 				String mark = done ? "§a" + Component.translatable("r3ct.quests.status.claimed").getString() : "§c" + Component.translatable("r3ct.quests.status.incomplete").getString();
 
 				if (minimizedHud) {
-					// ZMIANA: drawString -> text
 					guiGraphics.text(client.font, mark, virtualWidth - client.font.width(mark) - xOffset, currentY, baseColor, true);
 				} else {
 					String questName;
@@ -230,7 +226,6 @@ public class R3CTClient implements ClientModInitializer {
 					}
 
 					String lineText = diffIndicator + progressColor + questName + " (" + progress + "/" + q.requiredAmount + ") " + mark;
-					// ZMIANA: drawString -> text
 					guiGraphics.text(client.font, lineText, virtualWidth - client.font.width(lineText) - xOffset, currentY, baseColor, true);
 				}
 				currentY += 10;

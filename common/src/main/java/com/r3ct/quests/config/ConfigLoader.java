@@ -188,7 +188,6 @@ public class ConfigLoader {
             String itemStr = obj.get("reward_item").getAsString();
             int rewardAmount = obj.get("reward_amount").getAsInt();
 
-            // Tworzymy Quest z samą liczbą (rewardAmount), a nie z obiektem ItemStack
             Quest q = new Quest(
                     obj.get("id").getAsString(),
                     obj.has("name") ? obj.get("name").getAsString() : "Quest",

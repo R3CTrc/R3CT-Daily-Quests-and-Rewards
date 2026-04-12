@@ -19,7 +19,7 @@ public class Quest {
     public String actionType;
     public String target;
     public String rawRewardId;
-    public int rewardAmount; // Dodane pole na ilość zamiast gotowego ItemStack
+    public int rewardAmount;
 
     public Quest(String id, String name, String description, int requiredAmount, int difficulty, int points, int rewardAmount, String requiredDimension, String actionType, String target, String rawRewardId) {
         this.id = id;
@@ -35,7 +35,6 @@ public class Quest {
         this.rawRewardId = rawRewardId;
     }
 
-    // Ta metoda stworzy ItemStack dopiero w momencie, gdy będzie potrzebny (np. w GUI lub przy nagrodzie)
     public ItemStack getItemReward() {
         Item item;
         if (this.rawRewardId.startsWith("r3ct:")) {
