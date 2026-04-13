@@ -75,7 +75,7 @@ public class R3CTClient implements ClientModInitializer {
 					String stateText = minimizedHud ? "§4OFF" : "§aON";
 					client.player.displayClientMessage(
 							Component.translatable("r3ct.message.hud_toggle", stateText),
-							true
+							false
 					);
 				}
 			}
@@ -164,7 +164,8 @@ public class R3CTClient implements ClientModInitializer {
 
 			double currentGuiScale = Math.max(1.0, client.getWindow().getGuiScale());
 			float targetGuiScale = 2.0f;
-			float scale = (float) (targetGuiScale / currentGuiScale);
+			float configScale = com.r3ct.quests.config.R3CTQuestsConfig.getInstance().hudScale;
+			float scale = (float) (targetGuiScale / currentGuiScale) * configScale;
 
 			int alpha = 255;
 			if (client.player.isSleeping()) {

@@ -32,6 +32,16 @@ public class LeaderboardScreen extends Screen {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderTransparentBackground(guiGraphics);
 
+        float scale = com.r3ct.quests.config.R3CTQuestsConfig.getInstance().leaderboardScreenScale;
+
+        mouseX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
+        mouseY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
+
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(this.width / 2f, this.height / 2f);
+        guiGraphics.pose().scale(scale, scale);
+        guiGraphics.pose().translate(-this.width / 2f, -this.height / 2f);
+
         int leftPos = (this.width - boardWidth) / 2;
         int topPos = (this.height - boardHeight) / 2;
         int midX = leftPos + (boardWidth / 2);
@@ -96,13 +106,17 @@ public class LeaderboardScreen extends Screen {
         guiGraphics.drawString(this.font, backText, backX, backY, backColor, true);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        guiGraphics.pose().popMatrix();
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
         if (event.button() == 0) {
-            int mX = (int) event.x();
-            int mY = (int) event.y();
+            float scale = com.r3ct.quests.config.R3CTQuestsConfig.getInstance().leaderboardScreenScale;
+
+            int mX = (int)((event.x() - this.width / 2f) / scale + this.width / 2f);
+            int mY = (int)((event.y() - this.height / 2f) / scale + this.height / 2f);
 
             int leftPos = (this.width - boardWidth) / 2;
             int topPos = (this.height - boardHeight) / 2;

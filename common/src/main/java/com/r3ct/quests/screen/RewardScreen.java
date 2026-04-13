@@ -33,6 +33,16 @@ public class RewardScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTransparentBackground(guiGraphics);
 
+        float scale = com.r3ct.quests.config.R3CTQuestsConfig.getInstance().rewardScreenScale;
+
+        mouseX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
+        mouseY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
+
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(this.width / 2f, this.height / 2f);
+        guiGraphics.pose().scale(scale, scale);
+        guiGraphics.pose().translate(-this.width / 2f, -this.height / 2f);
+
         int leftPos = (this.width - imageWidth) / 2;
         int topPos = (this.height - imageHeight) / 2;
 
@@ -222,6 +232,8 @@ public class RewardScreen extends Screen {
             tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
             guiGraphics.renderTooltip(this.font, tTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
         }
+
+        guiGraphics.pose().popMatrix();
     }
 
     private void renderBonusMilestones(GuiGraphics g, int x, int y, int bWidth, int mouseX, int mouseY) {
@@ -379,13 +391,18 @@ public class RewardScreen extends Screen {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
         if (event.button() == 0) {
+            float scale = com.r3ct.quests.config.R3CTQuestsConfig.getInstance().rewardScreenScale;
+
+            int mX = (int)((event.x() - this.width / 2f) / scale + this.width / 2f);
+            int mY = (int)((event.y() - this.height / 2f) / scale + this.height / 2f);
+
             int leftPos = (this.width - imageWidth) / 2;
             int topPos = (this.height - imageHeight) / 2;
 
             int trophyX = leftPos + imageWidth - 24;
             int trophyY = topPos + 6;
 
-            if (event.x() >= trophyX && event.x() <= trophyX + 16 && event.y() >= trophyY && event.y() <= trophyY + 16) {
+            if (mX >= trophyX && mX <= trophyX + 16 && mY >= trophyY && mY <= trophyY + 16) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     com.r3ct.quests.platform.Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(1));
@@ -398,7 +415,7 @@ public class RewardScreen extends Screen {
             int arrowX = leftPos - 15 - textWidth;
             int arrowY = (this.height / 2) - 4;
 
-            if (event.x() >= arrowX && event.x() <= arrowX + textWidth && event.y() >= arrowY - 2 && event.y() <= arrowY + 10) {
+            if (mX >= arrowX && mX <= arrowX + textWidth && mY >= arrowY - 2 && mY <= arrowY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN, 1.0F));
                     this.minecraft.player.connection.sendCommand("daily quests");
@@ -413,7 +430,7 @@ public class RewardScreen extends Screen {
                 int slotX = leftPos + 27 + (i - 1) * 43;
                 int slotY = topPos + 43;
 
-                if (isMouseOverSlot(event.x(), event.y(), slotX, slotY) && i == data.rewardDay && !juzDzisiajOdebrane) {
+                if (isMouseOverSlot(mX, mY, slotX, slotY) && i == data.rewardDay && !juzDzisiajOdebrane) {
                     if (Minecraft.getInstance().player != null) {
                         Minecraft.getInstance().player.playSound(net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                         Minecraft.getInstance().player.connection.sendCommand("daily claimreward");
@@ -432,12 +449,12 @@ public class RewardScreen extends Screen {
             for (int i = 0; i < 3; i++) {
                 int t = thresholds[i];
                 String amountsStr = (i == 0) ? "§ax32" : (i == 1 ? "§bx16" : "§cx4");
-                int mX = (t == 21) ? (bar2X + bWidth - 1) : (bar2X + (int)(t * (bWidth / 21.0)));
+                int mX_bonus = (t == 21) ? (bar2X + bWidth - 1) : (bar2X + (int)(t * (bWidth / 21.0)));
                 int totalW = 18 + this.font.width(amountsStr);
-                int startX = mX - totalW / 2;
+                int startX = mX_bonus - totalW / 2;
                 int startY = barY + 24;
 
-                if (event.x() >= startX - 2 && event.x() <= startX + totalW + 2 && event.y() >= startY - 2 && event.y() <= startY + 18) {
+                if (mX >= startX - 2 && mX <= startX + totalW + 2 && mY >= startY - 2 && mY <= startY + 18) {
                     int absTarget = cycle * 21 + t;
                     boolean canClaim = data.totalCollected >= absTarget && !data.claimedBonusRewards.contains(absTarget);
 
@@ -457,7 +474,7 @@ public class RewardScreen extends Screen {
             int backX = midX - (backWidth / 2);
             int backY = topPos + imageHeight + 8;
 
-            if (event.x() >= backX - 2 && event.x() <= backX + backWidth + 2 && event.y() >= backY - 2 && event.y() <= backY + 10) {
+            if (mX >= backX - 2 && mX <= backX + backWidth + 2 && mY >= backY - 2 && mY <= backY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     this.onClose();

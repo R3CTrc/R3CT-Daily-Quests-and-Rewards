@@ -89,6 +89,7 @@ The mod is highly customizable! There are two ways to configure the mod:
 Players can access the mod settings via **Mod Menu** (on Fabric) or the **Mods tab** (on NeoForge). Here, users can:
 * Toggle the on-screen Quest HUD on or off.
 * Adjust the X and Y coordinates of the HUD to fit their screen.
+* Scale the size of the HUD, Quests, Rewards and Leaderboard Screens independently.
 
 ### 2. File Configuration (Server-side / Modpack Creators)
 All core mechanics, quests, and rewards can be completely rewritten. After running the mod once, navigate to the `config/r3ct/` folder:

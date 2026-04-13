@@ -801,7 +801,7 @@ public class R3CTNeoForge {
             while (ClientModEvents.openQuestsKey.consumeClick()) client.player.connection.sendCommand("daily quests");
             while (ClientModEvents.toggleHudKey.consumeClick()) {
                 minimizedHud = !minimizedHud;
-                client.player.displayClientMessage(Component.translatable("r3ct.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON"), true);
+                client.player.displayClientMessage(Component.translatable("r3ct.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON"), false);
             }
         }
 
@@ -818,7 +818,8 @@ public class R3CTNeoForge {
 
             double currentGuiScale = Math.max(1.0, client.getWindow().getGuiScale());
             float targetGuiScale = 2.0f;
-            float scale = (float) (targetGuiScale / currentGuiScale);
+            float configScale = com.r3ct.quests.config.R3CTQuestsConfig.getInstance().hudScale;
+            float scale = (float) (targetGuiScale / currentGuiScale) * configScale;
 
             int alpha = 255;
             if (client.player.isSleeping()) {

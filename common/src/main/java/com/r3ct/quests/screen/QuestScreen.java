@@ -35,6 +35,16 @@ public class QuestScreen extends Screen {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderTransparentBackground(guiGraphics);
 
+        float scale = ConfigLoader.mechanics != null ? com.r3ct.quests.config.R3CTQuestsConfig.getInstance().questScreenScale : 1.0f;
+
+        mouseX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
+        mouseY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
+
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(this.width / 2f, this.height / 2f);
+        guiGraphics.pose().scale(scale, scale);
+        guiGraphics.pose().translate(-this.width / 2f, -this.height / 2f);
+
         int leftPos = (this.width - bookWidth) / 2;
         int topPos = (this.height - bookHeight) / 2;
         int midX = leftPos + (bookWidth / 2);
@@ -257,6 +267,8 @@ public class QuestScreen extends Screen {
             tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
             guiGraphics.renderTooltip(this.font, tTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
         }
+
+        guiGraphics.pose().popMatrix();
     }
 
     private void renderPointMilestones(GuiGraphics g, int x, int y, int bWidth, int mouseX, int mouseY) {
@@ -303,8 +315,10 @@ public class QuestScreen extends Screen {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
         if (event.button() == 0) {
-            int mX = (int) event.x();
-            int mY = (int) event.y();
+            float scale = com.r3ct.quests.config.R3CTQuestsConfig.getInstance().questScreenScale;
+
+            int mX = (int)((event.x() - this.width / 2f) / scale + this.width / 2f);
+            int mY = (int)((event.y() - this.height / 2f) / scale + this.height / 2f);
 
             int leftPos = (this.width - bookWidth) / 2;
             int topPos = (this.height - bookHeight) / 2;

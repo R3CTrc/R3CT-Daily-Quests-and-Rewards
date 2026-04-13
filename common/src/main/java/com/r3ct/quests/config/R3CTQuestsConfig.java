@@ -15,6 +15,10 @@ public class R3CTQuestsConfig {
     public boolean enableHud = true;
     public int hudXOffset = 10;
     public int hudYOffset = 70;
+    public float hudScale = 1.0f;
+    public float questScreenScale = 1.0f;
+    public float rewardScreenScale = 1.0f;
+    public float leaderboardScreenScale = 1.0f;
 
     private static R3CTQuestsConfig instance = new R3CTQuestsConfig();
 
