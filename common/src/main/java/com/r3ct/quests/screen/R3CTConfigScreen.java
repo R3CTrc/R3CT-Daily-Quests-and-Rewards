@@ -15,6 +15,10 @@ public class R3CTConfigScreen extends Screen {
     private Button enableHudButton;
     private EditBox xOffsetBox;
     private EditBox yOffsetBox;
+    private EditBox hudScaleBox;
+    private EditBox questScaleBox;
+    private EditBox rewardScaleBox;
+    private EditBox leaderboardScaleBox;
 
     public R3CTConfigScreen(Screen parent) {
         super(Component.translatable("r3ct.config.title"));
@@ -23,7 +27,7 @@ public class R3CTConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        int rightColumnX = this.width / 2 + 10;
+        int rightColumnX = this.width / 2 + 20;
         int widgetWidth = 140;
         int widgetHeight = 20;
 
@@ -43,6 +47,22 @@ public class R3CTConfigScreen extends Screen {
         this.yOffsetBox = new EditBox(this.font, rightColumnX, 110, widgetWidth, widgetHeight, Component.translatable("r3ct.config.entry.hud_y"));
         this.yOffsetBox.setValue(String.valueOf(R3CTQuestsConfig.getInstance().hudYOffset));
         this.addRenderableWidget(this.yOffsetBox);
+
+        this.hudScaleBox = new EditBox(this.font, rightColumnX, 140, widgetWidth, widgetHeight, Component.translatable("r3ct.config.entry.hud_scale"));
+        this.hudScaleBox.setValue(String.valueOf(R3CTQuestsConfig.getInstance().hudScale));
+        this.addRenderableWidget(this.hudScaleBox);
+
+        this.questScaleBox = new EditBox(this.font, rightColumnX, 170, widgetWidth, widgetHeight, Component.translatable("r3ct.config.entry.quest_scale"));
+        this.questScaleBox.setValue(String.valueOf(R3CTQuestsConfig.getInstance().questScreenScale));
+        this.addRenderableWidget(this.questScaleBox);
+
+        this.rewardScaleBox = new EditBox(this.font, rightColumnX, 200, widgetWidth, widgetHeight, Component.translatable("r3ct.config.entry.reward_scale"));
+        this.rewardScaleBox.setValue(String.valueOf(R3CTQuestsConfig.getInstance().rewardScreenScale));
+        this.addRenderableWidget(this.rewardScaleBox);
+
+        this.leaderboardScaleBox = new EditBox(this.font, rightColumnX, 230, widgetWidth, widgetHeight, Component.translatable("r3ct.config.entry.leaderboard_scale"));
+        this.leaderboardScaleBox.setValue(String.valueOf(R3CTQuestsConfig.getInstance().leaderboardScreenScale));
+        this.addRenderableWidget(this.leaderboardScaleBox);
 
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose())
                 .bounds(this.width / 2 - 100, this.height - 40, 200, 20).build());
@@ -66,11 +86,15 @@ public class R3CTConfigScreen extends Screen {
 
         guiGraphics.centeredText(this.font, this.title, this.width / 2, 20, 0xFFFFFFFF);
 
-        int leftColumnX = this.width / 2 - 150;
+        int leftColumnX = this.width / 2 - 160;
 
         guiGraphics.text(this.font, Component.translatable("r3ct.config.entry.enable_hud"), leftColumnX, 50 + 6, 0xFFFFFFFF);
         guiGraphics.text(this.font, Component.translatable("r3ct.config.entry.hud_x"), leftColumnX, 80 + 6, 0xFFFFFFFF);
         guiGraphics.text(this.font, Component.translatable("r3ct.config.entry.hud_y"), leftColumnX, 110 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct.config.entry.hud_scale"), leftColumnX, 140 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct.config.entry.quest_scale"), leftColumnX, 170 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct.config.entry.reward_scale"), leftColumnX, 200 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct.config.entry.leaderboard_scale"), leftColumnX, 230 + 6, 0xFFFFFFFF);
     }
 
     @Override
@@ -81,6 +105,22 @@ public class R3CTConfigScreen extends Screen {
 
         try {
             R3CTQuestsConfig.getInstance().hudYOffset = Integer.parseInt(this.yOffsetBox.getValue());
+        } catch (NumberFormatException ignored) {}
+
+        try {
+            R3CTQuestsConfig.getInstance().hudScale = Float.parseFloat(this.hudScaleBox.getValue());
+        } catch (NumberFormatException ignored) {}
+
+        try {
+            R3CTQuestsConfig.getInstance().questScreenScale = Float.parseFloat(this.questScaleBox.getValue());
+        } catch (NumberFormatException ignored) {}
+
+        try {
+            R3CTQuestsConfig.getInstance().rewardScreenScale = Float.parseFloat(this.rewardScaleBox.getValue());
+        } catch (NumberFormatException ignored) {}
+
+        try {
+            R3CTQuestsConfig.getInstance().leaderboardScreenScale = Float.parseFloat(this.leaderboardScaleBox.getValue());
         } catch (NumberFormatException ignored) {}
 
         R3CTQuestsConfig.save();

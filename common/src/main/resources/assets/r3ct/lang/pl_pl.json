@@ -179,6 +179,10 @@
   "r3ct.config.entry.enable_hud": "Włącz HUD Zadań",
   "r3ct.config.entry.hud_x": "Odstęp HUD od prawej (X)",
   "r3ct.config.entry.hud_y": "Odstęp HUD od góry (Y)",
+  "r3ct.config.entry.hud_scale": "Skala HUD zadań",
+  "r3ct.config.entry.quest_scale": "Skala Menu Zadań",
+  "r3ct.config.entry.reward_scale": "Skala Menu Nagród",
+  "r3ct.config.entry.leaderboard_scale": "Skala Menu Rankingu",
 
   "r3ct.advancement.dimension_master.title": "Międzywymiarowy Wykonawca",
   "r3ct.advancement.dimension_master.desc": "Odblokuj Overworld, Nether i End w systemie misji.",
