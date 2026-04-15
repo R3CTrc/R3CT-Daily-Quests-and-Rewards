@@ -91,7 +91,7 @@ public class R3CTClient implements ClientModInitializer {
 				data.claimedRewardHistory = payload.claimedRewardHistory();
 				data.availableRewardFreezes = payload.availableRewardFreezes();
 				data.claimedBonusRewards = payload.claimedBonusRewards();
-				context.client().setScreen(new RewardScreen(data));
+				context.client().setScreen(new RewardScreen(data, payload));
 			});
 		});
 
@@ -112,7 +112,7 @@ public class R3CTClient implements ClientModInitializer {
 				data.claimedPointRewards = payload.claimedPointRewards();
 
 				clientQuestData = data;
-				context.client().setScreen(new QuestScreen(data));
+				context.client().setScreen(new QuestScreen(data, payload));
 			});
 		});
 

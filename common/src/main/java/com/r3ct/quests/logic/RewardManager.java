@@ -72,7 +72,7 @@ public class RewardManager {
                 var enchLookup = server.registryAccess().lookup(Registries.ENCHANTMENT).orElse(null);
                 ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK, amount);
                 if (enchLookup != null) {
-                    var enchList = enchLookup.listElements().toList();
+                    var enchList = enchLookup.listElements().filter(ref -> !ref.is(net.minecraft.tags.EnchantmentTags.CURSE)).toList();
                     if (!enchList.isEmpty()) {
                         var randomEnch = enchList.get(RANDOM.nextInt(enchList.size()));
                         net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(enchantedBook, builder -> {
@@ -188,7 +188,7 @@ public class RewardManager {
         server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
 
         int visualStreak = data.streak;
-        LocalDate today = LocalDate.now();
+        LocalDate today = java.time.LocalDateTime.now().minusHours(ConfigLoader.mechanics.technical.questRefreshHour).toLocalDate();
         if (data.lastStreakDate != null && !data.lastStreakDate.isEmpty()) {
             if (!data.lastStreakDate.equals(today.toString()) && !data.lastStreakDate.equals(today.minusDays(1).toString())) {
                 visualStreak = 0;
@@ -196,8 +196,15 @@ public class RewardManager {
         }
 
         com.r3ct.quests.platform.Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
-                data.rewardDay, data.lastRewardDate, visualStreak, data.totalCollected,
-                data.claimedRewardHistory, data.availableRewardFreezes, data.claimedBonusRewards
+                data.rewardDay,
+                data.lastRewardDate,
+                visualStreak,
+                data.totalCollected,
+                data.claimedRewardHistory,
+                data.availableRewardFreezes,
+                data.claimedBonusRewards,
+                ConfigLoader.mechanics.streaks.maxStoredRewardShields,
+                ConfigLoader.mechanics.technical.questRefreshHour
         ));
     }
 }

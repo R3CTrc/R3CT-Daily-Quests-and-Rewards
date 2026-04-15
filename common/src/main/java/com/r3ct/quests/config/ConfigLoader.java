@@ -94,7 +94,7 @@ public class ConfigLoader {
     private static void copyDefaultConfig(String fileName) {
         Path target = CONFIG_DIR.resolve(fileName);
         if (!Files.exists(target)) {
-            try (InputStream is = ConfigLoader.class.getResourceAsStream("/assets/r3ct/configs" + fileName)) {
+            try (InputStream is = ConfigLoader.class.getResourceAsStream("/assets/r3ct/configs/" + fileName)) {
                 if (is != null) {
                     Files.copy(is, target);
                 }
@@ -182,6 +182,7 @@ public class ConfigLoader {
     private static void parseQuestArray(com.google.gson.JsonArray array, String dimension) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
+            try {
             com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
             int diffInt = obj.get("difficulty").getAsInt();
 
@@ -205,6 +206,9 @@ public class ConfigLoader {
             if (diffInt == 0) QuestManager.EASY_QUESTS.add(q);
             else if (diffInt == 1) QuestManager.MEDIUM_QUESTS.add(q);
             else QuestManager.HARD_QUESTS.add(q);
+            } catch (Exception e) {
+                Constants.LOG.error("Error loading quest (index: " + i + ") in dimension " + dimension + ". Skipping quest.", e);
+            }
         }
     }
 }

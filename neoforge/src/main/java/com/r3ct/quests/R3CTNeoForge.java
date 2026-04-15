@@ -543,10 +543,26 @@ public class R3CTNeoForge {
                     QuestManager.grantAdvancement(player, "r3ct:quests/root");
                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), player.getUUID());
                     com.r3ct.quests.platform.Services.PLATFORM.sendToPlayer(player, new OpenQuestsPayload(
-                            data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                            data.activeQuests, data.questProgress, data.streak,
-                            data.perfectDaysCount, data.availableFreezes,
-                            data.questRewardsClaimed, data.claimedPointRewards
+                            data.questStreak,
+                            data.totalQuestPoints,
+                            data.dailyQuestsCompletedToday,
+                            data.activeQuests,
+                            data.questProgress,
+                            data.streak,
+                            data.perfectDaysCount,
+                            data.availableFreezes,
+                            data.questRewardsClaimed,
+                            data.claimedPointRewards,
+                            ConfigLoader.mechanics.quests.enableQuestRerolling,
+                            ConfigLoader.mechanics.quests.rerollCostEasy,
+                            ConfigLoader.mechanics.quests.rerollCostMedium,
+                            ConfigLoader.mechanics.quests.rerollCostHard,
+                            ConfigLoader.mechanics.quests.xpDailyReward,
+                            ConfigLoader.mechanics.quests.xpPerQuestEasy,
+                            ConfigLoader.mechanics.quests.xpPerQuestMedium,
+                            ConfigLoader.mechanics.quests.xpPerQuestHard,
+                            ConfigLoader.mechanics.streaks.perfectDaysForShield,
+                            ConfigLoader.mechanics.streaks.maxStoredQuestShields
                     ));
                     return 1;
                 }))
@@ -578,7 +594,17 @@ public class R3CTNeoForge {
                     if (data.lastStreakDate != null && !data.lastStreakDate.isEmpty() && !data.lastStreakDate.equals(today.toString()) && !data.lastStreakDate.equals(today.minusDays(1).toString())) {
                         visualStreak = 0;
                     }
-                    com.r3ct.quests.platform.Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(data.rewardDay, data.lastRewardDate, visualStreak, data.totalCollected, data.claimedRewardHistory, data.availableRewardFreezes, data.claimedBonusRewards));
+                    com.r3ct.quests.platform.Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
+                            data.rewardDay,
+                            data.lastRewardDate,
+                            visualStreak,
+                            data.totalCollected,
+                            data.claimedRewardHistory,
+                            data.availableRewardFreezes,
+                            data.claimedBonusRewards,
+                            ConfigLoader.mechanics.streaks.maxStoredRewardShields,
+                            ConfigLoader.mechanics.technical.questRefreshHour
+                    ));
                     return 1;
                 }))
                 .then(Commands.literal("claimreward").executes(context -> {
@@ -630,7 +656,17 @@ public class R3CTNeoForge {
                     data.rewardDay = (data.rewardDay >= 7) ? 1 : data.rewardDay + 1;
                     context.getSource().getServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
 
-                    com.r3ct.quests.platform.Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(data.rewardDay, data.lastRewardDate, data.streak, data.totalCollected, data.claimedRewardHistory, data.availableRewardFreezes, data.claimedBonusRewards));
+                    com.r3ct.quests.platform.Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
+                            data.rewardDay,
+                            data.lastRewardDate,
+                            data.streak,
+                            data.totalCollected,
+                            data.claimedRewardHistory,
+                            data.availableRewardFreezes,
+                            data.claimedBonusRewards,
+                            ConfigLoader.mechanics.streaks.maxStoredRewardShields,
+                            ConfigLoader.mechanics.technical.questRefreshHour
+                    ));
                     return 1;
                 }))
         );
@@ -798,7 +834,8 @@ public class R3CTNeoForge {
 
             while (ClientModEvents.openRewardsKey.consumeClick()) client.player.connection.sendCommand("daily rewards");
             while (ClientModEvents.openQuestsKey.consumeClick()) client.player.connection.sendCommand("daily quests");
-            while (ClientModEvents.toggleHudKey.consumeClick()) {
+
+            if (ClientModEvents.toggleHudKey.consumeClick()) {
                 minimizedHud = !minimizedHud;
                 Component message = Component.translatable("r3ct.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON");
                 client.gui.setOverlayMessage(message, false);
@@ -893,7 +930,7 @@ public class R3CTNeoForge {
             data.claimedRewardHistory = payload.claimedRewardHistory();
             data.availableRewardFreezes = payload.availableRewardFreezes();
             data.claimedBonusRewards = payload.claimedBonusRewards();
-            Minecraft.getInstance().setScreen(new RewardScreen(data));
+            Minecraft.getInstance().setScreen(new RewardScreen(data, payload));
         }
 
         public static void handleOpenQuests(OpenQuestsPayload payload) {
@@ -910,7 +947,7 @@ public class R3CTNeoForge {
             data.claimedPointRewards = payload.claimedPointRewards();
 
             ClientGameEvents.clientQuestData = data;
-            Minecraft.getInstance().setScreen(new QuestScreen(data));
+            Minecraft.getInstance().setScreen(new QuestScreen(data, payload));
         }
 
         public static void handleSyncQuests(SyncQuestsPayload payload) {

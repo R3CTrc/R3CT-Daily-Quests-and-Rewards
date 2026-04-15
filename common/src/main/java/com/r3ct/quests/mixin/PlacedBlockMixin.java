@@ -19,18 +19,14 @@ public abstract class PlacedBlockMixin {
         if (cir.getReturnValue().consumesAction() && context.getPlayer() instanceof ServerPlayer player) {
             net.minecraft.world.level.block.state.BlockState placedState = context.getLevel().getBlockState(context.getClickedPos());
             String blockId = BuiltInRegistries.BLOCK.getKey(placedState.getBlock()).toString();
-
             QuestManager.addPlacedBlock(context.getClickedPos(), context.getLevel());
-
             QuestManager.handleAction(player, "PLACE_BLOCK", blockId, 1);
             QuestManager.handleAction(player, "PLACE_BLOCK", "any", 1);
-
             if (placedState.getBlock() instanceof net.minecraft.world.level.block.BedBlock) {
                 if (player.level().isVillage(context.getClickedPos())) {
                     QuestManager.handleAction(player, "PLACE_BED_IN_VILLAGE", "any", 1);
                 }
             }
-
             if (placedState.is(net.minecraft.tags.BlockTags.SAPLINGS)) {
                 QuestManager.handleAction(player, "PLACE_SAPLING", "any", 1);
             }

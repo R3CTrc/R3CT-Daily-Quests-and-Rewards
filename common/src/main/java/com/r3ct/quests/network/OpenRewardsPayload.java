@@ -14,7 +14,9 @@ public record OpenRewardsPayload(
         int totalCollected,
         List<String> claimedRewardHistory,
         int availableRewardFreezes,
-        List<Integer> claimedBonusRewards
+        List<Integer> claimedBonusRewards,
+        int maxRewardShields,
+        int questRefreshHour
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<OpenRewardsPayload> ID =
@@ -33,7 +35,9 @@ public record OpenRewardsPayload(
                 buf.readInt(),
                 buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf),
                 buf.readInt(),
-                buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt)
+                buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt),
+                buf.readInt(),
+                buf.readInt()
         );
     }
 
@@ -45,6 +49,8 @@ public record OpenRewardsPayload(
         buf.writeCollection(claimedRewardHistory, FriendlyByteBuf::writeUtf);
         buf.writeInt(availableRewardFreezes);
         buf.writeCollection(claimedBonusRewards, FriendlyByteBuf::writeInt);
+        buf.writeInt(maxRewardShields);
+        buf.writeInt(questRefreshHour);
     }
 
     @Override

@@ -20,6 +20,7 @@ import java.util.List;
 
 public class QuestScreen extends Screen {
     private final PlayerData data;
+    private final com.r3ct.quests.network.OpenQuestsPayload payload;
 
     private final int bookWidth = 440;
     private final int bookHeight = 340;
@@ -28,9 +29,10 @@ public class QuestScreen extends Screen {
     private static float animatedStreak = 0.0f;
     private static float animatedPoints = 0.0f;
 
-    public QuestScreen(PlayerData data) {
+    public QuestScreen(PlayerData data, com.r3ct.quests.network.OpenQuestsPayload payload) {
         super(Component.translatable("r3ct.quests.title"));
         this.data = data;
+        this.payload = payload;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class QuestScreen extends Screen {
             int btnY = qY + 22;
             boolean isBtnHovered = false;
 
-            if (!done && ConfigLoader.mechanics.quests.enableQuestRerolling) {
+            if (!done && payload.enableQuestRerolling()) {
                 isBtnHovered = mouseX >= btnX && mouseX <= btnX + btnSize && mouseY >= btnY && mouseY <= btnY + btnSize;
                 if (isBtnHovered) hoveredRerollIndex = i;
 
@@ -202,9 +204,9 @@ public class QuestScreen extends Screen {
         if (hoveredRerollIndex != -1) {
             Quest rq = QuestManager.getQuestById(data.activeQuests.get(hoveredRerollIndex));
             if (rq != null) {
-                int cost = (rq.difficulty == 0) ? ConfigLoader.mechanics.quests.rerollCostEasy :
-                        (rq.difficulty == 1) ? ConfigLoader.mechanics.quests.rerollCostMedium :
-                                ConfigLoader.mechanics.quests.rerollCostHard;
+                int cost = (rq.difficulty == 0) ? payload.rerollCostEasy() :
+                        (rq.difficulty == 1) ? payload.rerollCostMedium() :
+                                payload.rerollCostHard();
 
                 List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> rTooltip = new ArrayList<>();
                 rTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§e§l" + Component.translatable("r3ct.quests.tooltip.reroll.title").getString()).getVisualOrderText()));
@@ -350,7 +352,7 @@ public class QuestScreen extends Screen {
                 int btnX = midX - 30;
                 int btnY = qY + 22;
 
-                if (!done && ConfigLoader.mechanics.quests.enableQuestRerolling && mX >= btnX && mX <= btnX + btnSize && mY >= btnY && mY <= btnY + btnSize) {
+                if (!done && payload.enableQuestRerolling() && mX >= btnX && mX <= btnX + btnSize && mY >= btnY && mY <= btnY + btnSize) {
                     if (this.minecraft != null && this.minecraft.player != null) {
                         com.r3ct.quests.platform.Services.PLATFORM.sendToServer(new RerollQuestPayload(i));
                         return true;
@@ -438,12 +440,12 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct.quests.tooltip.streak.freeze_title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        int reqDays = ConfigLoader.mechanics.streaks.perfectDaysForShield;
+        int reqDays = payload.perfectDaysForShield();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freeze_desc1", reqDays).getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
-        int maxQuestShields = ConfigLoader.mechanics.streaks.maxStoredQuestShields;
+        int maxQuestShields = payload.maxStoredQuestShields();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freezes").getString() + " §b" + data.availableFreezes + "§f/" + maxQuestShields).getVisualOrderText()));
 
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.progress").getString() + " §b" + data.perfectDaysCount + "§f/" + reqDays).getVisualOrderText()));
@@ -465,9 +467,9 @@ public class QuestScreen extends Screen {
 
         int multi = (data.questStreak >= 7) ? 2 : 1;
 
-        int baseXp = (q.difficulty == 0) ? ConfigLoader.mechanics.quests.xpPerQuestEasy :
-                (q.difficulty == 1) ? ConfigLoader.mechanics.quests.xpPerQuestMedium :
-                        ConfigLoader.mechanics.quests.xpPerQuestHard;
+        int baseXp = (q.difficulty == 0) ? payload.xpPerQuestEasy() :
+                (q.difficulty == 1) ? payload.xpPerQuestMedium() :
+                        payload.xpPerQuestHard();
         int xpReward = baseXp * multi;
 
         int itemAmount = q.rewardAmount * multi;
@@ -498,7 +500,7 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.daily.desc2").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
-        int dailyXp = ConfigLoader.mechanics.quests.xpDailyReward;
+        int dailyXp = payload.xpDailyReward();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.quest.xp").getString() + " §e+" + dailyXp + " §e" + Component.translatable("r3ct.unit.xp").getString()).getVisualOrderText()));
 
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.daily.list_title").getString()).getVisualOrderText()));
