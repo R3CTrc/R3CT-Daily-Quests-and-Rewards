@@ -302,9 +302,9 @@ public class R3CT implements ModInitializer {
 										if (anyCompleted) {
 											PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 											syncPlayerData(target, data);
-											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", "§e" + target.getName().getString()), true);
+											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", "§a" + target.getName().getString()), true);
 										} else {
-											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", "§b" + target.getName().getString()), false);
+											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", "§a" + target.getName().getString()), false);
 										}
 										return 1;
 									}))
@@ -315,9 +315,9 @@ public class R3CT implements ModInitializer {
 										boolean success = QuestManager.forceCompleteQuest(target, index, false);
 
 										if (success) {
-											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", "§e" + (index + 1), "§b" + target.getName().getString()), true);
+											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", "§e" + (index + 1), "§a" + target.getName().getString()), true);
 										} else {
-											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", "§e" + (index + 1), "§b" + target.getName().getString()), false);
+											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", "§e" + (index + 1), "§a" + target.getName().getString()), false);
 										}
 										return 1;
 									}))
@@ -337,7 +337,7 @@ public class R3CT implements ModInitializer {
 												data.lastQuestStreakDate = "1970-01-01";
 
 												syncPlayerData(target, data);
-												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.reset_cooldown.success", "§b" + target.getName().getString()), true);
+												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.reset_cooldown.success", "§a" + target.getName().getString()), true);
 												return 1;
 											})
 									)
@@ -349,7 +349,7 @@ public class R3CT implements ModInitializer {
 										PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 										data.totalQuestPoints += amount;
 										syncPlayerData(target, data);
-										context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.add", "§e" + amount, "§b" + target.getName().getString(), "§e" + data.totalQuestPoints), true);
+										context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.add", "§e" + amount, "§a" + target.getName().getString(), "§d" + data.totalQuestPoints), true);
 										return 1;
 									}))))
 									.then(Commands.literal("set").then(Commands.argument("target", net.minecraft.commands.arguments.EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -358,7 +358,7 @@ public class R3CT implements ModInitializer {
 										PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 										data.totalQuestPoints = amount;
 										syncPlayerData(target, data);
-										context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.set", "§e" + amount, "§b" + target.getName().getString()), true);
+										context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.set", "§e" + amount, "§a" + target.getName().getString()), true);
 										return 1;
 									}))))
 									.then(Commands.literal("remove").then(Commands.argument("target", net.minecraft.commands.arguments.EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(1)).executes(context -> {
@@ -367,7 +367,7 @@ public class R3CT implements ModInitializer {
 										PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 										data.totalQuestPoints = Math.max(0, data.totalQuestPoints - amount);
 										syncPlayerData(target, data);
-										context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.remove", "§e" + amount, "§b" + target.getName().getString(), "§e" + data.totalQuestPoints), true);
+										context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.remove", "§e" + amount, "§a" + target.getName().getString(), "§d" + data.totalQuestPoints), true);
 										return 1;
 									}))))
 							)
@@ -379,7 +379,7 @@ public class R3CT implements ModInitializer {
 												PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 												data.questStreak = amount;
 												syncPlayerData(target, data);
-												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.quests", "§b" + target.getName().getString(), "§e" + amount), true);
+												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.quests", "§a" + target.getName().getString(), "§d" + amount), true);
 												return 1;
 											}))))
 											.then(Commands.literal("rewards").then(Commands.argument("target", net.minecraft.commands.arguments.EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -388,7 +388,7 @@ public class R3CT implements ModInitializer {
 												PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 												data.streak = amount;
 												syncPlayerData(target, data);
-												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.rewards", "§b" + target.getName().getString(), "§e" + amount), true);
+												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.rewards", "§a" + target.getName().getString(), "§d" + amount), true);
 												return 1;
 											}))))
 									)
@@ -401,7 +401,7 @@ public class R3CT implements ModInitializer {
 												PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 												data.availableFreezes = amount;
 												syncPlayerData(target, data);
-												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.quests", "§b" + target.getName().getString(), "§e" + amount), true);
+												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.quests", "§a" + target.getName().getString(), "§b" + amount), true);
 												return 1;
 											}))))
 											.then(Commands.literal("rewards").then(Commands.argument("target", net.minecraft.commands.arguments.EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -410,7 +410,7 @@ public class R3CT implements ModInitializer {
 												PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 												data.availableRewardFreezes = amount;
 												syncPlayerData(target, data);
-												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.rewards", "§b" + target.getName().getString(), "§e" + amount), true);
+												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.rewards", "§a" + target.getName().getString(), "§b" + amount), true);
 												return 1;
 											}))))
 									)
@@ -423,9 +423,9 @@ public class R3CT implements ModInitializer {
 										if (!data.unlockedDimensions.contains(dim)) {
 											data.unlockedDimensions.add(dim);
 											syncPlayerData(target, data);
-											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.success", "§e" + dim, "§b" + target.getName().getString()), true);
+											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.success", "§e" + dim, "§a" + target.getName().getString()), true);
 										} else {
-											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.fail", "§b" + target.getName().getString(), "§c" + dim), false);
+											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.fail", "§a" + target.getName().getString(), "§c" + dim), false);
 										}
 										return 1;
 									}))))
@@ -436,9 +436,9 @@ public class R3CT implements ModInitializer {
 										if (data.unlockedDimensions.contains(dim)) {
 											data.unlockedDimensions.remove(dim);
 											syncPlayerData(target, data);
-											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.success", "§e" + dim, "§b" + target.getName().getString()), true);
+											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.success", "§e" + dim, "§a" + target.getName().getString()), true);
 										} else {
-											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.fail", "§b" + target.getName().getString(), "§c" + dim), false);
+											context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.fail", "§a" + target.getName().getString(), "§c" + dim), false);
 										}
 										return 1;
 									}))))
@@ -454,7 +454,7 @@ public class R3CT implements ModInitializer {
 												state.players.put(target.getUUID(), newData);
 
 												syncPlayerData(target, newData);
-												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.clear_data.success", "§b" + target.getName().getString()), true);
+												context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.clear_data.success", "§a" + target.getName().getString()), true);
 												return 1;
 											})
 									)

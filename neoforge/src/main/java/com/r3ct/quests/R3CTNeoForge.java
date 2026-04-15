@@ -522,9 +522,9 @@ public class R3CTNeoForge {
                             }
                             if (anyCompleted) {
                                 syncPlayerData(target, ModState.getPlayerData(context.getSource().getServer(), target.getUUID()));
-                                context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", "§e" + target.getName().getString()), true);
+                                context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", "§a" + target.getName().getString()), true);
                             } else {
-                                context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", "§b" + target.getName().getString()), false);
+                                context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", "§a" + target.getName().getString()), false);
                             }
                             return 1;
                         }))
@@ -532,8 +532,8 @@ public class R3CTNeoForge {
                             ServerPlayer target = net.minecraft.commands.arguments.EntityArgument.getPlayer(context, "target");
                             int index = IntegerArgumentType.getInteger(context, "index") - 1;
                             boolean success = QuestManager.forceCompleteQuest(target, index, false);
-                            if (success) context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", "§e" + (index + 1), "§b" + target.getName().getString()), true);
-                            else context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", "§e" + (index + 1), "§b" + target.getName().getString()), false);
+                            if (success) context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", "§e" + (index + 1), "§a" + target.getName().getString()), true);
+                            else context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", "§e" + (index + 1), "§a" + target.getName().getString()), false);
                             return 1;
                         }))
                 ))
