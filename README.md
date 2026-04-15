@@ -1,10 +1,13 @@
 # R3CT Daily Quests & Rewards 🎯
 
-![Minecraft Version](https://img.shields.io/badge/Minecraft-1.21.11-success)
-![Wiki](https://img.shields.io/badge/Documentation-Wiki-blueviolet)
-![Fabric](https://img.shields.io/badge/Loader-Fabric-orange)
-![NeoForge](https://img.shields.io/badge/Loader-NeoForge-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+<div align="center">
+
+[![Modrinth](https://img.shields.io/modrinth/dt/4NTCjyNQ?style=for-the-badge&label=Modrinth&logo=modrinth&logoColor=white&color=2EA043)](https://modrinth.com/mod/r3ct-daily-quests-rewards)
+[![CurseForge](https://img.shields.io/curseforge/dt/1508573?style=for-the-badge&label=CurseForge&logo=curseforge&logoColor=white&color=F16436)](https://www.curseforge.com/minecraft/mc-mods/r3ct-daily-quests-rewards)
+[![Wiki](https://img.shields.io/badge/Documentation-Wiki-6E40C9?style=for-the-badge&logo=readthedocs&logoColor=white)](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki)
+[![License: MIT](https://img.shields.io/badge/License-MIT-0576BA?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT)
+
+</div>
 
 A powerful, highly configurable Daily Quests and Login Rewards mod for Minecraft.
 Keep your players engaged with dynamic tasks, login streaks, and a beautifully integrated GUI. Built for both Fabric and NeoForge!
