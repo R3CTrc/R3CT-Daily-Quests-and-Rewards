@@ -160,9 +160,9 @@
   "r3ct.message.quests.daily_reward": "§b[Daily] §d⭐ §aYou received a Daily Reward for 3 quests!%s",
   "r3ct.message.quests.xp_gained": "§b[Daily] §e+%s§e XP (Experience)",
   "r3ct.message.quests.item_gained": "§b[Daily] §f%s§fx %s",
-  "r3ct.message.reroll.already_completed": "§c[Daily] §fYou cannot reroll a quest that has already been completed!",
-  "r3ct.message.reroll.not_enough_points": "§c[Daily] §fNot enough points to reroll! You need: §c%s total points§f. (You have: §d%s§f)",
-  "r3ct.message.reroll.no_quests_available": "§c[Daily] §fNo other quests of this difficulty are available to reroll!",
+  "r3ct.message.reroll.already_completed": "§b[Daily] §fYou cannot reroll a quest that has already been completed!",
+  "r3ct.message.reroll.not_enough_points": "§b[Daily] §fNot enough points to reroll! You need: §c%s total points§f. (You have: §d%s§f)",
+  "r3ct.message.reroll.no_quests_available": "§b[Daily] §fNo other quests of this difficulty are available to reroll!",
   "r3ct.message.reroll.success": "§b[Daily] §fQuest rerolled! Cost: §c%s total points§f. Current points: §d%s",
 
   "r3ct.message.bonus.claim_7": "§b[Daily] §d⭐ §fClaimed §d7§f-day bonus: §a(32x Emerald)",

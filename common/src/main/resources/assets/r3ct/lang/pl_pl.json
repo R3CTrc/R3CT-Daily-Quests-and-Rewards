@@ -160,9 +160,9 @@
   "r3ct.message.quests.daily_reward": "§b[Daily] §d⭐ §aOtrzymujesz Nagrodę Dzienną za 3 misje!%s",
   "r3ct.message.quests.xp_gained": "§b[Daily] §e+%s§e PD (Doświadczenia)",
   "r3ct.message.quests.item_gained": "§b[Daily] §f%s§fx %s",
-  "r3ct.message.reroll.already_completed": "§c[Daily] §fNie możesz wymienić zadania, które zostało już ukończone!",
-  "r3ct.message.reroll.not_enough_points": "§c[Daily] §fMasz za mało punktów na wymianę! Potrzebujesz: §c%s punktów ogólnych§f. (Masz: §d%s§f)",
-  "r3ct.message.reroll.no_quests_available": "§c[Daily] §fBrak innych dostępnych zadań tej trudności na wymianę!",
+  "r3ct.message.reroll.already_completed": "§b[Daily] §fNie możesz wymienić zadania, które zostało już ukończone!",
+  "r3ct.message.reroll.not_enough_points": "§b[Daily] §fMasz za mało punktów na wymianę! Potrzebujesz: §c%s punktów ogólnych§f. (Masz: §d%s§f)",
+  "r3ct.message.reroll.no_quests_available": "§b[Daily] §fBrak innych dostępnych zadań tej trudności na wymianę!",
   "r3ct.message.reroll.success": "§b[Daily] §fWymieniono zadanie! Koszt: §c%s punktów ogólnych§f. Aktualny stan punktów: §d%s",
 
   "r3ct.message.bonus.claim_7": "§b[Daily] §d⭐ §fOdebrano bonus §d7§f-dniowy: §a(32x Szmaragd)",
