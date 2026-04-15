@@ -72,11 +72,8 @@ public class R3CTClient implements ClientModInitializer {
 				minimizedHud = !minimizedHud;
 
 				if (client.player != null) {
-					String stateText = minimizedHud ? "§4OFF" : "§aON";
-					client.gui.setOverlayMessage(
-							Component.translatable("r3ct.message.hud_toggle", stateText),
-							false
-					);
+					Component message = Component.translatable("r3ct.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON");
+					client.gui.setOverlayMessage(message, false);
 				}
 			}
 		});
