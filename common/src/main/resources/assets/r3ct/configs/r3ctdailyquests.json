@@ -11,7 +11,7 @@
   },
   "streaks": {
     "perfectDaysForShield": 3,
-    "maxStoredShields": 3,
+    "maxStoredQuestShields": 3,
     "maxStoredRewardShields": 3
   },
   "technical": {
