@@ -18,7 +18,17 @@ public record OpenQuestsPayload(
         int perfectDaysCount,
         int availableFreezes,
         List<Boolean> questRewardsClaimed,
-        List<Integer> claimedPointRewards
+        List<Integer> claimedPointRewards,
+        boolean enableQuestRerolling,
+        int rerollCostEasy,
+        int rerollCostMedium,
+        int rerollCostHard,
+        int xpDailyReward,
+        int xpPerQuestEasy,
+        int xpPerQuestMedium,
+        int xpPerQuestHard,
+        int perfectDaysForShield,
+        int maxStoredQuestShields
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<OpenQuestsPayload> ID =
@@ -34,13 +44,23 @@ public record OpenQuestsPayload(
                 buf.readInt(),
                 buf.readInt(),
                 buf.readInt(),
-                readStringList(buf),
-                readIntList(buf),
+                buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf),
+                buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt),
                 buf.readInt(),
                 buf.readInt(),
                 buf.readInt(),
                 buf.readCollection(ArrayList::new, FriendlyByteBuf::readBoolean),
-                buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt)
+                buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt),
+                buf.readBoolean(),
+                buf.readInt(),
+                buf.readInt(),
+                buf.readInt(),
+                buf.readInt(),
+                buf.readInt(),
+                buf.readInt(),
+                buf.readInt(),
+                buf.readInt(),
+                buf.readInt()
         );
     }
 
@@ -48,34 +68,23 @@ public record OpenQuestsPayload(
         buf.writeInt(questStreak);
         buf.writeInt(totalQuestPoints);
         buf.writeInt(dailyQuestsCompletedToday);
-
-        buf.writeInt(activeQuests.size());
-        for (String s : activeQuests) buf.writeUtf(s);
-
-        buf.writeInt(questProgress.size());
-        for (int i : questProgress) buf.writeInt(i);
-
+        buf.writeCollection(activeQuests, FriendlyByteBuf::writeUtf);
+        buf.writeCollection(questProgress, FriendlyByteBuf::writeInt);
         buf.writeInt(streak);
-
         buf.writeInt(perfectDaysCount);
         buf.writeInt(availableFreezes);
-
         buf.writeCollection(questRewardsClaimed, FriendlyByteBuf::writeBoolean);
         buf.writeCollection(claimedPointRewards, FriendlyByteBuf::writeInt);
-    }
-
-    private static List<String> readStringList(FriendlyByteBuf buf) {
-        int size = buf.readInt();
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < size; i++) list.add(buf.readUtf());
-        return list;
-    }
-
-    private static List<Integer> readIntList(FriendlyByteBuf buf) {
-        int size = buf.readInt();
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < size; i++) list.add(buf.readInt());
-        return list;
+        buf.writeBoolean(enableQuestRerolling);
+        buf.writeInt(rerollCostEasy);
+        buf.writeInt(rerollCostMedium);
+        buf.writeInt(rerollCostHard);
+        buf.writeInt(xpDailyReward);
+        buf.writeInt(xpPerQuestEasy);
+        buf.writeInt(xpPerQuestMedium);
+        buf.writeInt(xpPerQuestHard);
+        buf.writeInt(perfectDaysForShield);
+        buf.writeInt(maxStoredQuestShields);
     }
 
     @Override

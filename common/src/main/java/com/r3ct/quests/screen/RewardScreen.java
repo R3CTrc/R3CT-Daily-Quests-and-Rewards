@@ -16,6 +16,7 @@ import java.util.List;
 
 public class RewardScreen extends Screen {
     private final PlayerData data;
+    private final com.r3ct.quests.network.OpenRewardsPayload payload;
 
     private final int imageWidth = 330;
     private final int imageHeight = 200;
@@ -23,9 +24,14 @@ public class RewardScreen extends Screen {
     private static float animatedStreak = 0.0f;
     private static float animatedCollected = 0.0f;
 
-    public RewardScreen(PlayerData data) {
+    public RewardScreen(PlayerData data, com.r3ct.quests.network.OpenRewardsPayload payload) {
         super(Component.translatable("r3ct.rewards.title"));
         this.data = data;
+        this.payload = payload;
+    }
+
+    private String getCurrentQuestDateString() {
+        return java.time.LocalDateTime.now().minusHours(payload.questRefreshHour()).toLocalDate().toString();
     }
 
     @Override
@@ -59,7 +65,7 @@ public class RewardScreen extends Screen {
         guiGraphics.fill(leftPos + 12, topPos + 30, leftPos + imageWidth - 12, topPos + 90, 0xFF8B8B8B);
 
         int hoveredDay = -1;
-        String dzisiajData = java.time.LocalDate.now().toString();
+        String dzisiajData = getCurrentQuestDateString();
         boolean juzDzisiajOdebrane = dzisiajData.equals(data.lastRewardDate);
 
         for (int i = 1; i <= 7; i++) {
@@ -291,8 +297,8 @@ public class RewardScreen extends Screen {
     }
 
     private void renderDayTooltip(GuiGraphics guiGraphics, int day, ItemStack stack, int mouseX, int mouseY) {
-        String dzisiaj = java.time.LocalDate.now().toString();
-        boolean juzDzisiajOdebrane = dzisiaj.equals(data.lastRewardDate);
+        String dzisiajData = getCurrentQuestDateString();
+        boolean juzDzisiajOdebrane = dzisiajData.equals(data.lastRewardDate);
         boolean czyOdebrane = juzDzisiajOdebrane ? ((data.rewardDay == 1) || (day < data.rewardDay)) : (day < data.rewardDay);
         boolean czyMoznaOdebrac = (day == data.rewardDay) && !juzDzisiajOdebrane;
 
@@ -346,7 +352,7 @@ public class RewardScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.streak.freeze_desc1").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        int maxRewardShields = ConfigLoader.mechanics.streaks.maxStoredRewardShields;
+        int maxRewardShields = payload.maxRewardShields();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
 
         guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
@@ -423,7 +429,7 @@ public class RewardScreen extends Screen {
                 }
             }
 
-            String dzisiajData = java.time.LocalDate.now().toString();
+            String dzisiajData = getCurrentQuestDateString();
             boolean juzDzisiajOdebrane = dzisiajData.equals(data.lastRewardDate);
 
             for (int i = 1; i <= 7; i++) {

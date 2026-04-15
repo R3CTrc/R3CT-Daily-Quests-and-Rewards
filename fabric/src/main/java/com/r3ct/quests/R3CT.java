@@ -467,10 +467,26 @@ public class R3CT implements ModInitializer {
 								QuestManager.grantAdvancement(player, "r3ct:quests/root");
 								PlayerData data = ModState.getPlayerData(context.getSource().getServer(), player.getUUID());
 								ServerPlayNetworking.send(player, new OpenQuestsPayload(
-										data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-										data.activeQuests, data.questProgress, data.streak,
-										data.perfectDaysCount, data.availableFreezes,
-										data.questRewardsClaimed, data.claimedPointRewards
+										data.questStreak,
+										data.totalQuestPoints,
+										data.dailyQuestsCompletedToday,
+										data.activeQuests,
+										data.questProgress,
+										data.streak,
+										data.perfectDaysCount,
+										data.availableFreezes,
+										data.questRewardsClaimed,
+										data.claimedPointRewards,
+										ConfigLoader.mechanics.quests.enableQuestRerolling,
+										ConfigLoader.mechanics.quests.rerollCostEasy,
+										ConfigLoader.mechanics.quests.rerollCostMedium,
+										ConfigLoader.mechanics.quests.rerollCostHard,
+										ConfigLoader.mechanics.quests.xpDailyReward,
+										ConfigLoader.mechanics.quests.xpPerQuestEasy,
+										ConfigLoader.mechanics.quests.xpPerQuestMedium,
+										ConfigLoader.mechanics.quests.xpPerQuestHard,
+										ConfigLoader.mechanics.streaks.perfectDaysForShield,
+										ConfigLoader.mechanics.streaks.maxStoredQuestShields
 								));
 								return 1;
 							})
@@ -524,7 +540,17 @@ public class R3CT implements ModInitializer {
 									}
 								}
 
-								ServerPlayNetworking.send(player, new OpenRewardsPayload(data.rewardDay, data.lastRewardDate, visualStreak, data.totalCollected, data.claimedRewardHistory, data.availableRewardFreezes, data.claimedBonusRewards));
+								ServerPlayNetworking.send(player, new OpenRewardsPayload(
+										data.rewardDay,
+										data.lastRewardDate,
+										visualStreak,
+										data.totalCollected,
+										data.claimedRewardHistory,
+										data.availableRewardFreezes,
+										data.claimedBonusRewards,
+										ConfigLoader.mechanics.streaks.maxStoredRewardShields,
+										ConfigLoader.mechanics.technical.questRefreshHour
+								));
 								return 1;
 							})
 					)
@@ -592,7 +618,17 @@ public class R3CT implements ModInitializer {
 
 								context.getSource().getServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
 
-								ServerPlayNetworking.send(player, new OpenRewardsPayload(data.rewardDay, data.lastRewardDate, data.streak, data.totalCollected, data.claimedRewardHistory, data.availableRewardFreezes, data.claimedBonusRewards));
+								ServerPlayNetworking.send(player, new OpenRewardsPayload(
+										data.rewardDay,
+										data.lastRewardDate,
+										data.streak,
+										data.totalCollected,
+										data.claimedRewardHistory,
+										data.availableRewardFreezes,
+										data.claimedBonusRewards,
+										ConfigLoader.mechanics.streaks.maxStoredRewardShields,
+										ConfigLoader.mechanics.technical.questRefreshHour
+								));
 
 								return 1;
 							})

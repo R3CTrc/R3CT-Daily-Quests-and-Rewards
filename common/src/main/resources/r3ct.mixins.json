@@ -6,7 +6,6 @@
   "compatibilityLevel": "JAVA_18",
   "mixins": [
     "AbstractHorseMixin",
-    "BlockPlaceMixin",
     "BredAnimalsMixin",
     "EnchantedItemMixin",
     "FurnaceExtractMixin",

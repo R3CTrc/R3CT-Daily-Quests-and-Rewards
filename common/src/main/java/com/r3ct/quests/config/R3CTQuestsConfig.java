@@ -29,9 +29,12 @@ public class R3CTQuestsConfig {
     public static void load() {
         if (CONFIG_FILE.exists()) {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
-                instance = GSON.fromJson(reader, R3CTQuestsConfig.class);
+                R3CTQuestsConfig loaded = GSON.fromJson(reader, R3CTQuestsConfig.class);
+                if (loaded != null) {
+                    instance = loaded;
+                }
             } catch (Exception e) {
-                e.printStackTrace();
+                com.r3ct.quests.Constants.LOG.error("Error loading quests_client.json!", e);
             }
         } else {
             save();
@@ -43,7 +46,7 @@ public class R3CTQuestsConfig {
         try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
             GSON.toJson(instance, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            com.r3ct.quests.Constants.LOG.error("Error saving quests_client.json!", e);
         }
     }
 }
