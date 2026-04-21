@@ -2,7 +2,7 @@ name: Build and Publish
 
 on:
   push:
-    branches: [ "26.1.x" ]
+    branches: [ "26.1" ]
   release:
     types: [ published ]
 
@@ -47,7 +47,7 @@ jobs:
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
-          name: R3CT-Daily-Quests-Builds
+          name: R3CT-Daily-Builds
           path: |
             fabric/build/libs/*.jar
             neoforge/build/libs/*.jar
@@ -67,8 +67,6 @@ jobs:
           loaders: fabric
           game-versions: |
             26.1
-            26.1.1
-            26.1.2
 
           dependencies: |
             fabric-api(required)
@@ -92,8 +90,6 @@ jobs:
           loaders: neoforge
           game-versions: |
             26.1
-            26.1.1
-            26.1.2
 
           version: ${{ github.event.release.tag_name }}-neoforge
           changelog: ${{ github.event.release.body }}
