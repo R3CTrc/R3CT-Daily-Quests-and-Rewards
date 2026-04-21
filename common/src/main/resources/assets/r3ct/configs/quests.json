@@ -1237,18 +1237,6 @@
       "reward_amount": 10
     },
     {
-      "id": "rzuc_tym",
-      "name": "r3ct.quest.rzuc_tym.name",
-      "description": "r3ct.quest.rzuc_tym.desc",
-      "difficulty": 1,
-      "action_type": "CRAFT_ITEM",
-      "target": "minecraft:splash_potion",
-      "amount": 3,
-      "points": 2,
-      "reward_item": "minecraft:gunpowder",
-      "reward_amount": 6
-    },
-    {
       "id": "bursztynowo",
       "name": "r3ct.quest.bursztynowo.name",
       "description": "r3ct.quest.bursztynowo.desc",
@@ -1259,18 +1247,6 @@
       "points": 2,
       "reward_item": "minecraft:cooked_porkchop",
       "reward_amount": 10
-    },
-    {
-      "id": "poczatkujacy_bimbrownik",
-      "name": "r3ct.quest.poczatkujacy_bimbrownik.name",
-      "description": "r3ct.quest.poczatkujacy_bimbrownik.desc",
-      "difficulty": 1,
-      "action_type": "BREW_POTION",
-      "target": "any",
-      "amount": 1,
-      "points": 2,
-      "reward_item": "minecraft:gunpowder",
-      "reward_amount": 3
     },
     {
       "id": "do_nasladowania",
@@ -2317,30 +2293,6 @@
       "reward_amount": 1
     },
     {
-      "id": "level_wyzej",
-      "name": "r3ct.quest.level_wyzej.name",
-      "description": "r3ct.quest.level_wyzej.desc",
-      "difficulty": 2,
-      "action_type": "BREW_POTION_LEVEL_2",
-      "target": "any",
-      "amount": 1,
-      "points": 4,
-      "reward_item": "minecraft:glowstone_dust",
-      "reward_amount": 9
-    },
-    {
-      "id": "dlugodystansowiec",
-      "name": "r3ct.quest.dlugodystansowiec.name",
-      "description": "r3ct.quest.dlugodystansowiec.desc",
-      "difficulty": 2,
-      "action_type": "BREW_POTION_EXTENDED",
-      "target": "any",
-      "amount": 1,
-      "points": 4,
-      "reward_item": "minecraft:redstone",
-      "reward_amount": 9
-    },
-    {
       "id": "mistrz_trojzebu",
       "name": "r3ct.quest.mistrz_trojzebu.name",
       "description": "r3ct.quest.mistrz_trojzebu.desc",
@@ -2519,18 +2471,6 @@
       "points": 4,
       "reward_item": "minecraft:diamond_sword",
       "reward_amount": 1
-    },
-    {
-      "id": "podstepny_alchemik",
-      "name": "r3ct.quest.podstepny_alchemik.name",
-      "description": "r3ct.quest.podstepny_alchemik.desc",
-      "difficulty": 2,
-      "action_type": "POTION_DAMAGE",
-      "target": "any",
-      "amount": 1,
-      "points": 4,
-      "reward_item": "minecraft:blaze_powder",
-      "reward_amount": 10
     },
     {
       "id": "wladca_bagien",
@@ -2799,6 +2739,30 @@
       "reward_amount": 1
     },
     {
+      "id": "poczatkujacy_bimbrownik",
+      "name": "r3ct.quest.poczatkujacy_bimbrownik.name",
+      "description": "r3ct.quest.poczatkujacy_bimbrownik.desc",
+      "difficulty": 1,
+      "action_type": "BREW_POTION",
+      "target": "any",
+      "amount": 1,
+      "points": 2,
+      "reward_item": "minecraft:gunpowder",
+      "reward_amount": 3
+    },
+    {
+      "id": "rzuc_tym",
+      "name": "r3ct.quest.rzuc_tym.name",
+      "description": "r3ct.quest.rzuc_tym.desc",
+      "difficulty": 1,
+      "action_type": "CRAFT_ITEM",
+      "target": "minecraft:splash_potion",
+      "amount": 3,
+      "points": 2,
+      "reward_item": "minecraft:gunpowder",
+      "reward_amount": 6
+    },
+    {
       "id": "gorace_patyki",
       "name": "r3ct.quest.gorace_patyki.name",
       "description": "r3ct.quest.gorace_patyki.desc",
@@ -2881,6 +2845,42 @@
       "points": 2,
       "reward_item": "minecraft:magma_cube_spawn_egg",
       "reward_amount": 1
+    },
+    {
+      "id": "level_wyzej",
+      "name": "r3ct.quest.level_wyzej.name",
+      "description": "r3ct.quest.level_wyzej.desc",
+      "difficulty": 2,
+      "action_type": "BREW_POTION_LEVEL_2",
+      "target": "any",
+      "amount": 1,
+      "points": 4,
+      "reward_item": "minecraft:glowstone_dust",
+      "reward_amount": 9
+    },
+    {
+      "id": "dlugodystansowiec",
+      "name": "r3ct.quest.dlugodystansowiec.name",
+      "description": "r3ct.quest.dlugodystansowiec.desc",
+      "difficulty": 2,
+      "action_type": "BREW_POTION_EXTENDED",
+      "target": "any",
+      "amount": 1,
+      "points": 4,
+      "reward_item": "minecraft:redstone",
+      "reward_amount": 9
+    },
+    {
+      "id": "podstepny_alchemik",
+      "name": "r3ct.quest.podstepny_alchemik.name",
+      "description": "r3ct.quest.podstepny_alchemik.desc",
+      "difficulty": 2,
+      "action_type": "POTION_DAMAGE",
+      "target": "any",
+      "amount": 1,
+      "points": 4,
+      "reward_item": "minecraft:blaze_powder",
+      "reward_amount": 10
     },
     {
       "id": "pradawny_skarb",
