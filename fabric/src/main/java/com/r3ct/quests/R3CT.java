@@ -588,13 +588,12 @@ public class R3CT implements ModInitializer {
 								for (ItemStack rewardStack : rewards) {
 									int amount = rewardStack.getCount() * multi;
 									rewardStack.setCount(amount);
-									String itemName = rewardStack.getHoverName().getString();
-
+									Component itemNameComp = Component.literal("§b").append(rewardStack.getHoverName());
 									QuestManager.giveOrDrop(player, rewardStack);
-
-									player.sendSystemMessage(Component.translatable("r3ct.message.rewards.received", "§f" + amount, "§b" + itemName));
+									player.sendSystemMessage(Component.translatable("r3ct.message.rewards.received", "§f" + amount, itemNameComp));
+									String historyItemName = rewardStack.getHoverName().getString();
 									if (!historyBuilder.isEmpty()) historyBuilder.append(", ");
-									historyBuilder.append("§a").append(amount).append("x ").append(itemName);
+									historyBuilder.append("§a").append(amount).append("x ").append(historyItemName);
 								}
 
 								while(data.claimedRewardHistory.size() < 7) {

@@ -171,7 +171,7 @@ public class QuestManager {
                 player.getX(), player.getY(), player.getZ(),
                 1.0F, 1.0F, player.getRandom().nextLong()
         ));
-        player.sendSystemMessage(Component.translatable("r3ct.message.quests.completed", "§f" + Component.translatable(q.name).getString()));
+        player.sendSystemMessage(Component.translatable("r3ct.message.quests.completed", Component.literal("§f").append(Component.translatable(q.name))));
     }
 
     public static void claimQuestReward(ServerPlayer player, int index) {
@@ -365,19 +365,20 @@ public class QuestManager {
             }
         }
 
-        String itemName = rewardToGive.getHoverName().getString();
+        rewardToGive.setCount(amountGiven);
+        Component itemNameComp = Component.literal("§b").append(rewardToGive.getHoverName());
         player.getInventory().add(rewardToGive);
         if (!rewardToGive.isEmpty()) {
             player.drop(rewardToGive, false);
         }
 
-        String multiStr = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus").getString() : "";
+        Component multiComp = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus") : Component.empty();
         player.sendSystemMessage(Component.translatable("r3ct.message.quests.claimed",
-                "§f" + Component.translatable(q.name).getString(),
+                Component.literal("§f").append(Component.translatable(q.name)),
                 "§e" + xpReward,
                 "§b" + amountGiven,
-                "§b" + itemName,
-                multiStr
+                itemNameComp,
+                multiComp
         ));
 
         data.totalQuestPoints += q.points;
@@ -471,8 +472,8 @@ public class QuestManager {
                 player.getX(), player.getY(), player.getZ(),
                 1.0F, 1.2F, player.getRandom().nextLong()
         ));
-        String multiStr = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus").getString() : "";
-        player.sendSystemMessage(Component.translatable("r3ct.message.quests.daily_reward", multiStr));
+        Component multiComp = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus") : Component.empty();
+        player.sendSystemMessage(Component.translatable("r3ct.message.quests.daily_reward", multiComp));
 
         int xp = ConfigLoader.mechanics.quests.xpDailyReward * multi;
         player.giveExperiencePoints(xp);
@@ -499,7 +500,7 @@ public class QuestManager {
 
         int finalAmount = baseAmount * multi;
         ItemStack reward = new ItemStack(item, finalAmount);
-        String itemName = reward.getHoverName().getString();
+        Component itemNameComp = Component.literal("§b").append(reward.getHoverName());
 
         if (item == Items.DIAMOND) {
             QuestManager.grantAdvancement(player, "r3ct:quests/lucky_drop");
@@ -509,7 +510,7 @@ public class QuestManager {
         }
 
         QuestManager.giveOrDrop(player, reward);
-        player.sendSystemMessage(Component.translatable("r3ct.message.quests.item_gained", "§f" + finalAmount, "§b" + itemName));
+        player.sendSystemMessage(Component.translatable("r3ct.message.quests.item_gained", "§f" + finalAmount, itemNameComp));
     }
 
     private static boolean hasQuestTypeActive(ServerPlayer player, String type) {
