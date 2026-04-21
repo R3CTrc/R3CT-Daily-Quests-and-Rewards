@@ -38,6 +38,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
@@ -81,6 +82,12 @@ public class R3CTNeoForge {
         modEventBus.addListener(this::onRegister);
         NeoForge.EVENT_BUS.register(this);
 
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
+            registerClientOnly(modContainer);
+        }
+    }
+
+    private void registerClientOnly(net.neoforged.fml.ModContainer modContainer) {
         modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
                 (client, parent) -> new R3CTConfigScreen(parent));
     }
@@ -633,11 +640,12 @@ public class R3CTNeoForge {
                     for (ItemStack rewardStack : rewards) {
                         int amount = rewardStack.getCount() * multi;
                         rewardStack.setCount(amount);
-                        String itemName = rewardStack.getHoverName().getString();
+                        Component itemNameComp = Component.literal("§b").append(rewardStack.getHoverName());
                         QuestManager.giveOrDrop(player, rewardStack);
-                        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.received", "§f" + amount, "§b" + itemName));
+                        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.received", "§f" + amount, itemNameComp));
+                        String historyItemName = rewardStack.getHoverName().getString();
                         if (!historyBuilder.isEmpty()) historyBuilder.append(", ");
-                        historyBuilder.append("§a").append(amount).append("x ").append(itemName);
+                        historyBuilder.append("§a").append(amount).append("x ").append(historyItemName);
                     }
 
                     while (data.claimedRewardHistory.size() < 7) data.claimedRewardHistory.add("");
