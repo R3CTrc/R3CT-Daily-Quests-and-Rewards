@@ -83,12 +83,14 @@ public class R3CTNeoForge {
         NeoForge.EVENT_BUS.register(this);
 
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
-            registerClientOnly(modContainer);
+            ClientConfigWrapper.register(modContainer);
         }
     }
-    private void registerClientOnly(net.neoforged.fml.ModContainer modContainer) {
-        modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
-                (client, parent) -> new R3CTConfigScreen(parent));
+    private static class ClientConfigWrapper {
+        static void register(net.neoforged.fml.ModContainer modContainer) {
+            modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
+                    (client, parent) -> new R3CTConfigScreen(parent));
+        }
     }
 
     private void registerPayloads(final RegisterPayloadHandlersEvent event) {
