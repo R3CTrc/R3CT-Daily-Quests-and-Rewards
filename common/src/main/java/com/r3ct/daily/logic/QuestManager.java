@@ -656,4 +656,83 @@ public class QuestManager {
         }
         return false;
     }
+
+    public static java.time.LocalDate getCurrentQuestDate() {
+        return java.time.LocalDateTime.now()
+                .minusHours(DailyServerConfig.mechanics.technical.questRefreshHour)
+                .toLocalDate();
+    }
+
+    public static void refreshPlayerDailyData(ServerPlayer player, net.minecraft.server.MinecraftServer server, java.time.LocalDate today, PlayerData data) {
+        String todayStr = today.toString();
+        java.time.LocalDate yesterday = today.minusDays(1);
+        List<Component> freezeMessages = new ArrayList<>();
+
+        if (!todayStr.equals(data.lastRewardDate)) {
+            if (!data.lastStreakDate.equals(yesterday.toString()) && !data.lastStreakDate.equals(todayStr)) {
+                if (data.lastStreakDate != null && !data.lastStreakDate.isEmpty()) {
+                    long days = java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.parse(data.lastStreakDate), today);
+                    long missed = days - 1;
+
+                    if (data.availableRewardFreezes >= missed) {
+                        data.availableRewardFreezes -= (int) missed;
+                        data.lastStreakDate = yesterday.toString();
+                        freezeMessages.add(Component.translatable("r3ct.message.rewards.freeze_used", "§b" + missed));
+                        QuestManager.grantAdvancement(player, "r3ct_daily:rewards/safe_player");
+                    } else {
+                        data.streak = 0;
+                        data.availableRewardFreezes = 0;
+                        data.absoluteRewardStreak = 0;
+                        freezeMessages.add(Component.translatable("r3ct.message.rewards.streak_reset"));
+                    }
+                }
+            }
+        }
+
+        if (data.lastQuestStreakDate != null && !data.lastQuestStreakDate.isEmpty() && !data.lastQuestStreakDate.equals(yesterday.toString()) && !data.lastQuestStreakDate.equals(todayStr)) {
+            java.time.LocalDate lastStreak = java.time.LocalDate.parse(data.lastQuestStreakDate);
+            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(lastStreak, today);
+            long missedDays = daysBetween - 1;
+
+            if (data.availableFreezes >= missedDays) {
+                data.availableFreezes -= (int) missedDays;
+                data.lastQuestStreakDate = yesterday.toString();
+                freezeMessages.add(Component.translatable("r3ct.message.quests.freeze_used", "§b" + missedDays));
+                QuestManager.grantAdvancement(player, "r3ct_daily:quests/time_lord");
+            } else {
+                data.questStreak = 0;
+                data.availableFreezes = 0;
+                freezeMessages.add(Component.translatable("r3ct.message.quests.streak_reset"));
+            }
+        }
+
+        data.lastQuestDate = todayStr;
+        data.dailyQuestsCompletedToday = 0;
+
+        List<Quest> newQuests = QuestManager.generateDailyQuests(data, player.getUUID(), today);
+        data.activeQuests.clear();
+        data.questProgress.clear();
+        data.questRewardsClaimed.clear();
+
+        for (Quest q : newQuests) {
+            if (q != null && q.id != null) {
+                data.activeQuests.add(q.id);
+                data.questProgress.add(0);
+                data.questRewardsClaimed.add(false);
+            }
+        }
+
+        server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+
+        Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
+                data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
+                data.activeQuests, data.questProgress, data.streak,
+                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
+                data.questRewardsClaimed, data.claimedPointRewards
+        ));
+
+        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.new_reward").append(Component.translatable("r3ct.message.click_here").withStyle(net.minecraft.network.chat.Style.EMPTY.withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/daily rewards")).withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu"))))));
+        player.sendSystemMessage(Component.translatable("r3ct.message.quests.new_quests").append(Component.translatable("r3ct.message.click_here").withStyle(net.minecraft.network.chat.Style.EMPTY.withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/daily quests")).withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu"))))));
+        for (Component msg : freezeMessages) player.sendSystemMessage(msg);
+    }
 }
