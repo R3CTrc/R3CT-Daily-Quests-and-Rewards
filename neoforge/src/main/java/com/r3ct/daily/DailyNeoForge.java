@@ -3,29 +3,18 @@ package com.r3ct.daily;
 import com.r3ct.daily.config.DailyServerConfig;
 import com.r3ct.daily.data.ModState;
 import com.r3ct.daily.data.PlayerData;
-import com.r3ct.daily.data.TopEntry;
 import com.r3ct.daily.item.ModItems;
 import com.r3ct.daily.logic.LeaderboardManager;
 import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestManager;
-import com.r3ct.daily.logic.RewardManager;
 import com.r3ct.daily.platform.Services;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.NameAndId;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,22 +22,17 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 @Mod(Constants.MOD_ID)
 public class DailyNeoForge {
@@ -281,32 +265,6 @@ public class DailyNeoForge {
         if (attacker instanceof ServerPlayer serverPlayer) {
             com.r3ct.daily.logic.QuestEventHandlers.onEntityDeath(serverPlayer, event.getEntity());
         }
-    }
-
-    @SubscribeEvent
-    public void onPlayerWakeUp(PlayerWakeUpEvent event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            com.r3ct.daily.logic.QuestEventHandlers.onPlayerWakeUp(serverPlayer, serverPlayer.blockPosition());
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            com.r3ct.daily.logic.QuestEventHandlers.onEntityInteract(serverPlayer, event.getHand(), event.getTarget());
-        }
-    }
-
-    @SubscribeEvent
-    public void onBlockInteract(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            com.r3ct.daily.logic.QuestEventHandlers.onBlockInteract(serverPlayer, event.getHand(), event.getPos(), event.getFace(), serverPlayer.level().getBlockState(event.getPos()));
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityLoad(EntityJoinLevelEvent event) {
-        com.r3ct.daily.logic.QuestEventHandlers.onEntityLoad(event.getEntity(), event.getLevel());
     }
 
     @SubscribeEvent

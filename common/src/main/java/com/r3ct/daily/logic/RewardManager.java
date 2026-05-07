@@ -173,17 +173,29 @@ public class RewardManager {
                 1.0F, 1.0F, player.getRandom().nextLong()
         ));
 
+        DailyServerConfig.MilestoneReward mr = null;
         if (bonusDay == 7) {
             QuestManager.grantAdvancement(player, "r3ct_daily:rewards/week_bonus");
-            QuestManager.giveOrDrop(player, new ItemStack(Items.EMERALD, 32));
-            player.sendSystemMessage(Component.translatable("r3ct.message.bonus.claim_7"));
+            mr = DailyServerConfig.mechanics.milestones.bonus_7;
         } else if (bonusDay == 14) {
-            QuestManager.giveOrDrop(player, new ItemStack(Items.DIAMOND, 16));
-            player.sendSystemMessage(Component.translatable("r3ct.message.bonus.claim_14"));
+            mr = DailyServerConfig.mechanics.milestones.bonus_14;
         } else if (bonusDay == 21) {
             QuestManager.grantAdvancement(player, "r3ct_daily:rewards/cycle_end");
-            QuestManager.giveOrDrop(player, new ItemStack(Items.NETHERITE_SCRAP, 4));
-            player.sendSystemMessage(Component.translatable("r3ct.message.bonus.claim_21"));
+            mr = DailyServerConfig.mechanics.milestones.bonus_21;
+        }
+
+        if (mr != null) {
+            ItemStack stack = QuestManager.getMilestoneRewardStack(mr);
+            String translationKey = stack.getItem().getDescriptionId();
+            QuestManager.giveOrDrop(player, stack);
+            String colorStr = mr.getFormattedColor();
+            net.minecraft.ChatFormatting format = net.minecraft.ChatFormatting.getByCode(colorStr.charAt(colorStr.length() - 1));
+            if (format == null) format = net.minecraft.ChatFormatting.WHITE;
+            net.minecraft.network.chat.MutableComponent rewardText = Component.literal("(" + mr.amount + "x ")
+                    .append(Component.translatable(translationKey))
+                    .append(")")
+                    .withStyle(format);
+            player.sendSystemMessage(Component.translatable("r3ct.message.bonus.claim", "§d" + bonusDay, rewardText));
         }
 
         server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();

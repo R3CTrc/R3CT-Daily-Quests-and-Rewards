@@ -2,7 +2,6 @@ package com.r3ct.daily.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.Constants;
@@ -31,7 +30,19 @@ public class DailyServerConfig {
         public int minAmount;
         public int maxAmount;
         public int weight;
-        public RewardEntry(String i, int min, int max, int w) { this.item = i; this.minAmount = min; this.maxAmount = max; this.weight = w; }
+        public String color;
+
+        public RewardEntry(String i, int min, int max, int w, String c) {
+            this.item = i;
+            this.minAmount = min;
+            this.maxAmount = max;
+            this.weight = w;
+            this.color = c;
+        }
+
+        public String getFormattedColor() {
+            return this.color != null ? this.color.replace('&', '§') : "§b";
+        }
     }
 
     public static class QuestsSettings {
@@ -61,6 +72,28 @@ public class DailyServerConfig {
         public QuestsSettings quests = new QuestsSettings();
         public StreaksSettings streaks = new StreaksSettings();
         public TechnicalSettings technical = new TechnicalSettings();
+        public MilestoneRewardsConfig milestones = new MilestoneRewardsConfig();
+    }
+
+    public static class MilestoneReward {
+        public String item;
+        public int amount;
+        public String color;
+        public MilestoneReward(String i, int a, String c) { this.item = i; this.amount = a; this.color = c; }
+        public String getFormattedColor() {
+            return this.color != null ? this.color.replace('&', '§') : "§b";
+        }
+    }
+
+    public static class MilestoneRewardsConfig {
+        public MilestoneReward point_50 = new MilestoneReward("minecraft:amethyst_shard", 32, "&d");
+        public MilestoneReward point_100 = new MilestoneReward("minecraft:emerald", 16, "&a");
+        public MilestoneReward point_150 = new MilestoneReward("minecraft:diamond", 8, "&b");
+        public MilestoneReward point_200 = new MilestoneReward("minecraft:netherite_scrap", 4, "&c");
+
+        public MilestoneReward bonus_7 = new MilestoneReward("minecraft:emerald", 32, "&a");
+        public MilestoneReward bonus_14 = new MilestoneReward("minecraft:diamond", 16, "&b");
+        public MilestoneReward bonus_21 = new MilestoneReward("minecraft:netherite_scrap", 4, "&c");
     }
 
     public static MechanicsConfig mechanics = new MechanicsConfig();
@@ -191,24 +224,36 @@ public class DailyServerConfig {
         }
     }
 
-    private static void parseRewards(JsonArray array, List<List<RewardEntry>> tierList) {
+    private static void parseRewards(com.google.gson.JsonArray array, List<List<RewardEntry>> tierList) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
-            JsonArray bucketArray = array.get(i).getAsJsonArray();
+            com.google.gson.JsonArray bucketArray = array.get(i).getAsJsonArray();
             List<RewardEntry> bucket = new ArrayList<>();
             for (int j = 0; j < bucketArray.size(); j++) {
-                JsonObject obj = bucketArray.get(j).getAsJsonObject();
-                bucket.add(new RewardEntry(obj.get("item").getAsString(), obj.get("min_amount").getAsInt(), obj.get("max_amount").getAsInt(), obj.get("weight").getAsInt()));
+                com.google.gson.JsonObject obj = bucketArray.get(j).getAsJsonObject();
+                bucket.add(new RewardEntry(
+                        obj.get("item").getAsString(),
+                        obj.get("min_amount").getAsInt(),
+                        obj.get("max_amount").getAsInt(),
+                        obj.get("weight").getAsInt(),
+                        obj.has("color") ? obj.get("color").getAsString() : "&b"
+                ));
             }
             tierList.add(bucket);
         }
     }
 
-    private static void parseSimpleRewards(JsonArray array, List<RewardEntry> list) {
+    private static void parseSimpleRewards(com.google.gson.JsonArray array, List<RewardEntry> list) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
-            JsonObject obj = array.get(i).getAsJsonObject();
-            list.add(new RewardEntry(obj.get("item").getAsString(), obj.get("min_amount").getAsInt(), obj.get("max_amount").getAsInt(), obj.get("weight").getAsInt()));
+            com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
+            list.add(new RewardEntry(
+                    obj.get("item").getAsString(),
+                    obj.get("min_amount").getAsInt(),
+                    obj.get("max_amount").getAsInt(),
+                    obj.get("weight").getAsInt(),
+                    obj.has("color") ? obj.get("color").getAsString() : "&b"
+            ));
         }
     }
 

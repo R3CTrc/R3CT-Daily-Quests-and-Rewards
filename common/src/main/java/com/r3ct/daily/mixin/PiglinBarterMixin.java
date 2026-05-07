@@ -17,7 +17,7 @@ public abstract class PiglinBarterMixin {
             if (ownerUUID != null) {
                 net.minecraft.server.level.ServerPlayer player = (net.minecraft.server.level.ServerPlayer) level.getPlayerByUUID(ownerUUID);
                 if (player != null) {
-                    QuestManager.handleAction(player, "TRADE", "minecraft:piglin", 1);
+                    QuestManager.handleAction(player, "PIGLIN_BARTER", "any", 1);
                 }
             }
         }

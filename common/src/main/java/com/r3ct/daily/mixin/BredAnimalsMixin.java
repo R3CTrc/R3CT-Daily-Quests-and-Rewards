@@ -13,20 +13,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Animal.class)
 public abstract class BredAnimalsMixin {
 
-    @Inject(method = "spawnChildFromBreeding", at = @At("TAIL"))
-    private void onBreed(ServerLevel level, Animal otherParent, CallbackInfo ci) {
-        Animal thisAnimal = (Animal)(Object)this;
-        ServerPlayer player = thisAnimal.getLoveCause();
-        if (player == null) player = otherParent.getLoveCause();
+    @Inject(method = "spawnChildFromBreeding", at = @At("RETURN"))
+    private void onBreed(ServerLevel level, Animal mate, CallbackInfo ci) {
+        Animal animal = (Animal) (Object) this;
+
+        ServerPlayer player = animal.getLoveCause();
+
         if (player != null) {
-            String thisId = BuiltInRegistries.ENTITY_TYPE.getKey(thisAnimal.getType()).toString();
-            String otherId = BuiltInRegistries.ENTITY_TYPE.getKey(otherParent.getType()).toString();
-            if ((thisId.contains("horse") && otherId.contains("donkey")) || (thisId.contains("donkey") && otherId.contains("horse"))) {
-                QuestManager.handleAction(player, "BREED_ANIMAL", "minecraft:mule", 1);
-            } else {
-                QuestManager.handleAction(player, "BREED_ANIMAL", thisId, 1);
+            String animalId1 = BuiltInRegistries.ENTITY_TYPE.getKey(animal.getType()).toString();
+            String animalId2 = BuiltInRegistries.ENTITY_TYPE.getKey(mate.getType()).toString();
+
+            String targetId = animalId1;
+
+            if ((animalId1.contains("horse") && animalId2.contains("donkey")) || (animalId1.contains("donkey") && animalId2.contains("horse"))) {
+                targetId = "minecraft:mule";
             }
-            QuestManager.handleAction(player, "BREED_ANIMAL", "any", 1);
+
+            QuestManager.handleAction(player, "BREED_ANIMAL", targetId, 1);
         }
     }
 }

@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class QuestManager {
@@ -26,10 +25,16 @@ public class QuestManager {
     public static final List<Quest> MEDIUM_QUESTS = new ArrayList<>();
     public static final List<Quest> HARD_QUESTS = new ArrayList<>();
 
-    public static final Set<String> PLACED_BLOCKS = ConcurrentHashMap.newKeySet();
+    public static final Set<String> PLACED_BLOCKS = java.util.Collections.synchronizedSet(
+            java.util.Collections.newSetFromMap(new java.util.LinkedHashMap<String, Boolean>(1000, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(java.util.Map.Entry<String, Boolean> eldest) {
+                    return size() > DailyServerConfig.mechanics.technical.placedBlocksCacheLimit;
+                }
+            })
+    );
 
     public static void addPlacedBlock(net.minecraft.core.BlockPos pos, net.minecraft.world.level.Level level) {
-        if (PLACED_BLOCKS.size() > DailyServerConfig.mechanics.technical.placedBlocksCacheLimit) PLACED_BLOCKS.clear();
         String key = level.dimension().identifier() + ";" + pos.getX() + ";" + pos.getY() + ";" + pos.getZ();
         PLACED_BLOCKS.add(key);
     }
@@ -50,7 +55,16 @@ public class QuestManager {
 
     public static List<Quest> generateDailyQuests(PlayerData data, java.util.UUID playerUuid, java.time.LocalDate date) {
 
-        long seed = playerUuid.hashCode() + date.toEpochDay();
+        long mostSigBits = playerUuid.getMostSignificantBits();
+        long leastSigBits = playerUuid.getLeastSignificantBits();
+
+        long epochDay = date.toEpochDay();
+        long seed = mostSigBits ^ leastSigBits ^ (epochDay * 0x9E3779B97F4A7C15L);
+
+        seed = (seed ^ (seed >>> 30)) * 0xBF58476D1CE4E5B9L;
+        seed = (seed ^ (seed >>> 27)) * 0x94D049BB133111EBL;
+        seed = seed ^ (seed >>> 31);
+
         java.util.Random random = new java.util.Random(seed);
 
         List<Quest> daily = new ArrayList<>();
@@ -119,7 +133,7 @@ public class QuestManager {
             if (q != null && q.actionType.equals(actionType)) {
                 boolean targetMatches = q.target.equals("any") || q.target.equals(target);
 
-                if (!targetMatches && actionType.equals("VISIT_BIOME")) {
+                if (!targetMatches && (actionType.equals("VISIT_BIOME") || actionType.equals("TIME_IN_BIOME"))) {
                     if (target.contains(q.target)) {
                         targetMatches = true;
                     }
@@ -131,8 +145,10 @@ public class QuestManager {
                     if (oldProg < q.requiredAmount) {
                         int newProg;
 
-                        if (actionType.equals("HAS_ITEMS") || actionType.equals("PICKUP_ITEM") || actionType.equals("ELYTRA_FLIGHT_NO_LAND")) {
+                        if (actionType.equals("HAS_ITEMS")) {
                             newProg = amount;
+                        } else if (actionType.equals("ELYTRA_FLIGHT_NO_LAND") || actionType.equals("PEARL_DISTANCE") || actionType.equals("LEVITATION_HEIGHT")) {
+                            newProg = Math.max(oldProg, amount);
                         } else {
                             newProg = oldProg + amount;
                         }
@@ -143,7 +159,13 @@ public class QuestManager {
                         if (newProg != oldProg) {
                             data.questProgress.set(i, newProg);
 
-                            if (!actionType.contains("DISTANCE") || newProg >= q.requiredAmount || (newProg) > (oldProg)) {
+                            boolean isDistance = actionType.contains("DISTANCE") ||
+                                    actionType.equals("ELYTRA_FLIGHT_NO_LAND") ||
+                                    actionType.equals("LEVITATION_HEIGHT") ||
+                                    actionType.equals("PEARL_DISTANCE");
+                            boolean passedInterval = (newProg / 5) > (oldProg / 5);
+
+                            if (!isDistance || newProg >= q.requiredAmount || passedInterval) {
                                 needsSync = true;
                             }
 
@@ -367,12 +389,21 @@ public class QuestManager {
             }
         }
 
-        rewardToGive.setCount(amountGiven);
         String itemNameStr = rewardToGive.getHoverName().getString();
         String questNameStr = Component.translatable(q.name).getString();
-        player.getInventory().add(rewardToGive);
-        if (!rewardToGive.isEmpty()) {
-            player.drop(rewardToGive, false);
+
+        int maxStack = rewardToGive.getMaxStackSize();
+        int remainingToGive = amountGiven;
+
+        while (remainingToGive > 0) {
+            int currentStackSize = Math.min(remainingToGive, maxStack);
+
+            ItemStack splitStack = rewardToGive.copy();
+            splitStack.setCount(currentStackSize);
+
+            giveOrDrop(player, splitStack);
+
+            remainingToGive -= currentStackSize;
         }
 
         Component multiComp = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus") : Component.empty();
@@ -433,20 +464,33 @@ public class QuestManager {
                 1.0F, 1.0F, player.getRandom().nextLong()
         ));
 
+        DailyServerConfig.MilestoneReward mr = null;
         if (threshold == 50) {
-            giveOrDrop(player, new ItemStack(Items.AMETHYST_SHARD, 32));
-            player.sendSystemMessage(Component.translatable("r3ct.message.points.claim_50"));
+            mr = DailyServerConfig.mechanics.milestones.point_50;
         } else if (threshold == 100) {
-            giveOrDrop(player, new ItemStack(Items.EMERALD, 16));
-            player.sendSystemMessage(Component.translatable("r3ct.message.points.claim_100"));
+            mr = DailyServerConfig.mechanics.milestones.point_100;
         } else if (threshold == 150) {
-            giveOrDrop(player, new ItemStack(Items.DIAMOND, 8));
-            player.sendSystemMessage(Component.translatable("r3ct.message.points.claim_150"));
+            mr = DailyServerConfig.mechanics.milestones.point_150;
         } else if (threshold == 200) {
             QuestManager.grantAdvancement(player, "r3ct_daily:quests/points_hunter");
-            giveOrDrop(player, new ItemStack(Items.NETHERITE_SCRAP, 4));
-            player.sendSystemMessage(Component.translatable("r3ct.message.points.claim_200"));
+            mr = DailyServerConfig.mechanics.milestones.point_200;
+        }
 
+        if (mr != null) {
+            ItemStack stack = getMilestoneRewardStack(mr);
+            String translationKey = stack.getItem().getDescriptionId();
+            giveOrDrop(player, stack);
+            String colorStr = mr.getFormattedColor();
+            net.minecraft.ChatFormatting format = net.minecraft.ChatFormatting.getByCode(colorStr.charAt(colorStr.length() - 1));
+            if (format == null) format = net.minecraft.ChatFormatting.WHITE;
+            net.minecraft.network.chat.MutableComponent rewardText = Component.literal("(" + mr.amount + "x ")
+                    .append(Component.translatable(translationKey))
+                    .append(")")
+                    .withStyle(format);
+            player.sendSystemMessage(Component.translatable("r3ct.message.points.claim", "§d" + threshold, rewardText));
+        }
+
+        if (threshold == 200) {
             data.totalQuestPoints -= 200;
             data.claimedPointRewards.clear();
             player.sendSystemMessage(Component.translatable("r3ct.message.points.reset"));
@@ -533,6 +577,13 @@ public class QuestManager {
         if (!stack.isEmpty()) {
             player.drop(stack, false);
         }
+    }
+
+    public static ItemStack getMilestoneRewardStack(DailyServerConfig.MilestoneReward mr) {
+        var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(
+                net.minecraft.resources.Identifier.parse(mr.item)
+        ).orElse(net.minecraft.world.item.Items.PAPER);
+        return new ItemStack(item, mr.amount);
     }
 
     public static void grantAdvancement(ServerPlayer player, String advancementId) {

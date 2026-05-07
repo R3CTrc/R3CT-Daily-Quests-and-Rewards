@@ -6,25 +6,31 @@
   "compatibilityLevel": "JAVA_18",
   "mixins": [
     "AbstractHorseMixin",
+    "ArmadilloMixin",
+    "BlockInteractMixin",
     "BredAnimalsMixin",
-    "EnchantedItemMixin",
-    "FurnaceExtractMixin",
-    "HealMixin",
+    "ComposterBlockMixin",
+    "CuredZombieVillagerMixin",
+    "EnderPearlMixin",
+    "FishInteractMixin",
     "ItemConsumeMixin",
     "LivingEntityDamageMixin",
     "LootMixin",
+    "MenuQuickMoveMixin",
     "PiglinBarterMixin",
     "PlacedBlockMixin",
+    "PlayerHealMixin",
+    "PlayerSleepMixin",
     "PlayerStatMixin",
     "PlayerTickMixin",
+    "SheepMixin",
     "SlotMixin",
+    "SummonedEntityMixin",
     "TamableAnimalMixin",
     "TradeMixin",
-    "VillagerQuestsMixin",
-    "ZombieCureMixin"
+    "VillagerProfessionMixin"
   ],
-  "client": [
-  ],
+  "client": [],
   "server": [],
   "injectors": {
     "defaultRequire": 1

@@ -1,6 +1,8 @@
 package com.r3ct.daily.client.screen;
 
 import com.r3ct.daily.config.DailyClientConfig;
+import com.r3ct.daily.config.DailyServerConfig;
+import com.r3ct.daily.logic.QuestManager;
 import com.r3ct.daily.network.OpenRewardsPayload;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.data.PlayerData;
@@ -210,18 +212,24 @@ public class RewardScreen extends Screen {
         int[] thresholds = {7, 14, 21};
         String rewLabel = Component.translatable("r3ct.quests.tooltip.reward").getString();
 
-        String[] titles = {
-                "§a§l" + Component.translatable("r3ct.rewards.tooltip.bonus.title", 7).getString(),
-                "§b§l" + Component.translatable("r3ct.rewards.tooltip.bonus.title", 14).getString(),
-                "§c§l" + Component.translatable("r3ct.rewards.tooltip.bonus.title", 21).getString()
+        DailyServerConfig.MilestoneReward[] mr = {
+                DailyServerConfig.mechanics.milestones.bonus_7,
+                DailyServerConfig.mechanics.milestones.bonus_14,
+                DailyServerConfig.mechanics.milestones.bonus_21
         };
 
-        String[] rewards = {
-                "§f" + rewLabel + " §a32x " + Component.translatable("r3ct.quests.item.emerald").getString(),
-                "§f" + rewLabel + " §b16x " + Component.translatable("r3ct.quests.item.diamond").getString(),
-                "§f" + rewLabel + " §c4x " + Component.translatable("r3ct.quests.item.netherite").getString()
-        };
-        String[] amountsStr = {"§ax32", "§bx16", "§cx4"};
+        String[] titles = new String[3];
+        String[] rewards = new String[3];
+        String[] amountsStr = new String[3];
+
+        for (int i = 0; i < 3; i++) {
+            String rewardColor = mr[i].getFormattedColor();
+
+            titles[i] = rewardColor + "§l" + Component.translatable("r3ct.rewards.tooltip.bonus.title", thresholds[i]).getString();
+            ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
+            rewards[i] = "§f" + rewLabel + " " + rewardColor + mr[i].amount + "x " + stack.getHoverName().getString();
+            amountsStr[i] = rewardColor + "x" + mr[i].amount;
+        }
 
         for (int i = 0; i < 3; i++) {
             int t = thresholds[i];
@@ -248,8 +256,20 @@ public class RewardScreen extends Screen {
 
     private void renderBonusMilestones(GuiGraphicsExtractor g, int x, int y, int bWidth, int mouseX, int mouseY) {
         int[] thresholds = {7, 14, 21};
-        ItemStack[] icons = {new ItemStack(Items.EMERALD), new ItemStack(Items.DIAMOND), new ItemStack(Items.NETHERITE_SCRAP)};
-        String[] amounts = {"§ax32", "§bx16", "§cx4"};
+        DailyServerConfig.MilestoneReward[] mr = {
+                DailyServerConfig.mechanics.milestones.bonus_7,
+                DailyServerConfig.mechanics.milestones.bonus_14,
+                DailyServerConfig.mechanics.milestones.bonus_21
+        };
+
+        ItemStack[] icons = new ItemStack[3];
+        String[] amounts = new String[3];
+
+        for (int i = 0; i < 3; i++) {
+            icons[i] = QuestManager.getMilestoneRewardStack(mr[i]);
+            amounts[i] = mr[i].getFormattedColor() + "x" + mr[i].amount;
+        }
+
         long time = System.currentTimeMillis();
 
         int cycle = (data.totalCollected == 0) ? 0 : (data.totalCollected - 1) / 21;
@@ -318,9 +338,21 @@ public class RewardScreen extends Screen {
             String zHisto = (data.claimedRewardHistory != null && data.claimedRewardHistory.size() > day - 1) ? data.claimedRewardHistory.get(day - 1) : "";
             if (zHisto != null && !zHisto.isEmpty()) {
                 tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.content").getString()).getVisualOrderText()));
-                String[] items = zHisto.split(", ");
+
+                String[] items = zHisto.split(",");
                 for (String itemStr : items) {
-                    tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("  - " + itemStr).getVisualOrderText()));
+                    itemStr = itemStr.trim();
+
+                    if (itemStr.contains(";")) {
+                        String[] parts = itemStr.split(";", 2);
+                        String amount = parts[0];
+                        String translationKey = parts[1];
+
+                        net.minecraft.network.chat.MutableComponent line = Component.literal("  - §b" + amount + "x ").append(Component.translatable(translationKey).withStyle(net.minecraft.ChatFormatting.AQUA));
+                        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(line.getVisualOrderText()));
+                    } else {
+                        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("  - " + itemStr).getVisualOrderText()));
+                    }
                 }
             } else {
                 tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.content").getString() + " §8(" + Component.translatable("r3ct.rewards.tooltip.no_data").getString() + ")").getVisualOrderText()));
@@ -366,9 +398,22 @@ public class RewardScreen extends Screen {
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct.rewards.tooltip.bonus_main.title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getBonusLine(absoluteCollected, 7, "32x " + Component.translatable("r3ct.quests.item.emerald").getString(), "§a").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getBonusLine(absoluteCollected, 14, "16x " + Component.translatable("r3ct.quests.item.diamond").getString(), "§b").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getBonusLine(absoluteCollected, 21, "4x " + Component.translatable("r3ct.quests.item.netherite").getString(), "§c").getVisualOrderText()));
+
+        DailyServerConfig.MilestoneReward[] mr = {
+                DailyServerConfig.mechanics.milestones.bonus_7,
+                DailyServerConfig.mechanics.milestones.bonus_14,
+                DailyServerConfig.mechanics.milestones.bonus_21
+        };
+        int[] thresholds = {7, 14, 21};
+
+        for (int i = 0; i < 3; i++) {
+            ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
+            String label = mr[i].amount + "x " + stack.getHoverName().getString();
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(
+                    getBonusLine(absoluteCollected, thresholds[i], label, mr[i].getFormattedColor()).getVisualOrderText()
+            ));
+        }
+
         guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
 
@@ -453,12 +498,15 @@ public class RewardScreen extends Screen {
             int bar2X = leftPos + 173;
             int bWidth = 135;
             int[] thresholds = {7, 14, 21};
-
+            DailyServerConfig.MilestoneReward[] mr = {
+                    DailyServerConfig.mechanics.milestones.bonus_7,
+                    DailyServerConfig.mechanics.milestones.bonus_14,
+                    DailyServerConfig.mechanics.milestones.bonus_21
+            };
             int cycle = (data.totalCollected == 0) ? 0 : (data.totalCollected - 1) / 21;
-
             for (int i = 0; i < 3; i++) {
                 int t = thresholds[i];
-                String amountsStr = (i == 0) ? "§ax32" : (i == 1 ? "§bx16" : "§cx4");
+                String amountsStr = mr[i].getFormattedColor() + "x" + mr[i].amount;
                 int mX_bonus = (t == 21) ? (bar2X + bWidth - 1) : (bar2X + (int)(t * (bWidth / 21.0)));
                 int totalW = 18 + this.font.width(amountsStr);
                 int startX = mX_bonus - totalW / 2;

@@ -9,12 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-public abstract class HealMixin {
+public abstract class PlayerHealMixin {
+
     @Inject(method = "heal", at = @At("HEAD"))
-    private void onHeal(float amount, CallbackInfo ci) {
-        LivingEntity entity = (LivingEntity) (Object) this;
-        if (entity instanceof ServerPlayer player && amount > 0) {
-            float actualHeal = Math.min(entity.getMaxHealth() - entity.getHealth(), amount);
+    private void onHeal(float healAmount, CallbackInfo ci) {
+        if ((Object) this instanceof ServerPlayer player) {
+            float missingHealth = player.getMaxHealth() - player.getHealth();
+            float actualHeal = Math.min(healAmount, missingHealth);
             if (actualHeal > 0) {
                 QuestManager.handleAction(player, "HEAL", "any", (int) Math.ceil(actualHeal));
             }

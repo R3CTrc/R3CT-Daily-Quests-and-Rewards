@@ -54,10 +54,10 @@ public class LeaderboardScreen extends Screen {
         guiGraphics.fill(leftPos + 2, topPos + 2, leftPos + boardWidth - 2, topPos + 25, 0xFF1A1A1A);
         guiGraphics.fill(midX - 1, topPos + 25, midX + 1, topPos + boardHeight - 2, 0xFF1A1A1A);
 
-        String title = "§6§l" + Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.title.quests" : "r3ct_daily.leaderboard.title.rewards").getString();
+        String title = "§6§l" + Component.translatable(boardType == 0 ? "r3ct.leaderboard.title.quests" : "r3ct.leaderboard.title.rewards").getString();
         guiGraphics.centeredText(this.font, title, midX, topPos + 8, 0xFFFFFFFF);
 
-        String leftTitle = "§f" + Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.left.quests" : "r3ct_daily.leaderboard.left.rewards").getString();
+        String leftTitle = "§f" + Component.translatable(boardType == 0 ? "r3ct.leaderboard.left.quests" : "r3ct.leaderboard.left.rewards").getString();
         String rightTitle = "§f" + Component.translatable("r3ct.leaderboard.right.streak").getString();
 
         guiGraphics.centeredText(this.font, leftTitle, leftPos + (boardWidth / 4), topPos + 32, 0xFFFFFFFF);
@@ -78,9 +78,9 @@ public class LeaderboardScreen extends Screen {
 
             tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("     §f§l" + hoveredEntry.name()).getVisualOrderText()));
             tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + questsStr + ": §a" + hoveredEntry.totalQuests()).getVisualOrderText()));
+            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + questsStr + ": §e" + hoveredEntry.totalQuests()).getVisualOrderText()));
             tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + maxQStr + ": §e" + hoveredEntry.maxQuestStreak() + " " + daysStr).getVisualOrderText()));
-            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + rewardsStr + ": §d" + hoveredEntry.totalRewards()).getVisualOrderText()));
+            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + rewardsStr + ": §e" + hoveredEntry.totalRewards()).getVisualOrderText()));
             tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + maxRStr + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysStr).getVisualOrderText()));
 
             guiGraphics.tooltip(this.font, tt, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
@@ -90,7 +90,7 @@ public class LeaderboardScreen extends Screen {
             guiGraphics.item(head, mouseX + 11, mouseY - 14);
         }
 
-        String switchText = Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.button.rewards_next" : "r3ct_daily.leaderboard.button.quests_prev").getString();
+        String switchText = Component.translatable(boardType == 0 ? "r3ct.leaderboard.button.rewards_next" : "r3ct.leaderboard.button.quests_prev").getString();
         int switchWidth = this.font.width(switchText);
         int switchX = (boardType == 0) ? leftPos + boardWidth + 15 : leftPos - 15 - switchWidth;
         int switchY = (this.height / 2) - 4;
@@ -125,7 +125,7 @@ public class LeaderboardScreen extends Screen {
             int topPos = (this.height - boardHeight) / 2;
             int midX = leftPos + (boardWidth / 2);
 
-            String switchText = Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.button.rewards_next" : "r3ct_daily.leaderboard.button.quests_prev").getString();
+            String switchText = Component.translatable(boardType == 0 ? "r3ct.leaderboard.button.rewards_next" : "r3ct.leaderboard.button.quests_prev").getString();
             int switchWidth = this.font.width(switchText);
             int switchX = (boardType == 0) ? leftPos + boardWidth + 15 : leftPos - 15 - switchWidth;
             int switchY = (this.height / 2) - 4;

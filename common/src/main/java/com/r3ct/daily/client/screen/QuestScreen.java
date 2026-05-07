@@ -236,21 +236,26 @@ public class QuestScreen extends Screen {
         int[] thresholds = {50, 100, 150, 200};
         String rewLabel = Component.translatable("r3ct.quests.tooltip.reward").getString();
 
-        String[] tooltips = {
-                "§d§l" + Component.translatable("r3ct.quests.tooltip.points.threshold", 50).getString(),
-                "§a§l" + Component.translatable("r3ct.quests.tooltip.points.threshold", 100).getString(),
-                "§b§l" + Component.translatable("r3ct.quests.tooltip.points.threshold", 150).getString(),
-                "§c§l" + Component.translatable("r3ct.quests.tooltip.points.threshold", 200).getString()
+        DailyServerConfig.MilestoneReward[] mr = {
+                DailyServerConfig.mechanics.milestones.point_50,
+                DailyServerConfig.mechanics.milestones.point_100,
+                DailyServerConfig.mechanics.milestones.point_150,
+                DailyServerConfig.mechanics.milestones.point_200
         };
 
-        String[] rewards = {
-                "§f" + rewLabel + " §d32x " + Component.translatable("r3ct.quests.item.amethyst").getString(),
-                "§f" + rewLabel + " §a16x " + Component.translatable("r3ct.quests.item.emerald").getString(),
-                "§f" + rewLabel + " §b8x " + Component.translatable("r3ct.quests.item.diamond").getString(),
-                "§f" + rewLabel + " §c4x " + Component.translatable("r3ct.quests.item.netherite").getString()
-        };
+        String[] tooltips = new String[4];
+        String[] rewards = new String[4];
+        String[] amountsStr = new String[4];
 
-        String[] amountsStr = {"§dx32", "§ax16", "§bx8", "§cx4"};
+        for (int i = 0; i < 4; i++) {
+            String color = mr[i].getFormattedColor();
+
+            tooltips[i] = color + "§l" + Component.translatable("r3ct.quests.tooltip.points.threshold", thresholds[i]).getString();
+
+            ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
+            rewards[i] = "§f" + rewLabel + " " + color + mr[i].amount + "x " + stack.getHoverName().getString();
+            amountsStr[i] = color + "x" + mr[i].amount;
+        }
 
         for (int i = 0; i < 4; i++) {
             int mX = rightTextX + (int)(thresholds[i] / 200.0 * (barW - 2));
@@ -280,8 +285,21 @@ public class QuestScreen extends Screen {
 
     private void renderPointMilestones(GuiGraphicsExtractor g, int x, int y, int bWidth, int mouseX, int mouseY) {
         int[] thresholds = {50, 100, 150, 200};
-        ItemStack[] icons = {new ItemStack(Items.AMETHYST_SHARD), new ItemStack(Items.EMERALD), new ItemStack(Items.DIAMOND), new ItemStack(Items.NETHERITE_SCRAP)};
-        String[] amounts = {"§dx32", "§ax16", "§bx8", "§cx4"};
+        DailyServerConfig.MilestoneReward[] rewards = {
+                DailyServerConfig.mechanics.milestones.point_50,
+                DailyServerConfig.mechanics.milestones.point_100,
+                DailyServerConfig.mechanics.milestones.point_150,
+                DailyServerConfig.mechanics.milestones.point_200
+        };
+
+        ItemStack[] icons = new ItemStack[4];
+        String[] amounts = new String[4];
+
+        for (int i = 0; i < 4; i++) {
+            icons[i] = QuestManager.getMilestoneRewardStack(rewards[i]);
+            amounts[i] = rewards[i].getFormattedColor() + "x" + rewards[i].amount;
+        }
+
         long time = System.currentTimeMillis();
 
         for (int i = 0; i < 4; i++) {
@@ -377,12 +395,20 @@ public class QuestScreen extends Screen {
             int barW = 160;
             int lifeY = topPos + 245;
             int[] thresholds = {50, 100, 150, 200};
-            String[] amountsStr = {"§dx32", "§ax16", "§bx8", "§cx4"};
+
+            DailyServerConfig.MilestoneReward[] mr = {
+                    DailyServerConfig.mechanics.milestones.point_50,
+                    DailyServerConfig.mechanics.milestones.point_100,
+                    DailyServerConfig.mechanics.milestones.point_150,
+                    DailyServerConfig.mechanics.milestones.point_200
+            };
 
             for (int i = 0; i < 4; i++) {
                 int t = thresholds[i];
+                String amountsStr = mr[i].getFormattedColor() + "x" + mr[i].amount;
+
                 int iconX = rightTextX + (int)(t / 200.0 * (barW - 2));
-                int totalW = 18 + this.font.width(amountsStr[i]);
+                int totalW = 18 + this.font.width(amountsStr);
                 int startX = iconX - totalW / 2;
                 int startY = lifeY + 28;
 
@@ -490,7 +516,7 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.quest.desc").getString() + " §7" + locDesc).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.quest.points").getString() + " §d+" + q.points).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.quest.xp").getString() + " §e+" + xpReward + " §e" + Component.translatable("r3ct.unit.xp").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.reward").getString() + " §a" + itemAmount + "§ax §a" + q.getItemReward().getHoverName().getString()).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.reward").getString() + " §b" + itemAmount + "§bx §b" + q.getItemReward().getHoverName().getString()).getVisualOrderText()));
 
         guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
@@ -521,8 +547,10 @@ public class QuestScreen extends Screen {
                         " (" + entry.minAmount + ")" :
                         " (" + entry.minAmount + "-" + entry.maxAmount + ")";
 
+                String entryColor = entry.getFormattedColor();
+
                 tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(
-                        Component.literal("§b- " + itemName + amountStr).getVisualOrderText()
+                        Component.literal(entryColor + "- " + itemName + amountStr).getVisualOrderText()
                 ));
             }
         }
@@ -535,10 +563,22 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct.quests.tooltip.lifetime.title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getLifetimeTooltipLine(data.totalQuestPoints, 50, "32x " + Component.translatable("r3ct.quests.item.amethyst").getString(), "§d").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getLifetimeTooltipLine(data.totalQuestPoints, 100, "16x " + Component.translatable("r3ct.quests.item.emerald").getString(), "§a").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getLifetimeTooltipLine(data.totalQuestPoints, 150, "8x " + Component.translatable("r3ct.quests.item.diamond").getString(), "§b").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(getLifetimeTooltipLine(data.totalQuestPoints, 200, "4x " + Component.translatable("r3ct.quests.item.netherite").getString(), "§c").getVisualOrderText()));
+        DailyServerConfig.MilestoneReward[] mr = {
+                DailyServerConfig.mechanics.milestones.point_50,
+                DailyServerConfig.mechanics.milestones.point_100,
+                DailyServerConfig.mechanics.milestones.point_150,
+                DailyServerConfig.mechanics.milestones.point_200
+        };
+        int[] thresholds = {50, 100, 150, 200};
+
+        for (int i = 0; i < 4; i++) {
+            ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
+            String label = mr[i].amount + "x " + stack.getHoverName().getString();
+
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(
+                    getLifetimeTooltipLine(data.totalQuestPoints, thresholds[i], label, mr[i].getFormattedColor()).getVisualOrderText()
+            ));
+        }
 
         guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }

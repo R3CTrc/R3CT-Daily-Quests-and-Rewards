@@ -55,163 +55,7 @@ public class DailyCommands {
         };
 
         dispatcher.register(Commands.literal("daily")
-                .then(Commands.literal("reload").requires(isOp).executes(context -> {
-                    DailyServerConfig.loadAll();
-                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.reload.success"), true);
-                    return 1;
-                }))
-                .then(Commands.literal("forcecomplete").requires(isOp).then(Commands.argument("target", EntityArgument.player())
-                        .then(Commands.literal("all").executes(context -> {
-                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                            boolean anyCompleted = false;
-                            for (int i = 0; i < 5; i++) {
-                                if (QuestManager.forceCompleteQuest(target, i, true)) anyCompleted = true;
-                            }
-                            if (anyCompleted) {
-                                syncPlayerData(target, ModState.getPlayerData(context.getSource().getServer(), target.getUUID()));
-                                context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", "§e" + target.getName().getString()), true);
-                            } else {
-                                context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", "§e" + target.getName().getString()), false);
-                            }
-                            return 1;
-                        }))
-                        .then(Commands.argument("index", IntegerArgumentType.integer(1, 5)).executes(context -> {
-                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                            int index = IntegerArgumentType.getInteger(context, "index") - 1;
-                            boolean success = QuestManager.forceCompleteQuest(target, index, false);
-                            if (success) context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", "§e" + (index + 1), "§e" + target.getName().getString()), true);
-                            else context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", "§e" + (index + 1), "§e" + target.getName().getString()), false);
-                            return 1;
-                        }))
-                ))
-                .then(Commands.literal("admin").requires(isOp)
-                        .then(Commands.literal("reset_cooldown").then(Commands.argument("target", EntityArgument.player()).executes(context -> {
-                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                            data.lastQuestDate = "1970-01-01";
-                            data.lastRewardDate = "1970-01-01";
-                            data.lastStreakDate = "1970-01-01";
-                            data.lastQuestStreakDate = "1970-01-01";
-                            syncPlayerData(target, data);
-                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.reset_cooldown.success", "§e" + target.getName().getString()), true);
-                            return 1;
-                        })))
-                        .then(Commands.literal("points")
-                                .then(Commands.literal("add").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(1)).executes(context -> {
-                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                    int amount = IntegerArgumentType.getInteger(context, "amount");
-                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                    data.totalQuestPoints += amount;
-                                    syncPlayerData(target, data);
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.add", "§d" + amount, "§e" + target.getName().getString(), "§d" + data.totalQuestPoints), true);
-                                    return 1;
-                                }))))
-                                .then(Commands.literal("set").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
-                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                    int amount = IntegerArgumentType.getInteger(context, "amount");
-                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                    data.totalQuestPoints = amount;
-                                    syncPlayerData(target, data);
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.set", "§d" + amount, "§e" + target.getName().getString()), true);
-                                    return 1;
-                                }))))
-                                .then(Commands.literal("remove").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(1)).executes(context -> {
-                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                    int amount = IntegerArgumentType.getInteger(context, "amount");
-                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                    data.totalQuestPoints = Math.max(0, data.totalQuestPoints - amount);
-                                    syncPlayerData(target, data);
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.remove", "§d" + amount, "§e" + target.getName().getString(), "§d" + data.totalQuestPoints), true);
-                                    return 1;
-                                }))))
-                        )
-                        .then(Commands.literal("streak")
-                                .then(Commands.literal("set")
-                                        .then(Commands.literal("quests").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
-                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                            int amount = IntegerArgumentType.getInteger(context, "amount");
-                                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                            data.questStreak = amount;
-                                            syncPlayerData(target, data);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.quests", "§e" + target.getName().getString(), "§e" + amount), true);
-                                            return 1;
-                                        }))))
-                                        .then(Commands.literal("rewards").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
-                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                            int amount = IntegerArgumentType.getInteger(context, "amount");
-                                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                            data.streak = amount;
-                                            syncPlayerData(target, data);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.rewards", "§e" + target.getName().getString(), "§e" + amount), true);
-                                            return 1;
-                                        }))))
-                                )
-                        )
-                        .then(Commands.literal("shields")
-                                .then(Commands.literal("set")
-                                        .then(Commands.literal("quests").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
-                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                            int amount = IntegerArgumentType.getInteger(context, "amount");
-                                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                            data.availableFreezes = amount;
-                                            syncPlayerData(target, data);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.quests", "§e" + target.getName().getString(), "§b" + amount), true);
-                                            return 1;
-                                        }))))
-                                        .then(Commands.literal("rewards").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
-                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                            int amount = IntegerArgumentType.getInteger(context, "amount");
-                                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                            data.availableRewardFreezes = amount;
-                                            syncPlayerData(target, data);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.rewards", "§e" + target.getName().getString(), "§b" + amount), true);
-                                            return 1;
-                                        }))))
-                                )
-                        )
-                        .then(Commands.literal("dimensions")
-                                .then(Commands.literal("unlock").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("dim", StringArgumentType.word()).executes(context -> {
-                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                    String dim = StringArgumentType.getString(context, "dim");
-                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                    if (!data.unlockedDimensions.contains(dim)) {
-                                        data.unlockedDimensions.add(dim);
-                                        syncPlayerData(target, data);
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.success", "§d" + dim, "§e" + target.getName().getString()), true);
-                                    } else {
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.fail", "§e" + target.getName().getString(), "§d" + dim), false);
-                                    }
-                                    return 1;
-                                }))))
-                                .then(Commands.literal("revoke").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("dim", StringArgumentType.word()).executes(context -> {
-                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                    String dim = StringArgumentType.getString(context, "dim");
-                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                    if (data.unlockedDimensions.contains(dim)) {
-                                        data.unlockedDimensions.remove(dim);
-                                        syncPlayerData(target, data);
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.success", "§d" + dim, "§e" + target.getName().getString()), true);
-                                    } else {
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.fail", "§e" + target.getName().getString(), "§d" + dim), false);
-                                    }
-                                    return 1;
-                                }))))
-                        )
-                        .then(Commands.literal("clear_data")
-                                .then(Commands.argument("target", EntityArgument.player())
-                                        .executes(context -> {
-                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                            ModState state = ModState.get(context.getSource().getServer());
-                                            PlayerData newData = new PlayerData();
-                                            newData.lastKnownName = target.getGameProfile().name();
-                                            state.players.put(target.getUUID(), newData);
-                                            syncPlayerData(target, newData);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.clear_data.success", "§e" + target.getName().getString()), true);
-                                            return 1;
-                                        })
-                                )
-                        )
-                )
+
                 .then(Commands.literal("quests").executes(context -> {
                     ServerPlayer player = context.getSource().getPlayer();
                     if (player == null) return 0;
@@ -299,11 +143,15 @@ public class DailyCommands {
                     for (ItemStack rewardStack : rewards) {
                         int amount = rewardStack.getCount() * multi;
                         rewardStack.setCount(amount);
-                        String itemNameStr = rewardStack.getHoverName().getString();
+
+                        String translationKey = rewardStack.getItem().getDescriptionId();
                         QuestManager.giveOrDrop(player, rewardStack);
-                        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.received", "§b" + amount, itemNameStr));
-                        if (!historyBuilder.isEmpty()) historyBuilder.append(", ");
-                        historyBuilder.append("§a").append(amount).append("x ").append(itemNameStr);
+
+                        net.minecraft.network.chat.MutableComponent translatedItem = Component.translatable(translationKey).withStyle(net.minecraft.ChatFormatting.AQUA);
+                        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.received", "§b" + amount, translatedItem));
+
+                        if (!historyBuilder.isEmpty()) historyBuilder.append(",");
+                        historyBuilder.append(amount).append(";").append(translationKey);
                     }
 
                     while(data.claimedRewardHistory.size() < 7) {
@@ -333,6 +181,205 @@ public class DailyCommands {
                     ));
                     return 1;
                 }))
+
+                .then(Commands.literal("admin").requires(isOp)
+
+                        .then(Commands.literal("reload").executes(context -> {
+                            DailyServerConfig.loadAll();
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.reload.success"), true);
+                            return 1;
+                        }))
+
+                        .then(Commands.literal("forcecomplete").then(Commands.argument("target", EntityArgument.player())
+                                .then(Commands.literal("all").executes(context -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                    boolean anyCompleted = false;
+                                    for (int i = 0; i < 5; i++) {
+                                        if (QuestManager.forceCompleteQuest(target, i, true)) anyCompleted = true;
+                                    }
+                                    if (anyCompleted) {
+                                        syncPlayerData(target, ModState.getPlayerData(context.getSource().getServer(), target.getUUID()));
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", "§e" + target.getName().getString()), true);
+                                    } else {
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", "§e" + target.getName().getString()), false);
+                                    }
+                                    return 1;
+                                }))
+                                .then(Commands.argument("index", IntegerArgumentType.integer(1, 5)).executes(context -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                    int index = IntegerArgumentType.getInteger(context, "index") - 1;
+                                    boolean success = QuestManager.forceCompleteQuest(target, index, false);
+                                    if (success) context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", "§e" + (index + 1), "§e" + target.getName().getString()), true);
+                                    else context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", "§e" + (index + 1), "§e" + target.getName().getString()), false);
+                                    return 1;
+                                }))
+                        ))
+
+                        .then(Commands.literal("reset_progress").then(Commands.argument("target", EntityArgument.player()).executes(context -> {
+                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+
+                            data.lastRewardDate = "1970-01-01";
+
+                            data.dailyQuestsCompletedToday = 0;
+
+                            for(int i=0; i < data.questProgress.size(); i++) {
+                                data.questProgress.set(i, 0);
+                                data.questRewardsClaimed.set(i, false);
+                            }
+
+                            syncPlayerData(target, data);
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.test.reset_progress", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)), true);
+                            return 1;
+                        })))
+
+                        .then(Commands.literal("new_quests").then(Commands.argument("target", EntityArgument.player()).executes(context -> {
+                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+
+                            data.lastRewardDate = "1970-01-01";
+                            data.dailyQuestsCompletedToday = 0;
+
+                            java.time.LocalDate today = getCurrentQuestDate();
+                            List<Quest> newQuests = QuestManager.generateDailyQuests(data, java.util.UUID.randomUUID(), today);
+
+                            data.activeQuests.clear();
+                            data.questProgress.clear();
+                            data.questRewardsClaimed.clear();
+
+                            for (Quest q : newQuests) {
+                                if (q != null && q.id != null) {
+                                    data.activeQuests.add(q.id);
+                                    data.questProgress.add(0);
+                                    data.questRewardsClaimed.add(false);
+                                }
+                            }
+
+                            syncPlayerData(target, data);
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.test.new_quests", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)), true);
+                            return 1;
+                        })))
+
+                        .then(Commands.literal("points")
+                                .then(Commands.literal("add").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(1)).executes(context -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                    int amount = IntegerArgumentType.getInteger(context, "amount");
+                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                    data.totalQuestPoints += amount;
+                                    syncPlayerData(target, data);
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.add", "§d" + amount, "§e" + target.getName().getString(), "§d" + data.totalQuestPoints), true);
+                                    return 1;
+                                }))))
+                                .then(Commands.literal("set").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                    int amount = IntegerArgumentType.getInteger(context, "amount");
+                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                    data.totalQuestPoints = amount;
+                                    syncPlayerData(target, data);
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.set", "§d" + amount, "§e" + target.getName().getString()), true);
+                                    return 1;
+                                }))))
+                                .then(Commands.literal("remove").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(1)).executes(context -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                    int amount = IntegerArgumentType.getInteger(context, "amount");
+                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                    data.totalQuestPoints = Math.max(0, data.totalQuestPoints - amount);
+                                    syncPlayerData(target, data);
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.remove", "§d" + amount, "§e" + target.getName().getString(), "§d" + data.totalQuestPoints), true);
+                                    return 1;
+                                }))))
+                        )
+
+                        .then(Commands.literal("streak")
+                                .then(Commands.literal("set")
+                                        .then(Commands.literal("quests").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
+                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                            int amount = IntegerArgumentType.getInteger(context, "amount");
+                                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                            data.questStreak = amount;
+                                            syncPlayerData(target, data);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.quests", "§e" + target.getName().getString(), "§e" + amount), true);
+                                            return 1;
+                                        }))))
+                                        .then(Commands.literal("rewards").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
+                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                            int amount = IntegerArgumentType.getInteger(context, "amount");
+                                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                            data.streak = amount;
+                                            syncPlayerData(target, data);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.rewards", "§e" + target.getName().getString(), "§e" + amount), true);
+                                            return 1;
+                                        }))))
+                                )
+                        )
+
+                        .then(Commands.literal("shields")
+                                .then(Commands.literal("set")
+                                        .then(Commands.literal("quests").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
+                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                            int amount = IntegerArgumentType.getInteger(context, "amount");
+                                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                            data.availableFreezes = amount;
+                                            syncPlayerData(target, data);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.quests", "§e" + target.getName().getString(), "§b" + amount), true);
+                                            return 1;
+                                        }))))
+                                        .then(Commands.literal("rewards").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
+                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                            int amount = IntegerArgumentType.getInteger(context, "amount");
+                                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                            data.availableRewardFreezes = amount;
+                                            syncPlayerData(target, data);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.rewards", "§e" + target.getName().getString(), "§b" + amount), true);
+                                            return 1;
+                                        }))))
+                                )
+                        )
+
+                        .then(Commands.literal("dimensions")
+                                .then(Commands.literal("unlock").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("dim", StringArgumentType.word()).executes(context -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                    String dim = StringArgumentType.getString(context, "dim");
+                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                    if (!data.unlockedDimensions.contains(dim)) {
+                                        data.unlockedDimensions.add(dim);
+                                        syncPlayerData(target, data);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.success", "§d" + dim, "§e" + target.getName().getString()), true);
+                                    } else {
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.fail", "§e" + target.getName().getString(), "§d" + dim), false);
+                                    }
+                                    return 1;
+                                }))))
+                                .then(Commands.literal("revoke").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("dim", StringArgumentType.word()).executes(context -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                    String dim = StringArgumentType.getString(context, "dim");
+                                    PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+                                    if (data.unlockedDimensions.contains(dim)) {
+                                        data.unlockedDimensions.remove(dim);
+                                        syncPlayerData(target, data);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.success", "§d" + dim, "§e" + target.getName().getString()), true);
+                                    } else {
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.fail", "§e" + target.getName().getString(), "§d" + dim), false);
+                                    }
+                                    return 1;
+                                }))))
+                        )
+
+                        .then(Commands.literal("clear_data")
+                                .then(Commands.argument("target", EntityArgument.player())
+                                        .executes(context -> {
+                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                            ModState state = ModState.get(context.getSource().getServer());
+                                            PlayerData newData = new PlayerData();
+                                            newData.lastKnownName = target.getGameProfile().name();
+                                            state.players.put(target.getUUID(), newData);
+                                            syncPlayerData(target, newData);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.clear_data.success", "§e" + target.getName().getString()), true);
+                                            return 1;
+                                        })
+                                )
+                        )
+                )
         );
     }
 }

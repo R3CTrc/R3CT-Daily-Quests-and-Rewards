@@ -4,7 +4,6 @@ import com.r3ct.daily.logic.QuestManager;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.MerchantResultSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.Merchant;
 import org.spongepowered.asm.mixin.Final;
@@ -14,31 +13,50 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MerchantResultSlot.class)
+@Mixin(net.minecraft.world.inventory.MerchantResultSlot.class)
 public abstract class TradeMixin {
 
-    @Shadow @Final private Merchant merchant;
     @Shadow @Final private Player player;
+    @Shadow @Final private Merchant merchant;
 
-    @Inject(method = "checkTakeAchievements(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"))
-    private void onTrade(ItemStack stack, CallbackInfo ci) {
+    @Inject(method = "checkTakeAchievements", at = @At("HEAD"))
+    private void onTradeResult(ItemStack stack, CallbackInfo ci) {
         if (this.player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
             String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-            int amount = stack.getCount();
 
-            QuestManager.handleAction(serverPlayer, "TRADE", itemId, amount);
+            QuestManager.handleAction(serverPlayer, "TRADE", "any", 1);
 
-            if (stack.is(net.minecraft.world.item.Items.EMERALD)) {
-                QuestManager.handleAction(serverPlayer, "TRADE_SELL_SPECIFIC", "any", amount);
-            }
+            QuestManager.handleAction(serverPlayer, "TRADE_ITEM", itemId, stack.getCount());
 
             if (this.merchant instanceof net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader) {
-                QuestManager.handleAction(serverPlayer, "TRADE_WANDERING", "any", amount);
+                QuestManager.handleAction(serverPlayer, "TRADE_WANDERING", "any", 1);
             } else if (this.merchant instanceof net.minecraft.world.entity.npc.villager.Villager villager) {
                 if (villager.getVillagerData().level() >= 5) {
-                    QuestManager.handleAction(serverPlayer, "TRADE_MASTER", "any", amount);
+                    QuestManager.handleAction(serverPlayer, "TRADE_MASTER", "any", 1);
                 }
             }
+        }
+    }
+
+    @Inject(method = "onTake", at = @At("HEAD"))
+    private void onTake(Player player, ItemStack stack, CallbackInfo ci) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            net.minecraft.world.Container container = ((net.minecraft.world.inventory.Slot)(Object)this).container;
+
+            if (container instanceof net.minecraft.world.inventory.MerchantContainer merchantContainer) {
+                ItemStack itemPaid1 = merchantContainer.getItem(0);
+                ItemStack itemPaid2 = merchantContainer.getItem(1);
+
+                checkSoldItem(serverPlayer, itemPaid1);
+                checkSoldItem(serverPlayer, itemPaid2);
+            }
+        }
+    }
+
+    private void checkSoldItem(ServerPlayer player, ItemStack paid) {
+        if (!paid.isEmpty()) {
+            String paidId = BuiltInRegistries.ITEM.getKey(paid.getItem()).toString();
+            QuestManager.handleAction(player, "TRADE_SELL", paidId, paid.getCount());
         }
     }
 }

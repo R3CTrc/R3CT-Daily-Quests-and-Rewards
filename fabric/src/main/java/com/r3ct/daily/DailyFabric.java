@@ -3,25 +3,18 @@ package com.r3ct.daily;
 import com.r3ct.daily.config.DailyServerConfig;
 import com.r3ct.daily.data.ModState;
 import com.r3ct.daily.data.PlayerData;
-import com.r3ct.daily.data.TopEntry;
 import com.r3ct.daily.item.ModItems;
 import com.r3ct.daily.logic.LeaderboardManager;
 import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestManager;
-import com.r3ct.daily.logic.RewardManager;
-import com.r3ct.daily.network.LeaderboardResponsePayload;
 import com.r3ct.daily.platform.Services;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -33,25 +26,16 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.NameAndId;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class DailyFabric implements ModInitializer {
 	public static final String MOD_ID = "r3ct_daily";
@@ -257,31 +241,6 @@ public class DailyFabric implements ModInitializer {
 			if (attacker instanceof ServerPlayer serverPlayer) {
 				com.r3ct.daily.logic.QuestEventHandlers.onEntityDeath(serverPlayer, entity);
 			}
-		});
-
-		net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents.STOP_SLEEPING.register((entity, blockPos) -> {
-			if (entity instanceof ServerPlayer serverPlayer) {
-				com.r3ct.daily.logic.QuestEventHandlers.onPlayerWakeUp(serverPlayer, blockPos);
-			}
-		});
-
-		UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-			if (hitResult != null) return InteractionResult.PASS;
-			if (player instanceof ServerPlayer serverPlayer) {
-				com.r3ct.daily.logic.QuestEventHandlers.onEntityInteract(serverPlayer, hand, entity);
-			}
-			return InteractionResult.PASS;
-		});
-
-		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-			if (player instanceof ServerPlayer serverPlayer) {
-				com.r3ct.daily.logic.QuestEventHandlers.onBlockInteract(serverPlayer, hand, hitResult.getBlockPos(), hitResult.getDirection(), world.getBlockState(hitResult.getBlockPos()));
-			}
-			return InteractionResult.PASS;
-		});
-
-		net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-			com.r3ct.daily.logic.QuestEventHandlers.onEntityLoad(entity, world);
 		});
 	}
 }
