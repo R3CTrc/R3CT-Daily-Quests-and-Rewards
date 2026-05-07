@@ -119,6 +119,19 @@ You can open all server config files directly from the in-game config menu! The 
 
 ---
 
+## 📦 Check out my other mods!
+
+If you enjoy this mod, you might also like my other projects:
+
+### [📖 R3CT Collector](https://modrinth.com/mod/r3ct-collector)
+*An interactive Collector's Book mod. Gather items, claim rewards, and climb the global leaderboard!*
+
+<a href="https://modrinth.com/mod/r3ct-collector">
+  <img src="./images/collector_icon_nb.png" width="150" alt="R3CT Collector">
+</a>
+
+---
+
 ## 💖 Support the Development
 
 I'm a computer science student, and I develop game mods and software in my free time. If my work has improved your server or modpack, consider supporting my coding journey! Every coffee helps me survive late-night debugging sessions. ☕💻
