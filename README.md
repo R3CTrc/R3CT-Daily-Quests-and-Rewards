@@ -10,7 +10,7 @@
 </div>
 
 A powerful, highly configurable Daily Quests and Login Rewards mod for Minecraft.
-Keep your players engaged with dynamic tasks, login streaks, and a beautifully integrated GUI. Built for both Fabric and NeoForge!
+Keep your players engaged with dynamic tasks, login streaks, competitive leaderboards, and a beautifully integrated GUI. Built natively for both Fabric and NeoForge!
 
 <div align="center">
   <img src="./images/icon_nb.png" width="50%" alt="R3CT Mod Icon">
@@ -20,9 +20,10 @@ Keep your players engaged with dynamic tasks, login streaks, and a beautifully i
 
 ## ✨ Features
 
-* **⚔️ Daily Quests System:** * Generate random daily tasks from customizable pools.
-  * Maintain your Quest Streak by completing tasks daily.
-  * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day!
+* **⚔️ Daily Quests System:** * Generate 5 random daily tasks from highly customizable pools.
+  * Earn Points to unlock massive **Milestone Rewards** (50, 100, 150, 200 points).
+  * **Reroll System:** Spend points to skip quests you don't like!
+  * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day.
 
 <div align="center">
   <a href="./images/Quests_Screen.png" target="_blank">
@@ -30,8 +31,9 @@ Keep your players engaged with dynamic tasks, login streaks, and a beautifully i
   </a>
 </div>
 
-* **🎁 Daily Rewards System:** * Claim escalating rewards for consecutive daily logins.
-  * Build up your Reward Streak to earn bonus multipliers.
+* **🎁 Daily Rewards System:** * Claim rewards every day you log in. Missed a day? Don't worry, your progress is saved and you pick up right where you left off!
+  * Build up your **Reward Streak** by logging in consecutively to earn bonus multipliers (2x loot!).
+  * Unlock powerful **Bonus Cycle Rewards** for claiming daily rewards for 7, 14, and 21 days in total.
   * Includes its own separate Shield System to save your login streak.
 
 <div align="center">
@@ -40,8 +42,12 @@ Keep your players engaged with dynamic tasks, login streaks, and a beautifully i
   </a>
 </div>
 
-* **🖥️ Beautiful GUI:** * Fully interactive, clean, and modern menus built directly into Minecraft.
-  * Track your progress easily (Default keys: `G` for Quests, `H` for Rewards).
+* **🏆 Competitive Leaderboards:**
+  * Compete with your friends or server community!
+  * Track the Top 10 players globally for: Total Quests Completed, Max Quest Streak, Total Rewards Collected, and Max Reward Streak.
+
+* **🖥️ Beautiful GUI & Integration:** * Fully interactive, clean, and modern menus built directly into Minecraft.
+  * Available in **English** and **Polish** (with native game translations for item names).
   * On-screen HUD to track your active quest progress in real-time. Easily toggle it on or off by pressing the `.` (period) key!
 
 <div align="center">
@@ -86,21 +92,21 @@ For detailed guides on how to set up quests, rewards, and technical mechanics, v
 
 ## ⚙️ Configuration & Customization
 
-The mod is highly customizable! There are two ways to configure the mod:
+The mod is highly customizable! The configuration is split to give you the ultimate control. After running the mod once, navigate to the `config/r3ct_daily/` folder:
 
-### 1. In-Game Settings (Client-side)
-Players can access the mod settings via **Mod Menu** (on Fabric) or the **Mods tab** (on NeoForge). Here, users can:
+### 1. Client-Side (`r3ct_daily_client.json`)
+Players can access the client settings via **Mod Menu** (on Fabric) or the **Mods tab** (on NeoForge). Here, users can:
 * Toggle the on-screen Quest HUD on or off.
 * Adjust the X and Y coordinates of the HUD to fit their screen.
-* Scale the size of the HUD, Quests, Rewards and Leaderboard Screens independently.
+* Scale the size of the HUD, Quests, Rewards, and Leaderboard Screens independently.
 
-### 2. File Configuration (Server-side / Modpack Creators)
-All core mechanics, quests, and rewards can be completely rewritten. After running the mod once, navigate to the `config/r3ct/` folder:
+### 2. Server-Side / Modpack Creators
+You can open all server config files directly from the in-game config menu! The system features an automatic backup mechanic, ensuring your data is safe during updates.
 
-* **`quests.json`** - Manage the pool of daily tasks. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Quests-Setup)
-* **`daily_quest_rewards.json`** - Configure bonus rewards for finishing 3 quests. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Quest-Rewards)
-* **`daily_rewards.json`** - Customize login streak loot pools. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Rewards)
-* **`r3ctdailyquests.json`** - Tweak core mechanics, reroll costs, and tech rules. [Learn more](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Core-Mechanics)
+* **`r3ct_daily_quests.json`** - Manage the pool of daily tasks across different dimensions.
+* **`r3ct_daily_rewards.json`** - Customize daily login reward pools.
+* **`r3ct_daily_quests_rewards.json`** - Configure bonus rewards for finishing 3 quests.
+* **`r3ct_daily_server.json`** - The core brain! Tweak mechanics, reroll costs, milestone thresholds, and tech rules.
 
 ---
 
