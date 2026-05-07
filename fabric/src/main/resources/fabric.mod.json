@@ -12,22 +12,22 @@
         "sources": "https://github.com/r3ct/quests-mod"
     },
     "license": "${license}",
-    "icon": "assets/r3ct/icon.png",
+    "icon": "assets/r3ct_daily/icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.r3ct.quests.R3CT"
+          "com.r3ct.daily.DailyFabric"
         ],
         "client": [
-            "com.r3ct.quests.R3CTClient"
+            "com.r3ct.daily.DailyFabricClient"
         ],
         "modmenu": [
-            "com.r3ct.quests.compat.ModMenuIntegration"
+          "com.r3ct.daily.compat.ModMenuIntegration"
         ]
     },
     "mixins": [
-        "r3ct.mixins.json",
-        "r3ct.fabric.mixins.json"
+        "r3ct_daily.mixins.json",
+        "r3ct_daily.fabric.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",

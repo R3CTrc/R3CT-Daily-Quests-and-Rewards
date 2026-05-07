@@ -1,0 +1,46 @@
+package com.r3ct.daily.mixin;
+
+import com.r3ct.daily.logic.QuestManager;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(Slot.class)
+public abstract class LootMixin {
+
+    @Inject(method = "onTake", at = @At("HEAD"))
+    private void onLootOrBrew(Player player, ItemStack stack, CallbackInfo ci) {
+        if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
+            Slot slot = (Slot)(Object)this;
+
+            if (slot.container instanceof net.minecraft.world.level.block.entity.BrewingStandBlockEntity) {
+
+                if (stack.is(net.minecraft.world.item.Items.SPLASH_POTION)) {
+                    QuestManager.handleAction(serverPlayer, "CRAFT_ITEM", "minecraft:splash_potion", stack.getCount());
+                }
+
+                net.minecraft.world.item.alchemy.PotionContents contents = stack.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
+                if (contents != null && contents.potion().isPresent()) {
+                    String potId = contents.potion().get().getRegisteredName();
+
+                    if (!potId.contains("water") && !potId.contains("mundane") && !potId.contains("thick") && !potId.contains("awkward")) {
+                        QuestManager.handleAction(serverPlayer, "BREW_POTION", potId, stack.getCount());
+                    }
+
+                    if (potId.contains("strong_")) {
+                        QuestManager.handleAction(serverPlayer, "BREW_POTION_LEVEL_2", potId, stack.getCount());
+                    }
+
+                    else if (potId.contains("long_")) {
+                        QuestManager.handleAction(serverPlayer, "BREW_POTION_EXTENDED", potId, stack.getCount());
+                    }
+                }
+            }
+        }
+    }
+}
