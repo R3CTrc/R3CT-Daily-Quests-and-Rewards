@@ -230,6 +230,10 @@
   "r3ct.advancement.week_bonus.title": "Payday",
   "r3ct.advancement.week_bonus.desc": "Claim the bonus for 7 days of continuous login.",
 
+  "r3ct.quest.enchanter.name": "Apprentice Enchanter",
+  "r3ct.quest.enchanter.desc": "Enchant any items at the Enchanting Table",
+  "r3ct.quest.unbreaking_enchant.name": "Durable Magic",
+  "r3ct.quest.unbreaking_enchant.desc": "Enchant an item with Unbreaking",
   "r3ct.quest.niezly_interes.name": "Good Business",
   "r3ct.quest.niezly_interes.desc": "Make three trades with any villager.",
   "r3ct.quest.plynny_ogien.name": "Liquid Fire",

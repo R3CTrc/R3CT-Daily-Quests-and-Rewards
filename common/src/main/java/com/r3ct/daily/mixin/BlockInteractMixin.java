@@ -3,6 +3,7 @@ package com.r3ct.daily.mixin;
 import com.r3ct.daily.logic.QuestManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
+import net.minecraft.tags.ItemTags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,6 +33,12 @@ public abstract class BlockInteractMixin {
             if (state.is(net.minecraft.world.level.block.Blocks.TNT)) {
                 if (stack.is(net.minecraft.world.item.Items.FLINT_AND_STEEL) || stack.is(net.minecraft.world.item.Items.FIRE_CHARGE)) {
                     QuestManager.handleAction(player, "IGNITE_TNT", "any", 1);
+                }
+            }
+
+            if (state.is(net.minecraft.world.level.block.Blocks.JUKEBOX)) {
+                if (stack.has(net.minecraft.core.component.DataComponents.JUKEBOX_PLAYABLE)) {
+                    QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
                 }
             }
         }

@@ -231,6 +231,10 @@
   "r3ct.advancement.week_bonus.title": "Wypłata",
   "r3ct.advancement.week_bonus.desc": "Odbierz bonus za 7 dni ciągłego logowania.",
 
+  "r3ct.quest.enchanter.name": "Adept Zaklęć",
+  "r3ct.quest.enchanter.desc": "Zaklnij dowolne przedmioty w Stole Zaklęć",
+  "r3ct.quest.unbreaking_enchant.name": "Trwała Magia",
+  "r3ct.quest.unbreaking_enchant.desc": "Zaklnij przedmiot na Niezniszczalność",
   "r3ct.quest.niezly_interes.name": "Niezły interes",
   "r3ct.quest.niezly_interes.desc": "Dokonaj trzech transakcji z dowolnym osadnikiem.",
   "r3ct.quest.plynny_ogien.name": "Płynny ogień",

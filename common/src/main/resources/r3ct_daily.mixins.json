@@ -11,6 +11,7 @@
     "BredAnimalsMixin",
     "ComposterBlockMixin",
     "CuredZombieVillagerMixin",
+    "EnchantItemMixin",
     "EnderPearlMixin",
     "FishInteractMixin",
     "ItemConsumeMixin",

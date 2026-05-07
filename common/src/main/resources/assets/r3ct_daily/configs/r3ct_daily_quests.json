@@ -798,6 +798,18 @@
       "reward_amount": 10
     },
     {
+      "id": "zaklinacz",
+      "name": "r3ct.quest.enchanter.name",
+      "description": "r3ct.quest.enchanter.desc",
+      "difficulty": 1,
+      "action_type": "ENCHANT_ITEM",
+      "target": "any",
+      "amount": 3,
+      "points": 2,
+      "reward_item": "minecraft:lapis_lazuli",
+      "reward_amount": 16
+    },
+    {
       "id": "ksiegowy_na_etacie",
       "name": "r3ct.quest.ksiegowy_na_etacie.name",
       "description": "r3ct.quest.ksiegowy_na_etacie.desc",
@@ -1876,6 +1888,18 @@
       "points": 2,
       "reward_item": "r3ct:random_pottery_sherd",
       "reward_amount": 4
+    },
+    {
+      "id": "niezniszczalny_sprzet",
+      "name": "r3ct.quest.unbreaking_enchant.name",
+      "description": "r3ct.quest.unbreaking_enchant.desc",
+      "difficulty": 2,
+      "action_type": "ENCHANT_WITH",
+      "target": "minecraft:unbreaking",
+      "amount": 1,
+      "points": 4,
+      "reward_item": "minecraft:experience_bottle",
+      "reward_amount": 5
     },
     {
       "id": "egzotyczne_oferty",

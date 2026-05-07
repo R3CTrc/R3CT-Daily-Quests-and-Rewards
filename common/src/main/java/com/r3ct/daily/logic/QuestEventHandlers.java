@@ -52,11 +52,13 @@ public class QuestEventHandlers {
         else if (state.is(net.minecraft.tags.BlockTags.CHERRY_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:cherry_logs", 1);
         else if (state.is(net.minecraft.tags.BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:pale_oak_logs", 1);
 
+        if (state.is(net.minecraft.tags.BlockTags.COAL_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:iron_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.IRON_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:iron_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.GOLD_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:gold_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.COPPER_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:copper_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.DIAMOND_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:diamond_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.LAPIS_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:lapis_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.REDSTONE_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:iron_ores", 1);
 
         if (blockId.equals("minecraft:nether_quartz_ore")) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:nether_quartz_ores", 1);
     }
@@ -91,6 +93,22 @@ public class QuestEventHandlers {
                 QuestManager.handleAction(serverPlayer, "KILL_MOB_VILLAGE", mobId, 1);
             }
         }
+    }
+
+    public static void onItemEnchanted(ServerPlayer player, net.minecraft.world.item.ItemStack item) {
+        QuestManager.handleAction(player, "ENCHANT_ITEM", "any", 1);
+
+        net.minecraft.world.item.enchantment.ItemEnchantments enchantments = item.getOrDefault(
+                net.minecraft.core.component.DataComponents.ENCHANTMENTS,
+                net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY
+        );
+
+        enchantments.keySet().forEach(holder -> {
+            holder.unwrapKey().ifPresent(key -> {
+                String enchantId = key.identifier().toString();
+                QuestManager.handleAction(player, "ENCHANT_WITH", enchantId, 1);
+            });
+        });
     }
 
     public static void onPlayerTick(ServerPlayer player) {
