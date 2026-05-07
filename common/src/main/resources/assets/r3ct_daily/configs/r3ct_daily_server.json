@@ -1,0 +1,49 @@
+{
+  "_comment_version": "Do not change the version number! It is used for automatic config updates.",
+  "version": 1,
+
+  "quests": {
+    "_comment_reroll": "Settings for quest rerolling mechanics. Costs are in Total Points.",
+    "enableQuestRerolling": true,
+    "rerollCostEasy": 1,
+    "rerollCostMedium": 2,
+    "rerollCostHard": 4,
+
+    "_comment_xp": "Experience points granted for completing quests of different difficulties.",
+    "xpPerQuestEasy": 30,
+    "xpPerQuestMedium": 60,
+    "xpPerQuestHard": 90,
+    "xpDailyReward": 90
+  },
+
+  "streaks": {
+    "_comment_perfect_days": "How many 'Perfect Days' (all 5 quests completed) are needed to get a Quest Shield.",
+    "perfectDaysForShield": 3,
+
+    "_comment_shields": "Maximum amount of Quest Shields and Reward Shields a player can hold at once.",
+    "maxStoredQuestShields": 3,
+    "maxStoredRewardShields": 3
+  },
+
+  "technical": {
+    "_comment_cache": "Maximum amount of placed blocks remembered by the server to prevent block-break and block-place quests abuse.",
+    "placedBlocksCacheLimit": 10000,
+
+    "_comment_leaderboard": "How often (in ticks) the leaderboard cache is updated (1200 ticks = 1 minute).",
+    "leaderboardUpdateIntervalTicks": 1200,
+
+    "_comment_refresh": "Hour of the day (0-23) when daily quests and rewards refresh (0 = midnight).",
+    "questRefreshHour": 0
+  },
+
+  "milestones": {
+    "_comment_milestones": "Rewards for reaching Total Points thresholds (point_X) and daily reward thresholds (bonus_X). Supports '&' color codes.",
+    "point_50":  { "item": "minecraft:amethyst_shard", "amount": 32, "color": "&d" },
+    "point_100": { "item": "minecraft:emerald", "amount": 16, "color": "&a" },
+    "point_150": { "item": "minecraft:diamond", "amount": 8, "color": "&b" },
+    "point_200": { "item": "minecraft:netherite_scrap", "amount": 4, "color": "&c" },
+    "bonus_7":   { "item": "minecraft:emerald", "amount": 32, "color": "&a" },
+    "bonus_14":  { "item": "minecraft:diamond", "amount": 16, "color": "&b" },
+    "bonus_21":  { "item": "minecraft:netherite_scrap", "amount": 4, "color": "&c" }
+  }
+}

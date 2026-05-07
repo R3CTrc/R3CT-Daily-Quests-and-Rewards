@@ -7,9 +7,7 @@ plugins {
 
 allprojects {
     tasks.withType(Javadoc).configureEach {
-        // Wyłącza rygorystyczne sprawdzanie komentarzy (doclint) w Javie
         options.addStringOption('Xdoclint:none', '-quiet')
-        // Gwarantuje, że ewentualne błędy Javadoc nie przerwą buildu
         failOnError = false
     }
 }
