@@ -236,20 +236,20 @@ public class QuestManager {
         ItemStack rewardToGive = q.getItemReward();
         rewardToGive.setCount(amountGiven);
 
-        if (q.rawRewardId != null && q.rawRewardId.startsWith("r3ct_daily:")) {
+        if (q.rawRewardId != null && q.rawRewardId.startsWith("r3ct:")) {
             Random rand = new Random();
 
-            if (q.rawRewardId.equals("r3ct_daily:random_dye")) {
+            if (q.rawRewardId.equals("r3ct:random_dye")) {
                 Item[] dyes = {Items.RED_DYE, Items.GREEN_DYE, Items.BLUE_DYE, Items.YELLOW_DYE, Items.ORANGE_DYE, Items.MAGENTA_DYE, Items.PINK_DYE, Items.LIME_DYE, Items.CYAN_DYE, Items.PURPLE_DYE};
                 rewardToGive = new ItemStack(dyes[rand.nextInt(dyes.length)], rewardToGive.getCount());
-            } else if (q.rawRewardId.equals("r3ct_daily:random_head")) {
+            } else if (q.rawRewardId.equals("r3ct:random_head")) {
                 Item[] heads = {Items.ZOMBIE_HEAD, Items.SKELETON_SKULL, Items.CREEPER_HEAD, Items.PIGLIN_HEAD};
                 rewardToGive = new ItemStack(heads[rand.nextInt(heads.length)], rewardToGive.getCount());
-            } else if (q.rawRewardId.equals("r3ct_daily:random_sapling")) {
+            } else if (q.rawRewardId.equals("r3ct:random_sapling")) {
                 Item[] saplings = {Items.OAK_SAPLING, Items.SPRUCE_SAPLING, Items.BIRCH_SAPLING, Items.JUNGLE_SAPLING, Items.ACACIA_SAPLING, Items.DARK_OAK_SAPLING, Items.CHERRY_SAPLING};
                 rewardToGive = new ItemStack(saplings[rand.nextInt(saplings.length)], rewardToGive.getCount());
             }
-            else if (q.rawRewardId.equals("r3ct_daily:random_potion")) {
+            else if (q.rawRewardId.equals("r3ct:random_potion")) {
                 var potionLookup = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.POTION);
                 var potionList = potionLookup.listElements().toList();
                 var randomPotion = potionList.get(rand.nextInt(potionList.size()));
@@ -258,11 +258,11 @@ public class QuestManager {
                 potStack.setCount(rewardToGive.getCount());
                 rewardToGive = potStack;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:random_coral_block")) {
+            else if (q.rawRewardId.equals("r3ct:random_coral_block")) {
                 Item[] corals = {Items.BRAIN_CORAL_BLOCK, Items.BUBBLE_CORAL_BLOCK, Items.FIRE_CORAL_BLOCK, Items.HORN_CORAL_BLOCK, Items.TUBE_CORAL_BLOCK};
                 rewardToGive = new ItemStack(corals[rand.nextInt(corals.length)], rewardToGive.getCount());
             }
-            else if (q.rawRewardId.equals("r3ct_daily:random_carpet")) {
+            else if (q.rawRewardId.equals("r3ct:random_carpet")) {
                 Item[] carpets = {
                         Items.WHITE_CARPET, Items.ORANGE_CARPET, Items.MAGENTA_CARPET, Items.LIGHT_BLUE_CARPET,
                         Items.YELLOW_CARPET, Items.LIME_CARPET, Items.PINK_CARPET, Items.GRAY_CARPET,
@@ -271,11 +271,11 @@ public class QuestManager {
                 };
                 rewardToGive = new ItemStack(carpets[rand.nextInt(carpets.length)], rewardToGive.getCount());
             }
-            else if (q.rawRewardId.equals("r3ct_daily:random_wool")) {
+            else if (q.rawRewardId.equals("r3ct:random_wool")) {
                 Item[] wools = {Items.WHITE_WOOL, Items.ORANGE_WOOL, Items.MAGENTA_WOOL, Items.LIGHT_BLUE_WOOL, Items.YELLOW_WOOL, Items.LIME_WOOL, Items.PINK_WOOL, Items.GRAY_WOOL};
                 rewardToGive = new ItemStack(wools[rand.nextInt(wools.length)], rewardToGive.getCount());
             }
-            else if (q.rawRewardId.equals("r3ct_daily:unbreaking_2_book")) {
+            else if (q.rawRewardId.equals("r3ct:unbreaking_2_book")) {
                 ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
                 var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
                 var unbreaking = registry.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING);
@@ -284,7 +284,7 @@ public class QuestManager {
                 });
                 rewardToGive = book;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:efficiency_3_book")) {
+            else if (q.rawRewardId.equals("r3ct:efficiency_3_book")) {
                 ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
                 var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
                 net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
@@ -292,18 +292,18 @@ public class QuestManager {
                 });
                 rewardToGive = book;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:firework_tier_3")) {
+            else if (q.rawRewardId.equals("r3ct:firework_tier_3")) {
                 ItemStack rockets = new ItemStack(net.minecraft.world.item.Items.FIREWORK_ROCKET, rewardToGive.getCount());
                 rockets.set(net.minecraft.core.component.DataComponents.FIREWORKS, new net.minecraft.world.item.component.Fireworks(3, java.util.List.of()));
                 rewardToGive = rockets;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:healing_2_potion")) {
+            else if (q.rawRewardId.equals("r3ct:healing_2_potion")) {
                 ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
                 potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
                         new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.STRONG_HEALING));
                 rewardToGive = potion;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:infinity_book")) {
+            else if (q.rawRewardId.equals("r3ct:infinity_book")) {
                 ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
                 var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
                 net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
@@ -311,7 +311,7 @@ public class QuestManager {
                 });
                 rewardToGive = book;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:feather_falling_3_book")) {
+            else if (q.rawRewardId.equals("r3ct:feather_falling_3_book")) {
                 ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
                 var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
                 net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
@@ -319,35 +319,35 @@ public class QuestManager {
                 });
                 rewardToGive = book;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:water_breathing_potion")) {
+            else if (q.rawRewardId.equals("r3ct:water_breathing_potion")) {
                 ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
                 potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
                         new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.WATER_BREATHING)
                 );
                 rewardToGive = potion;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:fire_resistance_potion")) {
+            else if (q.rawRewardId.equals("r3ct:fire_resistance_potion")) {
                 ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
                 potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
                         new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.FIRE_RESISTANCE)
                 );
                 rewardToGive = potion;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:slow_falling_potion")) {
+            else if (q.rawRewardId.equals("r3ct:slow_falling_potion")) {
                 ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
                 potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
                         new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.SLOW_FALLING)
                 );
                 rewardToGive = potion;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:night_vision_potion")) {
+            else if (q.rawRewardId.equals("r3ct:night_vision_potion")) {
                 ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
                 potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
                         new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.NIGHT_VISION)
                 );
                 rewardToGive = potion;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:sharpness_2_book")) {
+            else if (q.rawRewardId.equals("r3ct:sharpness_2_book")) {
                 ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
                 var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
                 net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
@@ -355,25 +355,25 @@ public class QuestManager {
                 });
                 rewardToGive = book;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:regeneration_potion")) {
+            else if (q.rawRewardId.equals("r3ct:regeneration_potion")) {
                 ItemStack potion = new ItemStack(Items.POTION);
                 potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
                         new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.REGENERATION)
                 );
                 rewardToGive = potion;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:speed_potion")) {
+            else if (q.rawRewardId.equals("r3ct:speed_potion")) {
                 ItemStack potion = new ItemStack(Items.POTION);
                 potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
                         new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.SWIFTNESS)
                 );
                 rewardToGive = potion;
             }
-            else if (q.rawRewardId.equals("r3ct_daily:random_pottery_sherd")) {
+            else if (q.rawRewardId.equals("r3ct:random_pottery_sherd")) {
                 Item[] sherds = {Items.ANGLER_POTTERY_SHERD, Items.ARCHER_POTTERY_SHERD, Items.ARMS_UP_POTTERY_SHERD, Items.BLADE_POTTERY_SHERD};
                 rewardToGive = new ItemStack(sherds[player.getRandom().nextInt(sherds.length)], rewardToGive.getCount());
             }
-            else if (q.rawRewardId.equals("r3ct_daily:random_job_block")) {
+            else if (q.rawRewardId.equals("r3ct:random_job_block")) {
                 net.minecraft.world.item.Item[] blocks = {
                         net.minecraft.world.item.Items.LECTERN,
                         net.minecraft.world.item.Items.COMPOSTER,
