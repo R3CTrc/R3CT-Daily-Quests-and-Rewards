@@ -52,13 +52,13 @@ public class QuestEventHandlers {
         else if (state.is(net.minecraft.tags.BlockTags.CHERRY_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:cherry_logs", 1);
         else if (state.is(net.minecraft.tags.BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:pale_oak_logs", 1);
 
-        if (state.is(net.minecraft.tags.BlockTags.COAL_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:iron_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.COAL_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:coal_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.IRON_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:iron_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.GOLD_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:gold_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.COPPER_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:copper_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.DIAMOND_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:diamond_ores", 1);
         if (state.is(net.minecraft.tags.BlockTags.LAPIS_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:lapis_ores", 1);
-        if (state.is(net.minecraft.tags.BlockTags.REDSTONE_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:iron_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.REDSTONE_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:redstone_ores", 1);
 
         if (blockId.equals("minecraft:nether_quartz_ore")) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:nether_quartz_ores", 1);
     }
