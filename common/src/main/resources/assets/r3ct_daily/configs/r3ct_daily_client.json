@@ -1,0 +1,17 @@
+{
+  "_comment_version": "Do not change the version number! It is used for automatic config updates.",
+  "version": 1,
+
+  "_comment_hud": "Enable or disable the on-screen quests HUD.",
+  "enableHud": true,
+
+  "_comment_hud_position": "X and Y offset for the HUD position on the screen (X=10 and Y=70 is default position).",
+  "hudXOffset": 10,
+  "hudYOffset": 70,
+
+  "_comment_scales": "Scale modifiers for different GUI elements (1.0 is default size).",
+  "hudScale": 1.0,
+  "questScreenScale": 1.0,
+  "rewardScreenScale": 1.0,
+  "leaderboardScreenScale": 1.0
+}
