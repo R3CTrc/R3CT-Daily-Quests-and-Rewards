@@ -194,8 +194,8 @@ public class QuestManager {
                 player.getX(), player.getY(), player.getZ(),
                 1.0F, 1.0F, player.getRandom().nextLong()
         ));
-        String questNameStr = Component.translatable(q.name).getString();
-        player.sendSystemMessage(Component.translatable("r3ct.message.quests.completed", "§e" + questNameStr));
+        Component questNameComp = Component.translatable(q.name).withStyle(net.minecraft.ChatFormatting.YELLOW);
+        player.sendSystemMessage(Component.translatable("r3ct.message.quests.completed", questNameComp));
     }
 
     public static void claimQuestReward(ServerPlayer player, int index) {
@@ -389,9 +389,6 @@ public class QuestManager {
             }
         }
 
-        String itemNameStr = rewardToGive.getHoverName().getString();
-        String questNameStr = Component.translatable(q.name).getString();
-
         int maxStack = rewardToGive.getMaxStackSize();
         int remainingToGive = amountGiven;
 
@@ -406,12 +403,15 @@ public class QuestManager {
             remainingToGive -= currentStackSize;
         }
 
+        Component questNameComp = Component.translatable(q.name).withStyle(net.minecraft.ChatFormatting.YELLOW);
+        Component itemNameComp = rewardToGive.getHoverName().copy().withStyle(net.minecraft.ChatFormatting.AQUA);
         Component multiComp = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus") : Component.empty();
+
         player.sendSystemMessage(Component.translatable("r3ct.message.quests.claimed",
-                "§e" + questNameStr,
+                questNameComp,
                 "§e" + xpReward,
                 "§b" + amountGiven,
-                "§b" + itemNameStr,
+                itemNameComp,
                 multiComp
         ));
 
@@ -547,7 +547,6 @@ public class QuestManager {
 
         int finalAmount = baseAmount * multi;
         ItemStack reward = new ItemStack(item, finalAmount);
-        String itemNameStr = reward.getHoverName().getString();
 
         if (item == Items.DIAMOND) {
             QuestManager.grantAdvancement(player, "r3ct_daily:quests/lucky_drop");
@@ -557,7 +556,8 @@ public class QuestManager {
         }
 
         QuestManager.giveOrDrop(player, reward);
-        player.sendSystemMessage(Component.translatable("r3ct.message.quests.item_gained", "§b" + finalAmount, "§b" + itemNameStr));
+        Component itemNameComp = reward.getHoverName().copy().withStyle(net.minecraft.ChatFormatting.AQUA);
+        player.sendSystemMessage(Component.translatable("r3ct.message.quests.item_gained", "§b" + finalAmount, itemNameComp));
     }
 
     private static boolean hasQuestTypeActive(ServerPlayer player, String type) {
