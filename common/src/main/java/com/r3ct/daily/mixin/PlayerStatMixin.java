@@ -22,6 +22,7 @@ public abstract class PlayerStatMixin {
     @Unique private int horseCmBuffer = 0;
     @Unique private int minecartCmBuffer = 0;
     @Unique private int striderCmBuffer = 0;
+    @Unique private int pigCmBuffer = 0;
 
     @Inject(method = "awardStat(Lnet/minecraft/stats/Stat;I)V", at = @At("HEAD"))
     private void onAwardStat(Stat<?> stat, int amount, CallbackInfo ci) {
@@ -126,6 +127,17 @@ public abstract class PlayerStatMixin {
                         QuestManager.handleAction(serverPlayer, "STRIDER_DISTANCE", "any", blocks);
                         striderCmBuffer %= 100;
                     }
+                    break;
+                case "minecraft:pig_one_cm":
+                    pigCmBuffer += amount;
+                    blocks = pigCmBuffer / 100;
+                    if (blocks > 0) {
+                        QuestManager.handleAction(serverPlayer, "RIDE_PIG_DISTANCE", "any", blocks);
+                        pigCmBuffer %= 100;
+                    }
+                    break;
+                case "minecraft:bell_ring":
+                    QuestManager.handleAction(serverPlayer, "RING_BELL", "any", amount);
                     break;
             }
         }

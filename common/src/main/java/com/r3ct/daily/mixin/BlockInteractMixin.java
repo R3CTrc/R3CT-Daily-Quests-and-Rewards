@@ -41,6 +41,12 @@ public abstract class BlockInteractMixin {
                     QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
                 }
             }
+
+            if (state.is(net.minecraft.world.level.block.Blocks.VAULT)) {
+                if (stack.is(net.minecraft.world.item.Items.TRIAL_KEY) || stack.is(net.minecraft.world.item.Items.OMINOUS_TRIAL_KEY)) {
+                    QuestManager.handleAction(player, "OPEN_VAULT", "any", 1);
+                }
+            }
         }
     }
 }

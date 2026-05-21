@@ -142,6 +142,7 @@ public class QuestEventHandlers {
                                     else if (q.target.equals("r3ct:leaves") && invStack.is(net.minecraft.tags.ItemTags.LEAVES)) matches = true;
                                     else if (q.target.equals("r3ct:raw_fishes") && invStack.is(net.minecraft.tags.ItemTags.FISHES)) matches = true;
                                     else if (q.target.equals("r3ct:eggs") && (invId.equals("minecraft:egg") || invId.equals("minecraft:brown_egg") || invId.equals("minecraft:blue_egg"))) matches = true;
+                                    else if (q.target.equals("r3ct:froglights") && (invId.equals("minecraft:ochre_froglight") || invId.equals("minecraft:verdant_froglight") || invId.equals("minecraft:pearlescent_froglight"))) matches = true;
                                 }
 
                                 if (q.target.equals("r3ct:full_beehive") && (invId.equals("minecraft:beehive") || invId.equals("minecraft:bee_nest"))) {
