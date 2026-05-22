@@ -41,14 +41,26 @@ public class StreakShieldItem extends Item {
                     stack.shrink(1);
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.0F);
-                    serverPlayer.sendSystemMessage(Component.translatable("r3ct.message.shield.quest.used", "§b" + data.availableFreezes, "§b" + maxQuestShields));
+
+                    Component curComp = Component.literal(String.valueOf(data.availableFreezes)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                    Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
+
+                    serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                            Component.translatable("r3ct.message.shield.quest.used", curComp, maxComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                    ));
+
                     if (data.availableFreezes == maxQuestShields) {
                         QuestManager.grantAdvancement(serverPlayer, "r3ct_daily:quests/hamster");
                     }
                 } else {
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.NOTE_BLOCK_BASS, SoundSource.PLAYERS, 1.0F, 1.0F);
-                    serverPlayer.sendSystemMessage(Component.translatable("r3ct.message.shield.quest.full", "§b" + maxQuestShields));
+
+                    Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                    serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                            Component.translatable("r3ct.message.shield.quest.full", maxComp).withStyle(net.minecraft.ChatFormatting.RED)
+                    ));
+
                     return InteractionResult.FAIL;
                 }
             } else {
@@ -59,14 +71,26 @@ public class StreakShieldItem extends Item {
                     stack.shrink(1);
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.0F);
-                    serverPlayer.sendSystemMessage(Component.translatable("r3ct.message.shield.reward.used", "§b" + data.availableRewardFreezes, "§b" + maxRewardShields));
+
+                    Component curComp = Component.literal(String.valueOf(data.availableRewardFreezes)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                    Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
+
+                    serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                            Component.translatable("r3ct.message.shield.reward.used", curComp, maxComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                    ));
+
                     if (data.availableRewardFreezes == maxRewardShields) {
                         QuestManager.grantAdvancement(serverPlayer, "r3ct_daily:rewards/shield_collector");
                     }
                 } else {
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.NOTE_BLOCK_BASS, SoundSource.PLAYERS, 1.0F, 1.0F);
-                    serverPlayer.sendSystemMessage(Component.translatable("r3ct.message.shield.reward.full", "§b" + maxRewardShields));
+
+                    Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                    serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                            Component.translatable("r3ct.message.shield.reward.full", maxComp).withStyle(net.minecraft.ChatFormatting.RED)
+                    ));
+
                     return InteractionResult.FAIL;
                 }
             }

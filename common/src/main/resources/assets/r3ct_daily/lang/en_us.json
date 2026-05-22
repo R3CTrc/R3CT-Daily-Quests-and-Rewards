@@ -129,10 +129,10 @@
   "r3ct.rewards.tooltip.streak.freeze_desc2": "to earn a §bReward Streak Shield.",
   "r3ct.rewards.tooltip.bonus_main.title": "BONUS REWARDS:",
 
-  "r3ct.message.dimension_discovered": "§b[Daily] §aYou discovered a new dimension: %s§a!",
+  "r3ct.message.dimension_discovered": "You have discovered a new dimension: %s! New quests unlocked!",
   "r3ct.message.quests.new_quests": "You received 5 new quests! ",
-  "r3ct.message.quests.remaining": "§b[Daily] §aYou still have: %s§a quests left! ",
-  "r3ct.message.quests.open_menu": "§aOpen quests menu!",
+  "r3ct.message.quests.remaining": "You still have: %s quests left!",
+  "r3ct.message.quests.open_menu": "Click to open quests menu",
   "r3ct.message.quests.completed": "✔ Completed: %s Open the menu to claim your reward.",
   "r3ct.message.quests.claimed": "Claimed reward: %s (+%s XP and %s x %s)%s",
   "r3ct.message.quests.streak_bonus": " (x2 Streak!)",
@@ -142,7 +142,7 @@
   "r3ct.message.quests.item_gained": "%s x %s",
 
   "r3ct.message.rewards.new_reward": "You have a new reward! ",
-  "r3ct.message.rewards.open_menu": "§aOpen rewards menu!",
+  "r3ct.message.rewards.open_menu": "Click to open rewards menu",
   "r3ct.message.rewards.received": "Received: %s x %s",
 
   "r3ct.message.points.claim": "Claimed reward for %s points! %s",
@@ -150,16 +150,15 @@
 
   "r3ct.message.bonus.claim": "Claimed Bonus Reward for Day %s! Received: %s",
 
-  "r3ct.message.shield.quest.used": "§b[Daily] §bQuest Streak Shield §aactivated! Current protection: %s§b/%s",
-  "r3ct.message.shield.quest.full": "§b[Daily] §cYou already have the maximum number of active §bQuest Streak Shields (%s§b)§a!",
+  "r3ct.message.shield.quest.used": "Quest Streak Shield activated! Current protection: %s/%s.",
+  "r3ct.message.shield.quest.full": "You already have the maximum number of active Quest Streak Shields (%s)!",
   "r3ct.message.quests.shield_item_received": "You received a Quest Streak Shield! Use it to protect your Quest Streak.",
   "r3ct.message.quests.freeze_used": "Quest Streak Shields saved your streak. Used: %s shields!",
   "r3ct.message.quests.streak_reset": "Your Quest Streak has been reset!",
 
-  "r3ct.message.shield.reward.used": "§b[Daily] §bReward Streak Shield §aactivated! Current protection: %s§b/%s.",
-  "r3ct.message.shield.reward.full": "§b[Daily] §cYou already have the maximum number of active §bReward Streak Shields (%s§b)§a!",
+  "r3ct.message.shield.reward.used": "Reward Streak Shield activated! Current protection: %s/%s.",
+  "r3ct.message.shield.reward.full": "You already have the maximum number of active Reward Streak Shields (%s)!",
   "r3ct.message.rewards.shield_item_received": "You received a Reward Streak Shield! Use it to protect your Reward Streak.",
-  "r3ct.message.rewards.shield_earned": "§b[Daily] §aYou claimed the day 7 reward! You received a §bReward Streak Shield.",
   "r3ct.message.rewards.freeze_used": "Reward Streak Shields saved your streak. Used: %s shields!",
   "r3ct.message.rewards.streak_reset": "Your Reward Streak has been reset!",
 
@@ -570,8 +569,6 @@
   "r3ct.quest.archeologia.desc": "Fully deplete a brush.",
   "r3ct.quest.egzotyczne_oferty.name": "Exotic Offers",
   "r3ct.quest.egzotyczne_oferty.desc": "Make one trade with a wandering trader.",
-  "r3ct.quest.pojde_boso.name": "I'll Go Barefoot",
-  "r3ct.quest.pojde_boso.desc": "Completely break a pair of boots.",
   "r3ct.quest.degustator.name": "Taster",
   "r3ct.quest.degustator.desc": "Have 3 different potion effects active at the same time.",
   "r3ct.quest.nowe_ubranie.name": "New Clothes",
@@ -760,8 +757,6 @@
   "r3ct.quest.eksmisja.desc": "Defeat 10 shulkers.",
   "r3ct.quest.reanimacja.name": "Resuscitation",
   "r3ct.quest.reanimacja.desc": "Craft an end crystal.",
-  "r3ct.quest.kapitan_floty.name": "Fleet Captain",
-  "r3ct.quest.kapitan_floty.desc": "Stand on the deck of an end ship.",
   "r3ct.quest.fioletowe_fortece.name": "Purple Fortresses",
   "r3ct.quest.fioletowe_fortece.desc": "Visit biome: End Highlands.",
   "r3ct.quest.luskany_poprosze.name": "Sunflower Seeds Please",

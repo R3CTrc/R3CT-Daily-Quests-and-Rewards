@@ -129,10 +129,10 @@
   "r3ct.rewards.tooltip.streak.freeze_desc2": "aby zyskać §bTarczę Serii Nagród.",
   "r3ct.rewards.tooltip.bonus_main.title": "DODATKOWE NAGRODY:",
 
-  "r3ct.message.dimension_discovered": "§b[Daily] §aOdkryłeś nowy wymiar: %s§a!",
+  "r3ct.message.dimension_discovered": "Odkryłeś nowy wymiar: %s! Odblokowano nowe misje!",
   "r3ct.message.quests.new_quests": "Otrzymałeś 5 nowych misji! ",
-  "r3ct.message.quests.remaining": "§b[Daily] §aZostało Ci jeszcze: %s§a misji! ",
-  "r3ct.message.quests.open_menu": "§aOtwórz menu zadań!",
+  "r3ct.message.quests.remaining": "Zostało Ci jeszcze: %s misji!",
+  "r3ct.message.quests.open_menu": "Kliknij, aby otworzyć menu misji",
   "r3ct.message.quests.completed": "✔ Ukończono: %s Otwórz menu, aby odebrać nagrodę.",
   "r3ct.message.quests.claimed": "Odebrano nagrodę: %s (+%s PD oraz %s x %s)%s",
   "r3ct.message.quests.streak_bonus": " (x2 Streak!)",
@@ -142,7 +142,7 @@
   "r3ct.message.quests.item_gained": "%s x %s",
 
   "r3ct.message.rewards.new_reward": "Masz nową nagrodę! ",
-  "r3ct.message.rewards.open_menu": "§aOtwórz menu nagród!",
+  "r3ct.message.rewards.open_menu": "Kliknij, aby otworzyć menu nagród",
   "r3ct.message.rewards.received": "Otrzymano: %s x %s",
 
   "r3ct.message.points.claim": "Odebrano nagrodę za %s punktów! %s",
@@ -150,16 +150,15 @@
 
   "r3ct.message.bonus.claim": "Odebrano Nagrodę Bonusową za Dzień %s! Otrzymano: %s",
 
-  "r3ct.message.shield.quest.used": "§b[Daily] §bTarcza Serii Misji §aaktywowana! Aktualna ochrona: %s§b/%s.",
-  "r3ct.message.shield.quest.full": "§b[Daily] §cPosiadasz już maksymalną ilość aktywnych §bTarcz Serii Misji (%s§b)§a!",
+  "r3ct.message.shield.quest.used": "Tarcza Serii Misji aktywowana! Aktualna ochrona: %s/%s.",
+  "r3ct.message.shield.quest.full": "Posiadasz już maksymalną ilość aktywnych Tarcz Serii Misji (%s)!",
   "r3ct.message.quests.shield_item_received": "Otrzymałeś Tarczę Serii Misji! Użyj jej, aby chronić swoją Serię Misji.",
   "r3ct.message.quests.freeze_used": "Tarcze Serii Misji uratowały Twoją serię. Zużyto: %s tarcz!",
   "r3ct.message.quests.streak_reset": "Twoja Seria Zadań została wyzerowana!",
 
-  "r3ct.message.shield.reward.used": "§b[Daily] §bTarcza Serii Nagród §faktywowana! Aktualna ochrona: %s§b/%s.",
-  "r3ct.message.shield.reward.full": "§b[Daily] §cPosiadasz już maksymalną ilość aktywnych §bTarcz Serii Nagród (%s§b)§a!",
+  "r3ct.message.shield.reward.used": "Tarcza Serii Nagród aktywowana! Aktualna ochrona: %s/%s.",
+  "r3ct.message.shield.reward.full": "Posiadasz już maksymalną ilość aktywnych Tarcz Serii Nagród (%s)!",
   "r3ct.message.rewards.shield_item_received": "Otrzymałeś Tarczę Serii Nagród! Użyj jej, aby chronić swoją Serię Nagród.",
-  "r3ct.message.rewards.shield_earned": "§b[Daily] §aOdebrałeś nagrodę za 7 dzień! Zyskujesz §bTarczę serii nagród.",
   "r3ct.message.rewards.freeze_used": "Tarcze Serii Nagród uratowały Twoją serię. Zużyto: %s tarcz!",
   "r3ct.message.rewards.streak_reset": "Twoja Seria Nagród została wyzerowana!",
 
@@ -573,8 +572,6 @@
   "r3ct.quest.archeologia.desc": "Zużyj całkowicie szczotkę.",
   "r3ct.quest.egzotyczne_oferty.name": "Egzotyczne oferty",
   "r3ct.quest.egzotyczne_oferty.desc": "Dokonaj jednej transakcji u wędrownego handlarza.",
-  "r3ct.quest.pojde_boso.name": "Pójdę boso",
-  "r3ct.quest.pojde_boso.desc": "Doprowadź do całkowitego zniszczenia butów.",
   "r3ct.quest.degustator.name": "Degustator",
   "r3ct.quest.degustator.desc": "Miej na sobie 3 różne efekty jednocześnie.",
   "r3ct.quest.nowe_ubranie.name": "Nowe ubranie",
@@ -777,8 +774,6 @@
   "r3ct.quest.eksmisja.desc": "Pokonaj 10 shulkerów.",
   "r3ct.quest.reanimacja.name": "Reanimacja",
   "r3ct.quest.reanimacja.desc": "Wytwórz kryształ endu.",
-  "r3ct.quest.kapitan_floty.name": "Kapitan floty",
-  "r3ct.quest.kapitan_floty.desc": "Stań na pokładzie smoczego statku w end city.",
   "r3ct.quest.fioletowe_fortece.name": "Fioletowe fortece",
   "r3ct.quest.fioletowe_fortece.desc": "Odwiedź biom: Wyżyny Endu (End Highlands)."
 }

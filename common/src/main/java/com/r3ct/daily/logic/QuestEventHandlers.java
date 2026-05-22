@@ -14,13 +14,17 @@ public class QuestEventHandlers {
 
     public static void onDimensionChange(ServerPlayer player, String dimId) {
         net.minecraft.server.MinecraftServer server = player.level().getServer();
+
         if (server == null) return;
 
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
 
         if (!data.unlockedDimensions.contains(dimId)) {
             data.unlockedDimensions.add(dimId);
-
+            net.minecraft.network.chat.Component dimComp = net.minecraft.network.chat.Component.literal(dimId).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+            player.sendSystemMessage(net.minecraft.network.chat.Component.empty().append(QuestManager.getPrefix()).append(
+                    net.minecraft.network.chat.Component.translatable("r3ct.message.dimension_discovered", dimComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+            ));
             server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
         }
     }
