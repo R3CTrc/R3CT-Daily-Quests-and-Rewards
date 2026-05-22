@@ -147,8 +147,12 @@ public class DailyCommands {
                         String translationKey = rewardStack.getItem().getDescriptionId();
                         QuestManager.giveOrDrop(player, rewardStack);
 
-                        net.minecraft.network.chat.MutableComponent translatedItem = Component.translatable(translationKey).withStyle(net.minecraft.ChatFormatting.AQUA);
-                        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.received", "§b" + amount, translatedItem));
+                        Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                        Component translatedItem = Component.translatable(translationKey).withStyle(net.minecraft.ChatFormatting.AQUA);
+
+                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                                Component.translatable("r3ct.message.rewards.received", amountComp, translatedItem).withStyle(net.minecraft.ChatFormatting.GREEN)
+                        ));
 
                         if (!historyBuilder.isEmpty()) historyBuilder.append(",");
                         historyBuilder.append(amount).append(";").append(translationKey);
@@ -165,7 +169,9 @@ public class DailyCommands {
                     if (data.rewardDay == 7) {
                         QuestManager.grantAdvancement(player, "r3ct_daily:rewards/rich_week");
                         QuestManager.giveOrDrop(player, new ItemStack(ModItems.REWARD_SHIELD));
-                        player.sendSystemMessage(Component.translatable("r3ct.message.rewards.shield_item_received"));
+                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                                Component.translatable("r3ct.message.rewards.shield_item_received").withStyle(net.minecraft.ChatFormatting.GREEN)
+                        ));
                     }
 
                     data.lastRewardDate = today.toString();
@@ -186,31 +192,36 @@ public class DailyCommands {
 
                         .then(Commands.literal("reload").executes(context -> {
                             DailyServerConfig.loadAll();
-                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.reload.success"), true);
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.reload.success").withStyle(net.minecraft.ChatFormatting.GREEN), true);
                             return 1;
                         }))
 
                         .then(Commands.literal("forcecomplete").then(Commands.argument("target", EntityArgument.player())
                                 .then(Commands.literal("all").executes(context -> {
                                     ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                    Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+
                                     boolean anyCompleted = false;
                                     for (int i = 0; i < 5; i++) {
                                         if (QuestManager.forceCompleteQuest(target, i, true)) anyCompleted = true;
                                     }
                                     if (anyCompleted) {
                                         syncPlayerData(target, ModState.getPlayerData(context.getSource().getServer(), target.getUUID()));
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", "§e" + target.getName().getString()), true);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     } else {
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", "§e" + target.getName().getString()), false);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", targetName).withStyle(net.minecraft.ChatFormatting.RED), false);
                                     }
                                     return 1;
                                 }))
                                 .then(Commands.argument("index", IntegerArgumentType.integer(1, 5)).executes(context -> {
                                     ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                     int index = IntegerArgumentType.getInteger(context, "index") - 1;
+                                    Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                    Component indexComp = Component.literal(String.valueOf(index + 1)).withStyle(net.minecraft.ChatFormatting.YELLOW);
+
                                     boolean success = QuestManager.forceCompleteQuest(target, index, false);
-                                    if (success) context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", "§e" + (index + 1), "§e" + target.getName().getString()), true);
-                                    else context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", "§e" + (index + 1), "§e" + target.getName().getString()), false);
+                                    if (success) context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", indexComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                    else context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", indexComp, targetName).withStyle(net.minecraft.ChatFormatting.RED), false);
                                     return 1;
                                 }))
                         ))
@@ -220,7 +231,6 @@ public class DailyCommands {
                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 
                             data.lastRewardDate = "1970-01-01";
-
                             data.dailyQuestsCompletedToday = 0;
 
                             for(int i=0; i < data.questProgress.size(); i++) {
@@ -229,7 +239,7 @@ public class DailyCommands {
                             }
 
                             syncPlayerData(target, data);
-                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.test.reset_progress", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)), true);
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.test.reset_progress", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                             return 1;
                         })))
 
@@ -256,7 +266,7 @@ public class DailyCommands {
                             }
 
                             syncPlayerData(target, data);
-                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.test.new_quests", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)), true);
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.test.new_quests", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                             return 1;
                         })))
 
@@ -267,7 +277,12 @@ public class DailyCommands {
                                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
                                     data.totalQuestPoints += amount;
                                     syncPlayerData(target, data);
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.add", "§d" + amount, "§e" + target.getName().getString(), "§d" + data.totalQuestPoints), true);
+
+                                    Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                    Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+                                    Component totalComp = Component.literal(String.valueOf(data.totalQuestPoints)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.add", amountComp, targetName, totalComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     return 1;
                                 }))))
                                 .then(Commands.literal("set").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -276,7 +291,11 @@ public class DailyCommands {
                                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
                                     data.totalQuestPoints = amount;
                                     syncPlayerData(target, data);
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.set", "§d" + amount, "§e" + target.getName().getString()), true);
+
+                                    Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                    Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.set", amountComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     return 1;
                                 }))))
                                 .then(Commands.literal("remove").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(1)).executes(context -> {
@@ -285,7 +304,12 @@ public class DailyCommands {
                                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
                                     data.totalQuestPoints = Math.max(0, data.totalQuestPoints - amount);
                                     syncPlayerData(target, data);
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.remove", "§d" + amount, "§e" + target.getName().getString(), "§d" + data.totalQuestPoints), true);
+
+                                    Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                    Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+                                    Component totalComp = Component.literal(String.valueOf(data.totalQuestPoints)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.remove", amountComp, targetName, totalComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     return 1;
                                 }))))
                         )
@@ -298,7 +322,11 @@ public class DailyCommands {
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
                                             data.questStreak = amount;
                                             syncPlayerData(target, data);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.quests", "§e" + target.getName().getString(), "§e" + amount), true);
+
+                                            Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                            Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.YELLOW);
+
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.quests", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         }))))
                                         .then(Commands.literal("rewards").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -307,7 +335,11 @@ public class DailyCommands {
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
                                             data.streak = amount;
                                             syncPlayerData(target, data);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.rewards", "§e" + target.getName().getString(), "§e" + amount), true);
+
+                                            Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                            Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.YELLOW);
+
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.rewards", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         }))))
                                 )
@@ -321,7 +353,11 @@ public class DailyCommands {
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
                                             data.availableFreezes = amount;
                                             syncPlayerData(target, data);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.quests", "§e" + target.getName().getString(), "§b" + amount), true);
+
+                                            Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                            Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
+
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.quests", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         }))))
                                         .then(Commands.literal("rewards").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -330,7 +366,11 @@ public class DailyCommands {
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
                                             data.availableRewardFreezes = amount;
                                             syncPlayerData(target, data);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.rewards", "§e" + target.getName().getString(), "§b" + amount), true);
+
+                                            Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                            Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
+
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.rewards", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         }))))
                                 )
@@ -341,12 +381,16 @@ public class DailyCommands {
                                     ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                     String dim = StringArgumentType.getString(context, "dim");
                                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+
+                                    Component dimComp = Component.literal(dim).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+                                    Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+
                                     if (!data.unlockedDimensions.contains(dim)) {
                                         data.unlockedDimensions.add(dim);
                                         syncPlayerData(target, data);
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.success", "§d" + dim, "§e" + target.getName().getString()), true);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.success", dimComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     } else {
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.fail", "§e" + target.getName().getString(), "§d" + dim), false);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.fail", targetName, dimComp).withStyle(net.minecraft.ChatFormatting.RED), false);
                                     }
                                     return 1;
                                 }))))
@@ -354,12 +398,16 @@ public class DailyCommands {
                                     ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                     String dim = StringArgumentType.getString(context, "dim");
                                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+
+                                    Component dimComp = Component.literal(dim).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+                                    Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+
                                     if (data.unlockedDimensions.contains(dim)) {
                                         data.unlockedDimensions.remove(dim);
                                         syncPlayerData(target, data);
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.success", "§d" + dim, "§e" + target.getName().getString()), true);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.success", dimComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     } else {
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.fail", "§e" + target.getName().getString(), "§d" + dim), false);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.fail", targetName, dimComp).withStyle(net.minecraft.ChatFormatting.RED), false);
                                     }
                                     return 1;
                                 }))))
@@ -374,7 +422,9 @@ public class DailyCommands {
                                             newData.lastKnownName = target.getGameProfile().name();
                                             state.players.put(target.getUUID(), newData);
                                             syncPlayerData(target, newData);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.clear_data.success", "§e" + target.getName().getString()), true);
+
+                                            Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.clear_data.success", targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         })
                                 )

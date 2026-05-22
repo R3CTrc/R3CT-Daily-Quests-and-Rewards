@@ -24,6 +24,10 @@ import java.util.Random;
 public class RewardManager {
     private static final Random RANDOM = new Random();
 
+    public static Component getPrefix() {
+        return Component.literal("[Daily] ").withStyle(net.minecraft.ChatFormatting.AQUA);
+    }
+
     public static List<ItemStack> getTier1Rewards(MinecraftServer server) {
         return processBuckets(DailyServerConfig.rewardsTier1, server);
     }
@@ -191,11 +195,13 @@ public class RewardManager {
             String colorStr = mr.getFormattedColor();
             net.minecraft.ChatFormatting format = net.minecraft.ChatFormatting.getByCode(colorStr.charAt(colorStr.length() - 1));
             if (format == null) format = net.minecraft.ChatFormatting.WHITE;
-            net.minecraft.network.chat.MutableComponent rewardText = Component.literal("(" + mr.amount + "x ")
+            Component bonusDayComp = Component.literal(String.valueOf(bonusDay)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+            net.minecraft.network.chat.MutableComponent bonusRewardText = Component.literal(mr.amount + "x ")
                     .append(Component.translatable(translationKey))
-                    .append(")")
                     .withStyle(format);
-            player.sendSystemMessage(Component.translatable("r3ct.message.bonus.claim", "§d" + bonusDay, rewardText));
+            player.sendSystemMessage(Component.empty().append(getPrefix()).append(
+                    Component.translatable("r3ct.message.bonus.claim", bonusDayComp, bonusRewardText).withStyle(net.minecraft.ChatFormatting.GREEN)
+            ));
         }
 
         server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
