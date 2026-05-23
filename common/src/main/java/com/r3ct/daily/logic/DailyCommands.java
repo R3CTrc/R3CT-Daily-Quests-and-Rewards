@@ -11,6 +11,7 @@ import com.r3ct.daily.network.OpenQuestsPayload;
 import com.r3ct.daily.network.OpenRewardsPayload;
 import com.r3ct.daily.network.SyncQuestsPayload;
 import com.r3ct.daily.platform.Services;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -140,18 +141,22 @@ public class DailyCommands {
                     List<ItemStack> rewards = (data.rewardDay <= 4) ? RewardManager.getTier1Rewards(context.getSource().getServer()) : (data.rewardDay <= 6 ? RewardManager.getTier2Rewards(context.getSource().getServer()) : RewardManager.getTier3Rewards(context.getSource().getServer()));
                     StringBuilder historyBuilder = new StringBuilder();
 
+                    Component dayComp = Component.literal(String.valueOf(data.rewardDay)).withStyle(net.minecraft.ChatFormatting.YELLOW);
+                    player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                            Component.translatable("r3ct.message.rewards.claimed_base", dayComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                    ));
+
                     for (ItemStack rewardStack : rewards) {
                         int amount = rewardStack.getCount() * multi;
                         rewardStack.setCount(amount);
-
                         String translationKey = rewardStack.getItem().getDescriptionId();
+                        Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                        Component translatedItem = rewardStack.getHoverName().copy().withStyle(net.minecraft.ChatFormatting.AQUA);
+
                         QuestManager.giveOrDrop(player, rewardStack);
 
-                        Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
-                        Component translatedItem = Component.translatable(translationKey).withStyle(net.minecraft.ChatFormatting.AQUA);
-
-                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                                Component.translatable("r3ct.message.rewards.received", amountComp, translatedItem).withStyle(net.minecraft.ChatFormatting.GREEN)
+                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append("- ").withStyle(net.minecraft.ChatFormatting.GRAY).append(
+                                Component.translatable("r3ct.message.quests.item_gained", amountComp, translatedItem).withStyle(net.minecraft.ChatFormatting.GREEN)
                         ));
 
                         if (!historyBuilder.isEmpty()) historyBuilder.append(",");

@@ -410,15 +410,27 @@ public class QuestManager {
             remainingToGive -= currentStackSize;
         }
 
-        Component questNameComp = Component.translatable(q.name).withStyle(net.minecraft.ChatFormatting.YELLOW);
-        Component xpComp = Component.literal(String.valueOf(xpReward)).withStyle(net.minecraft.ChatFormatting.YELLOW);
-        Component amountComp = Component.literal(String.valueOf(amountGiven)).withStyle(net.minecraft.ChatFormatting.AQUA);
-        Component itemNameComp = rewardToGive.getHoverName().copy().withStyle(net.minecraft.ChatFormatting.AQUA);
-        Component multiComp = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus").withStyle(net.minecraft.ChatFormatting.GOLD) : Component.empty();
+        Component questNameComp = Component.translatable(q.name).withStyle(ChatFormatting.YELLOW);
+        Component multiComp = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus").withStyle(ChatFormatting.GOLD) : Component.empty();
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                Component.translatable("r3ct.message.quests.claimed", questNameComp, xpComp, amountComp, itemNameComp, multiComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                Component.translatable("r3ct.message.quests.claimed_base", questNameComp, multiComp).withStyle(ChatFormatting.GREEN)
         ));
+
+        if (xpReward > 0) {
+            Component bulletComp = Component.literal("- ").withStyle(ChatFormatting.GREEN);
+            Component xpComp = Component.literal(xpReward + " ").append(Component.translatable("r3ct.unit.xp")).withStyle(ChatFormatting.YELLOW);
+            player.sendSystemMessage(Component.empty().append(getPrefix()).append(bulletComp).append(xpComp));
+        }
+
+        if (!rewardToGive.isEmpty()) {
+            Component amountComp = Component.literal(String.valueOf(amountGiven)).withStyle(ChatFormatting.AQUA);
+            Component itemNameComp = rewardToGive.getHoverName().copy().withStyle(ChatFormatting.AQUA);
+
+            player.sendSystemMessage(Component.empty().append(getPrefix()).append(
+                    Component.translatable("r3ct.message.quests.item_gained", amountComp, itemNameComp).withStyle(ChatFormatting.GREEN)
+            ));
+        }
 
         data.totalQuestPoints += q.points;
         data.dailyQuestsCompletedToday++;
@@ -490,15 +502,18 @@ public class QuestManager {
 
         if (mr != null) {
             ItemStack stack = getMilestoneRewardStack(mr);
-            String translationKey = stack.getItem().getDescriptionId();
-            giveOrDrop(player, stack);
             String colorStr = mr.getFormattedColor();
             net.minecraft.ChatFormatting format = net.minecraft.ChatFormatting.getByCode(colorStr.charAt(colorStr.length() - 1));
             if (format == null) format = net.minecraft.ChatFormatting.WHITE;
+
+            Component itemNameComp = stack.getHoverName().copy().withStyle(format);
             net.minecraft.network.chat.MutableComponent rewardText = Component.literal("(" + mr.amount + "x ")
-                    .append(Component.translatable(translationKey))
+                    .append(itemNameComp)
                     .append(")")
                     .withStyle(format);
+
+            giveOrDrop(player, stack);
+
             Component thresholdComp = Component.literal(String.valueOf(threshold)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                     Component.translatable("r3ct.message.points.claim", thresholdComp, rewardText).withStyle(net.minecraft.ChatFormatting.GREEN)
@@ -543,10 +558,10 @@ public class QuestManager {
 
         int xp = DailyServerConfig.mechanics.quests.xpDailyReward * multi;
         player.giveExperiencePoints(xp);
-        Component xpComp = Component.literal(String.valueOf(xp)).withStyle(net.minecraft.ChatFormatting.YELLOW);
-        player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                Component.translatable("r3ct.message.quests.xp_gained", xpComp).withStyle(net.minecraft.ChatFormatting.YELLOW)
-        ));
+
+        Component bulletComp2 = Component.literal("- ").withStyle(ChatFormatting.GREEN);
+        Component xpComp2 = Component.literal(xp + " ").append(Component.translatable("r3ct.unit.xp")).withStyle(ChatFormatting.YELLOW);
+        player.sendSystemMessage(Component.empty().append(getPrefix()).append(bulletComp2).append(xpComp2));
 
         if (DailyServerConfig.dailyQuestRewards.isEmpty()) return;
 
@@ -577,11 +592,12 @@ public class QuestManager {
             QuestManager.grantAdvancement(player, "r3ct_daily:quests/week_streak");
         }
 
-        QuestManager.giveOrDrop(player, reward);
         Component amountComp = Component.literal(String.valueOf(finalAmount)).withStyle(net.minecraft.ChatFormatting.AQUA);
         Component itemNameComp = reward.getHoverName().copy().withStyle(net.minecraft.ChatFormatting.AQUA);
 
-        player.sendSystemMessage(Component.empty().append(getPrefix()).append(
+        QuestManager.giveOrDrop(player, reward);
+
+        player.sendSystemMessage(Component.empty().append(getPrefix()).append("- ").withStyle(net.minecraft.ChatFormatting.GRAY).append(
                 Component.translatable("r3ct.message.quests.item_gained", amountComp, itemNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
         ));
     }

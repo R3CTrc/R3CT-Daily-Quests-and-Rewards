@@ -5,12 +5,12 @@
   "item.r3ct.quest_shield.description": "Adds one Quest Streak Shield.",
   "item.r3ct_daily.reward_shield": "Reward Streak Shield",
   "item.r3ct.reward_shield.description": "Adds one Reward Streak Shield.",
-  "r3ct.item.special_reward": "§dSpecial Reward",
+  "r3ct.item.special_reward": "§bSpecial Reward",
 
   "key.category.r3ct_daily.main": "R3CT",
   "key.r3ct_daily.open_rewards": "Open Daily Rewards",
   "key.r3ct_daily.open_quests": "Open Daily Quests",
-  "key.r3ct_daily.toggle_hud": "Minimalize Quest HUD",
+  "key.r3ct_daily.toggle_hud": "Minimize Quest HUD",
 
   "r3ct.misc.none": "None",
   "r3ct.unit.xp": "XP",
@@ -134,21 +134,20 @@
   "r3ct.message.quests.remaining": "You still have: %s quests left!",
   "r3ct.message.quests.open_menu": "Click to open quests menu",
   "r3ct.message.quests.completed": "✔ Completed: %s Open the menu to claim your reward.",
-  "r3ct.message.quests.claimed": "Claimed reward: %s (+%s XP and %s x %s)%s",
+  "r3ct.message.quests.claimed_base": "Claimed reward for quest: %s!%s",
   "r3ct.message.quests.streak_bonus": " (x2 Streak!)",
   "r3ct.message.quests.perfect_day": "All quests completed! (%s/%s days to %s)",
   "r3ct.message.quests.daily_reward": "You received a Daily Reward for 3 quests!%s",
-  "r3ct.message.quests.xp_gained": "+%s XP",
-  "r3ct.message.quests.item_gained": "%s x %s",
+  "r3ct.message.quests.item_gained": "- %s §bx§r %s",
 
   "r3ct.message.rewards.new_reward": "You have a new reward! ",
   "r3ct.message.rewards.open_menu": "Click to open rewards menu",
-  "r3ct.message.rewards.received": "Received: %s x %s",
+  "r3ct.message.rewards.claimed_base": "Claimed daily reward for Day %s!",
 
   "r3ct.message.points.claim": "Claimed reward for %s points! %s",
   "r3ct.message.points.reset": "Your total points bar has been reset to a new cycle.",
 
-  "r3ct.message.bonus.claim": "Claimed Bonus Reward for Day %s! Received: %s",
+  "r3ct.message.bonus.claimed_base": "Claimed Bonus Reward for Day %s!",
 
   "r3ct.message.shield.quest.used": "Quest Streak Shield activated! Current protection: %s/%s.",
   "r3ct.message.shield.quest.full": "You already have the maximum number of active Quest Streak Shields (%s)!",
@@ -210,6 +209,7 @@
   "r3ct.advancement.time_lord.desc": "Save your streak from resetting by using a Streak Shield.",
   "r3ct.advancement.week_streak.title": "A Solid Week",
   "r3ct.advancement.week_streak.desc": "Maintain a quest streak for 7 days and activate the x2 multiplier.",
+
   "r3ct.advancement.always_on_time.title": "Always on Time",
   "r3ct.advancement.always_on_time.desc": "Activate the x2 multiplier by logging in for 7 consecutive days.",
   "r3ct.advancement.cycle_end.title": "End of the Cycle",

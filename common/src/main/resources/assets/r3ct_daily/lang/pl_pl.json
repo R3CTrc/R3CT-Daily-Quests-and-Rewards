@@ -5,7 +5,7 @@
   "item.r3ct.quest_shield.description": "Dodaje jedną Tarczę Serii Misji.",
   "item.r3ct_daily.reward_shield": "Tarcza Serii Nagród",
   "item.r3ct.reward_shield.description": "Dodaje jedną Tarczę Serii Nagród.",
-  "r3ct.item.special_reward": "§aSpecjalna Nagroda",
+  "r3ct.item.special_reward": "§bSpecjalna Nagroda",
 
   "key.category.r3ct_daily.main": "R3CT",
   "key.r3ct_daily.open_rewards": "Otwórz Daily Rewards",
@@ -134,21 +134,20 @@
   "r3ct.message.quests.remaining": "Zostało Ci jeszcze: %s misji!",
   "r3ct.message.quests.open_menu": "Kliknij, aby otworzyć menu misji",
   "r3ct.message.quests.completed": "✔ Ukończono: %s Otwórz menu, aby odebrać nagrodę.",
-  "r3ct.message.quests.claimed": "Odebrano nagrodę: %s (+%s PD oraz %s x %s)%s",
+  "r3ct.message.quests.claimed_base": "Odebrano nagrodę za misję: %s!%s",
   "r3ct.message.quests.streak_bonus": " (x2 Streak!)",
   "r3ct.message.quests.perfect_day": "Komplet zadań wykonany! (%s/%s dni do %s)",
   "r3ct.message.quests.daily_reward": "Otrzymujesz Nagrodę Dzienną za 3 misje!%s",
-  "r3ct.message.quests.xp_gained": "+%s PD",
-  "r3ct.message.quests.item_gained": "%s x %s",
+  "r3ct.message.quests.item_gained": "- %s §bx§r %s",
 
   "r3ct.message.rewards.new_reward": "Masz nową nagrodę! ",
   "r3ct.message.rewards.open_menu": "Kliknij, aby otworzyć menu nagród",
-  "r3ct.message.rewards.received": "Otrzymano: %s x %s",
+  "r3ct.message.rewards.claimed_base": "Odebrano codzienną nagrodę za Dzień %s!",
 
   "r3ct.message.points.claim": "Odebrano nagrodę za %s punktów! %s",
   "r3ct.message.points.reset": "Twój pasek punktów ogólnych został zresetowany do nowego cyklu.",
 
-  "r3ct.message.bonus.claim": "Odebrano Nagrodę Bonusową za Dzień %s! Otrzymano: %s",
+  "r3ct.message.bonus.claimed_base": "Odebrano Nagrodę Bonusową za Dzień %s!",
 
   "r3ct.message.shield.quest.used": "Tarcza Serii Misji aktywowana! Aktualna ochrona: %s/%s.",
   "r3ct.message.shield.quest.full": "Posiadasz już maksymalną ilość aktywnych Tarcz Serii Misji (%s)!",

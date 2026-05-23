@@ -190,17 +190,22 @@ public class RewardManager {
 
         if (mr != null) {
             ItemStack stack = QuestManager.getMilestoneRewardStack(mr);
-            String translationKey = stack.getItem().getDescriptionId();
-            QuestManager.giveOrDrop(player, stack);
             String colorStr = mr.getFormattedColor();
             net.minecraft.ChatFormatting format = net.minecraft.ChatFormatting.getByCode(colorStr.charAt(colorStr.length() - 1));
             if (format == null) format = net.minecraft.ChatFormatting.WHITE;
             Component bonusDayComp = Component.literal(String.valueOf(bonusDay)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
-            net.minecraft.network.chat.MutableComponent bonusRewardText = Component.literal(mr.amount + "x ")
-                    .append(Component.translatable(translationKey))
-                    .withStyle(format);
+
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct.message.bonus.claim", bonusDayComp, bonusRewardText).withStyle(net.minecraft.ChatFormatting.GREEN)
+                    Component.translatable("r3ct.message.bonus.claimed_base", bonusDayComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+            ));
+
+            Component amountComp = Component.literal(String.valueOf(mr.amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
+            Component itemNameComp = stack.getHoverName().copy().withStyle(format);
+
+            QuestManager.giveOrDrop(player, stack);
+
+            player.sendSystemMessage(Component.empty().append(getPrefix()).append("- ").withStyle(net.minecraft.ChatFormatting.GRAY).append(
+                    Component.translatable("r3ct.message.quests.item_gained", amountComp, itemNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
             ));
         }
 
