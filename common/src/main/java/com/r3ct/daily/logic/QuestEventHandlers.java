@@ -21,10 +21,14 @@ public class QuestEventHandlers {
 
         if (!data.unlockedDimensions.contains(dimId)) {
             data.unlockedDimensions.add(dimId);
-            net.minecraft.network.chat.Component dimComp = net.minecraft.network.chat.Component.literal(dimId).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+
+            String translationKey = "r3ct.dimension." + dimId.replace(':', '.');
+            net.minecraft.network.chat.Component dimComp = net.minecraft.network.chat.Component.translatable(translationKey).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+
             player.sendSystemMessage(net.minecraft.network.chat.Component.empty().append(QuestManager.getPrefix()).append(
                     net.minecraft.network.chat.Component.translatable("r3ct.message.dimension_discovered", dimComp).withStyle(net.minecraft.ChatFormatting.GREEN)
             ));
+
             server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
         }
     }

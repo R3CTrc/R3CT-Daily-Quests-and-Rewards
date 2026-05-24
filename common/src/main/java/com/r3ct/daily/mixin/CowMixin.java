@@ -7,17 +7,26 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.animal.cow.AbstractCow;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractCow.class)
 public abstract class CowMixin {
+
+    @Unique
+    private boolean wasHoldingBucket;
+
+    @Inject(method = "mobInteract", at = @At("HEAD"))
+    private void beforeInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+        this.wasHoldingBucket = player.getItemInHand(hand).is(net.minecraft.world.item.Items.BUCKET);
+    }
+
     @Inject(method = "mobInteract", at = @At("RETURN"))
     private void onInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         if (cir.getReturnValue().consumesAction() && player instanceof ServerPlayer serverPlayer) {
-            net.minecraft.world.item.ItemStack stack = player.getItemInHand(hand);
-            if (stack.is(net.minecraft.world.item.Items.BUCKET)) {
+            if (this.wasHoldingBucket) {
                 QuestManager.handleAction(serverPlayer, "MILK_COW", "any", 1);
             }
         }

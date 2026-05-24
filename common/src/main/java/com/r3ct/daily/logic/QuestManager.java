@@ -152,7 +152,7 @@ public class QuestManager {
 
                         if (actionType.equals("HAS_ITEMS")) {
                             newProg = amount;
-                        } else if (actionType.equals("ELYTRA_FLIGHT_NO_LAND") || actionType.equals("PEARL_DISTANCE") || actionType.equals("LEVITATION_HEIGHT")) {
+                        } else if (actionType.equals("PEARL_DISTANCE") || actionType.equals("LEVITATION_HEIGHT")) {
                             newProg = Math.max(oldProg, amount);
                         } else {
                             newProg = oldProg + amount;
@@ -168,7 +168,9 @@ public class QuestManager {
                                     actionType.equals("ELYTRA_FLIGHT_NO_LAND") ||
                                     actionType.equals("LEVITATION_HEIGHT") ||
                                     actionType.equals("PEARL_DISTANCE");
-                            boolean passedInterval = (newProg / 5) > (oldProg / 5);
+
+                            int syncInterval = actionType.equals("ELYTRA_FLIGHT_NO_LAND") ? 50 : 5;
+                            boolean passedInterval = (newProg / syncInterval) > (oldProg / syncInterval);
 
                             if (!isDistance || newProg >= q.requiredAmount || passedInterval) {
                                 needsSync = true;
@@ -868,5 +870,34 @@ public class QuestManager {
         ).append(clickHereQuestsComp));
 
         for (Component msg : freezeMessages) player.sendSystemMessage(msg);
+    }
+
+    public static void resetQuestProgress(ServerPlayer player, String actionType) {
+        net.minecraft.server.MinecraftServer server = player.level().getServer();
+        if (server == null) return;
+        PlayerData data = ModState.getPlayerData(server, player.getUUID());
+        boolean needsSync = false;
+
+        for (int i = 0; i < data.activeQuests.size(); i++) {
+            Quest q = getQuestById(data.activeQuests.get(i));
+            if (q != null && q.actionType.equals(actionType)) {
+                int oldProg = data.questProgress.get(i);
+
+                if (oldProg < q.requiredAmount && oldProg > 0) {
+                    data.questProgress.set(i, 0);
+                    needsSync = true;
+                }
+            }
+        }
+
+        if (needsSync) {
+            server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+            Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
+                    data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
+                    data.activeQuests, data.questProgress, data.streak,
+                    data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
+                    data.questRewardsClaimed, data.claimedPointRewards
+            ));
+        }
     }
 }

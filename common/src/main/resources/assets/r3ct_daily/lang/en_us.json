@@ -129,6 +129,10 @@
   "r3ct.rewards.tooltip.streak.freeze_desc2": "to earn a §bReward Streak Shield.",
   "r3ct.rewards.tooltip.bonus_main.title": "BONUS REWARDS:",
 
+  "r3ct.dimension.minecraft.overworld": "Overworld",
+  "r3ct.dimension.minecraft.the_nether": "The Nether",
+  "r3ct.dimension.minecraft.the_end": "The End",
+
   "r3ct.message.dimension_discovered": "You have discovered a new dimension: %s! New quests unlocked!",
   "r3ct.message.quests.new_quests": "You received 5 new quests! ",
   "r3ct.message.quests.remaining": "You still have: %s quests left!",

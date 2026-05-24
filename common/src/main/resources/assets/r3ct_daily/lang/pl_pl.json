@@ -129,6 +129,10 @@
   "r3ct.rewards.tooltip.streak.freeze_desc2": "aby zyskać §bTarczę Serii Nagród.",
   "r3ct.rewards.tooltip.bonus_main.title": "DODATKOWE NAGRODY:",
 
+  "r3ct.dimension.minecraft.overworld": "Overworld",
+  "r3ct.dimension.minecraft.the_nether": "Nether",
+  "r3ct.dimension.minecraft.the_end": "End",
+
   "r3ct.message.dimension_discovered": "Odkryłeś nowy wymiar: %s! Odblokowano nowe misje!",
   "r3ct.message.quests.new_quests": "Otrzymałeś 5 nowych misji! ",
   "r3ct.message.quests.remaining": "Zostało Ci jeszcze: %s misji!",
