@@ -504,7 +504,7 @@
       "difficulty": 0,
       "action_type": "HAS_ITEMS",
       "target": "r3ct:flowers",
-      "amount": 12,
+      "amount": 16,
       "points": 1,
       "reward_item": "minecraft:flower_pot",
       "reward_amount": 4
@@ -1620,7 +1620,7 @@
       "difficulty": 1,
       "action_type": "CATCH_FISH_BUCKET",
       "target": "minecraft:tropical_fish",
-      "amount": 3,
+      "amount": 1,
       "points": 2,
       "reward_item": "r3ct:random_coral_block",
       "reward_amount": 4
@@ -1668,7 +1668,7 @@
       "difficulty": 1,
       "action_type": "HAS_ITEMS",
       "target": "r3ct:flowers",
-      "amount": 16,
+      "amount": 32,
       "points": 2,
       "reward_item": "minecraft:flower_pot",
       "reward_amount": 6
@@ -1870,7 +1870,7 @@
       "name": "r3ct.quest.rosnij_duzy.name",
       "description": "r3ct.quest.rosnij_duzy.desc",
       "difficulty": 1,
-      "action_type": "BREAK_BLOCK",
+      "action_type": "HAS_ITEMS",
       "target": "minecraft:bamboo",
       "amount": 32,
       "points": 2,
