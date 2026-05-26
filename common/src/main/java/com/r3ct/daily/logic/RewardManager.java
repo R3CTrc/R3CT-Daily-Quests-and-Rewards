@@ -68,7 +68,13 @@ public class RewardManager {
             case "random_potion":
                 var potionLookup = server.registryAccess().lookup(Registries.POTION).orElse(null);
                 if (potionLookup != null) {
-                    var potionList = potionLookup.listElements().toList();
+                    var potionList = potionLookup.listElements().filter(ref -> {
+                        if (ref.unwrapKey().isEmpty()) return true;
+                        String path = ref.unwrapKey().get().identifier().getPath();
+                        return !path.equals("empty") && !path.equals("water") && !path.equals("mundane")
+                                && !path.equals("thick") && !path.equals("awkward");
+                    }).toList();
+
                     if (!potionList.isEmpty()) {
                         var randomPotion = potionList.get(RANDOM.nextInt(potionList.size()));
                         ItemStack stack = PotionContents.createItemStack(Items.POTION, randomPotion);
@@ -95,7 +101,7 @@ public class RewardManager {
             case "random_disc":
                 return getRandomItemWithKeyword("music_disc", amount);
             case "random_spawn_egg":
-                return getRandomItemWithKeyword("spawn_egg", amount);
+                return getRandomSpawnEgg(amount);
             case "random_carpet":
                 return getRandomItemWithKeyword("_carpet", amount);
             case "random_head":
@@ -227,7 +233,7 @@ public class RewardManager {
 
     private static ItemStack getRandomItemWithKeyword(String keyword, int amount) {
         List<Item> items = BuiltInRegistries.ITEM.stream()
-                .filter(i -> BuiltInRegistries.ITEM.getKey(i).getPath().contains(keyword))
+                .filter(i -> BuiltInRegistries.ITEM.getKey(i).getPath().endsWith(keyword))
                 .toList();
         return new ItemStack(items.isEmpty() ? Items.PAPER : items.get(RANDOM.nextInt(items.size())), amount);
     }
@@ -251,6 +257,16 @@ public class RewardManager {
                 Items.WITHER_SKELETON_SKULL
         };
         return new ItemStack(heads[RANDOM.nextInt(heads.length)], amount);
+    }
+
+    private static ItemStack getRandomSpawnEgg(int amount) {
+        List<Item> items = BuiltInRegistries.ITEM.stream()
+                .filter(i -> {
+                    String path = BuiltInRegistries.ITEM.getKey(i).getPath();
+                    return path.endsWith("spawn_egg") && !path.contains("ender_dragon") && !path.contains("wither");
+                })
+                .toList();
+        return new ItemStack(items.isEmpty() ? Items.PAPER : items.get(RANDOM.nextInt(items.size())), amount);
     }
 
     public static void claimBonusReward(ServerPlayer player, int bonusDay) {
