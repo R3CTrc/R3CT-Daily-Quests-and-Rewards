@@ -65,7 +65,7 @@ public abstract class SlotMixin {
         QuestManager.handleAction(player, "SMELT_ITEM", itemId, amount);
 
         if (itemId.endsWith("_glazed_terracotta")) {
-            QuestManager.handleAction(player, "SMELT_ITEM", "r3ct:glazed_terracotta", amount);
+            QuestManager.handleAction(player, "SMELT_ITEM", "r3ct_daily:glazed_terracotta", amount);
         }
 
         if (isBlastFurnace) {

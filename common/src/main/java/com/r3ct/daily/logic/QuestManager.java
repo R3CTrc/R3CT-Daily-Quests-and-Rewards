@@ -100,9 +100,9 @@ public class QuestManager {
         }
 
         while (daily.size() < 5 && !availableEasy.isEmpty()) {
+            if (daily.containsAll(availableEasy)) break;
             Quest extra = availableEasy.get(random.nextInt(availableEasy.size()));
             if (!daily.contains(extra)) daily.add(extra);
-            else if (availableEasy.size() < daily.size()) break;
         }
 
         return daily;
@@ -203,7 +203,7 @@ public class QuestManager {
         ));
         Component questNameComp = Component.translatable(q.name).withStyle(net.minecraft.ChatFormatting.YELLOW);
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                Component.translatable("r3ct.message.quests.completed", questNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                Component.translatable("r3ct_daily.message.quests.completed", questNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
         ));
     }
 
@@ -242,160 +242,13 @@ public class QuestManager {
         }
 
         int amountGiven = q.rewardAmount * multi;
-        ItemStack rewardToGive = q.getItemReward();
-        rewardToGive.setCount(amountGiven);
+        ItemStack rewardToGive;
 
-        if (q.rawRewardId != null && q.rawRewardId.startsWith("r3ct:")) {
-            Random rand = new Random();
-
-            if (q.rawRewardId.equals("r3ct:random_dye")) {
-                Item[] dyes = {Items.RED_DYE, Items.GREEN_DYE, Items.BLUE_DYE, Items.YELLOW_DYE, Items.ORANGE_DYE, Items.MAGENTA_DYE, Items.PINK_DYE, Items.LIME_DYE, Items.CYAN_DYE, Items.PURPLE_DYE};
-                rewardToGive = new ItemStack(dyes[rand.nextInt(dyes.length)], rewardToGive.getCount());
-            } else if (q.rawRewardId.equals("r3ct:random_head")) {
-                Item[] heads = {Items.ZOMBIE_HEAD, Items.SKELETON_SKULL, Items.CREEPER_HEAD, Items.PIGLIN_HEAD};
-                rewardToGive = new ItemStack(heads[rand.nextInt(heads.length)], rewardToGive.getCount());
-            } else if (q.rawRewardId.equals("r3ct:random_sapling")) {
-                Item[] saplings = {Items.OAK_SAPLING, Items.SPRUCE_SAPLING, Items.BIRCH_SAPLING, Items.JUNGLE_SAPLING, Items.ACACIA_SAPLING, Items.DARK_OAK_SAPLING, Items.CHERRY_SAPLING};
-                rewardToGive = new ItemStack(saplings[rand.nextInt(saplings.length)], rewardToGive.getCount());
-            }
-            else if (q.rawRewardId.equals("r3ct:random_potion")) {
-                var potionLookup = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.POTION);
-                var potionList = potionLookup.listElements().toList();
-                var randomPotion = potionList.get(rand.nextInt(potionList.size()));
-
-                ItemStack potStack = net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, randomPotion);
-                potStack.setCount(rewardToGive.getCount());
-                rewardToGive = potStack;
-            }
-            else if (q.rawRewardId.equals("r3ct:random_coral_block")) {
-                Item[] corals = {Items.BRAIN_CORAL_BLOCK, Items.BUBBLE_CORAL_BLOCK, Items.FIRE_CORAL_BLOCK, Items.HORN_CORAL_BLOCK, Items.TUBE_CORAL_BLOCK};
-                rewardToGive = new ItemStack(corals[rand.nextInt(corals.length)], rewardToGive.getCount());
-            }
-            else if (q.rawRewardId.equals("r3ct:random_carpet")) {
-                Item[] carpets = {
-                        Items.WHITE_CARPET, Items.ORANGE_CARPET, Items.MAGENTA_CARPET, Items.LIGHT_BLUE_CARPET,
-                        Items.YELLOW_CARPET, Items.LIME_CARPET, Items.PINK_CARPET, Items.GRAY_CARPET,
-                        Items.LIGHT_GRAY_CARPET, Items.CYAN_CARPET, Items.PURPLE_CARPET, Items.BLUE_CARPET,
-                        Items.BROWN_CARPET, Items.GREEN_CARPET, Items.RED_CARPET, Items.BLACK_CARPET
-                };
-                rewardToGive = new ItemStack(carpets[rand.nextInt(carpets.length)], rewardToGive.getCount());
-            }
-            else if (q.rawRewardId.equals("r3ct:random_wool")) {
-                Item[] wools = {Items.WHITE_WOOL, Items.ORANGE_WOOL, Items.MAGENTA_WOOL, Items.LIGHT_BLUE_WOOL, Items.YELLOW_WOOL, Items.LIME_WOOL, Items.PINK_WOOL, Items.GRAY_WOOL};
-                rewardToGive = new ItemStack(wools[rand.nextInt(wools.length)], rewardToGive.getCount());
-            }
-            else if (q.rawRewardId.equals("r3ct:unbreaking_2_book")) {
-                ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
-                var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
-                var unbreaking = registry.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
-                    builder.set(unbreaking, 2);
-                });
-                rewardToGive = book;
-            }
-            else if (q.rawRewardId.equals("r3ct:efficiency_3_book")) {
-                ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
-                var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
-                    builder.set(registry.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.EFFICIENCY), 3);
-                });
-                rewardToGive = book;
-            }
-            else if (q.rawRewardId.equals("r3ct:firework_tier_3")) {
-                ItemStack rockets = new ItemStack(net.minecraft.world.item.Items.FIREWORK_ROCKET, rewardToGive.getCount());
-                rockets.set(net.minecraft.core.component.DataComponents.FIREWORKS, new net.minecraft.world.item.component.Fireworks(3, java.util.List.of()));
-                rewardToGive = rockets;
-            }
-            else if (q.rawRewardId.equals("r3ct:healing_2_potion")) {
-                ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
-                potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
-                        new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.STRONG_HEALING));
-                rewardToGive = potion;
-            }
-            else if (q.rawRewardId.equals("r3ct:infinity_book")) {
-                ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
-                var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
-                    builder.set(registry.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.INFINITY), 1);
-                });
-                rewardToGive = book;
-            }
-            else if (q.rawRewardId.equals("r3ct:feather_falling_3_book")) {
-                ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
-                var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
-                    builder.set(registry.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.FEATHER_FALLING), 3);
-                });
-                rewardToGive = book;
-            }
-            else if (q.rawRewardId.equals("r3ct:water_breathing_potion")) {
-                ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
-                potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
-                        new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.WATER_BREATHING)
-                );
-                rewardToGive = potion;
-            }
-            else if (q.rawRewardId.equals("r3ct:fire_resistance_potion")) {
-                ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
-                potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
-                        new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.FIRE_RESISTANCE)
-                );
-                rewardToGive = potion;
-            }
-            else if (q.rawRewardId.equals("r3ct:slow_falling_potion")) {
-                ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
-                potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
-                        new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.SLOW_FALLING)
-                );
-                rewardToGive = potion;
-            }
-            else if (q.rawRewardId.equals("r3ct:night_vision_potion")) {
-                ItemStack potion = new ItemStack(net.minecraft.world.item.Items.POTION);
-                potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
-                        new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.NIGHT_VISION)
-                );
-                rewardToGive = potion;
-            }
-            else if (q.rawRewardId.equals("r3ct:sharpness_2_book")) {
-                ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
-                var registry = player.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(book, builder -> {
-                    builder.set(registry.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS), 2);
-                });
-                rewardToGive = book;
-            }
-            else if (q.rawRewardId.equals("r3ct:regeneration_potion")) {
-                ItemStack potion = new ItemStack(Items.POTION);
-                potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
-                        new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.REGENERATION)
-                );
-                rewardToGive = potion;
-            }
-            else if (q.rawRewardId.equals("r3ct:speed_potion")) {
-                ItemStack potion = new ItemStack(Items.POTION);
-                potion.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
-                        new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.SWIFTNESS)
-                );
-                rewardToGive = potion;
-            }
-            else if (q.rawRewardId.equals("r3ct:random_pottery_sherd")) {
-                Item[] sherds = {Items.ANGLER_POTTERY_SHERD, Items.ARCHER_POTTERY_SHERD, Items.ARMS_UP_POTTERY_SHERD, Items.BLADE_POTTERY_SHERD};
-                rewardToGive = new ItemStack(sherds[player.getRandom().nextInt(sherds.length)], rewardToGive.getCount());
-            }
-            else if (q.rawRewardId.equals("r3ct:random_job_block")) {
-                net.minecraft.world.item.Item[] blocks = {
-                        net.minecraft.world.item.Items.LECTERN,
-                        net.minecraft.world.item.Items.COMPOSTER,
-                        net.minecraft.world.item.Items.BARREL,
-                        net.minecraft.world.item.Items.LOOM,
-                        net.minecraft.world.item.Items.SMOKER,
-                        net.minecraft.world.item.Items.FLETCHING_TABLE,
-                        net.minecraft.world.item.Items.GRINDSTONE,
-                        net.minecraft.world.item.Items.BLAST_FURNACE,
-                        net.minecraft.world.item.Items.STONECUTTER
-                };
-                rewardToGive = new ItemStack(blocks[player.getRandom().nextInt(blocks.length)]);
-            }
+        if (q.rawRewardId != null && (q.rawRewardId.startsWith("r3ct_daily:"))) {
+            rewardToGive = RewardManager.getCustomReward(q.rawRewardId, amountGiven, server);
+        } else {
+            rewardToGive = q.getItemReward();
+            rewardToGive.setCount(amountGiven);
         }
 
         int maxStack = rewardToGive.getMaxStackSize();
@@ -413,15 +266,15 @@ public class QuestManager {
         }
 
         Component questNameComp = Component.translatable(q.name).withStyle(ChatFormatting.YELLOW);
-        Component multiComp = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus").withStyle(ChatFormatting.GOLD) : Component.empty();
+        Component multiComp = (multi > 1) ? Component.translatable("r3ct_daily.message.quests.streak_bonus").withStyle(ChatFormatting.GOLD) : Component.empty();
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                Component.translatable("r3ct.message.quests.claimed_base", questNameComp, multiComp).withStyle(ChatFormatting.GREEN)
+                Component.translatable("r3ct_daily.message.quests.claimed_base", questNameComp, multiComp).withStyle(ChatFormatting.GREEN)
         ));
 
         if (xpReward > 0) {
             Component bulletComp = Component.literal("- ").withStyle(ChatFormatting.GREEN);
-            Component xpComp = Component.literal(xpReward + " ").append(Component.translatable("r3ct.unit.xp")).withStyle(ChatFormatting.YELLOW);
+            Component xpComp = Component.literal(xpReward + " ").append(Component.translatable("r3ct_daily.unit.xp")).withStyle(ChatFormatting.YELLOW);
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(bulletComp).append(xpComp));
         }
 
@@ -430,7 +283,7 @@ public class QuestManager {
             Component itemNameComp = rewardToGive.getHoverName().copy().withStyle(ChatFormatting.AQUA);
 
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct.message.quests.item_gained", amountComp, itemNameComp).withStyle(ChatFormatting.GREEN)
+                    Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, itemNameComp).withStyle(ChatFormatting.GREEN)
             ));
         }
 
@@ -450,7 +303,7 @@ public class QuestManager {
                 data.perfectDaysCount = 0;
                 QuestManager.giveOrDrop(player, new ItemStack(ModItems.QUEST_SHIELD));
                 player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                        Component.translatable("r3ct.message.quests.shield_item_received").withStyle(net.minecraft.ChatFormatting.GREEN)
+                        Component.translatable("r3ct_daily.message.quests.shield_item_received").withStyle(net.minecraft.ChatFormatting.GREEN)
                 ));
             } else {
                 Component daysComp = Component.literal(String.valueOf(data.perfectDaysCount)).withStyle(net.minecraft.ChatFormatting.AQUA);
@@ -458,7 +311,7 @@ public class QuestManager {
                 Component shieldComp = Component.translatable("item.r3ct_daily.quest_shield").withStyle(net.minecraft.ChatFormatting.AQUA);
 
                 player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                        Component.translatable("r3ct.message.quests.perfect_day", daysComp, maxDaysComp, shieldComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                        Component.translatable("r3ct_daily.message.quests.perfect_day", daysComp, maxDaysComp, shieldComp).withStyle(net.minecraft.ChatFormatting.GREEN)
                 ));
             }
         }
@@ -518,7 +371,7 @@ public class QuestManager {
 
             Component thresholdComp = Component.literal(String.valueOf(threshold)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct.message.points.claim", thresholdComp, rewardText).withStyle(net.minecraft.ChatFormatting.GREEN)
+                    Component.translatable("r3ct_daily.message.points.claim", thresholdComp, rewardText).withStyle(net.minecraft.ChatFormatting.GREEN)
             ));
         }
 
@@ -526,7 +379,7 @@ public class QuestManager {
             data.totalQuestPoints -= 200;
             data.claimedPointRewards.clear();
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct.message.points.reset").withStyle(net.minecraft.ChatFormatting.GRAY)
+                    Component.translatable("r3ct_daily.message.points.reset").withStyle(net.minecraft.ChatFormatting.GRAY)
             ));
         }
 
@@ -553,16 +406,16 @@ public class QuestManager {
                 player.getX(), player.getY(), player.getZ(),
                 1.0F, 1.2F, player.getRandom().nextLong()
         ));
-        Component multiComp = (multi > 1) ? Component.translatable("r3ct.message.quests.streak_bonus").withStyle(net.minecraft.ChatFormatting.GOLD) : Component.empty();
+        Component multiComp = (multi > 1) ? Component.translatable("r3ct_daily.message.quests.streak_bonus").withStyle(net.minecraft.ChatFormatting.GOLD) : Component.empty();
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                Component.translatable("r3ct.message.quests.daily_reward", multiComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                Component.translatable("r3ct_daily.message.quests.daily_reward", multiComp).withStyle(net.minecraft.ChatFormatting.GREEN)
         ));
 
         int xp = DailyServerConfig.mechanics.quests.xpDailyReward * multi;
         player.giveExperiencePoints(xp);
 
         Component bulletComp2 = Component.literal("- ").withStyle(ChatFormatting.GREEN);
-        Component xpComp2 = Component.literal(xp + " ").append(Component.translatable("r3ct.unit.xp")).withStyle(ChatFormatting.YELLOW);
+        Component xpComp2 = Component.literal(xp + " ").append(Component.translatable("r3ct_daily.unit.xp")).withStyle(ChatFormatting.YELLOW);
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(bulletComp2).append(xpComp2));
 
         if (DailyServerConfig.dailyQuestRewards.isEmpty()) return;
@@ -600,7 +453,7 @@ public class QuestManager {
         QuestManager.giveOrDrop(player, reward);
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append("- ").withStyle(net.minecraft.ChatFormatting.GRAY).append(
-                Component.translatable("r3ct.message.quests.item_gained", amountComp, itemNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, itemNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
         ));
     }
 
@@ -652,7 +505,7 @@ public class QuestManager {
 
         if (!DailyServerConfig.mechanics.quests.enableQuestRerolling) {
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct.message.reroll.disabled").withStyle(net.minecraft.ChatFormatting.RED)
+                    Component.translatable("r3ct_daily.message.reroll.disabled").withStyle(net.minecraft.ChatFormatting.RED)
             ));
             return;
         }
@@ -660,7 +513,7 @@ public class QuestManager {
         if (index < 0 || index >= data.activeQuests.size()) return;
         if (data.questRewardsClaimed.get(index) || data.questProgress.get(index) >= getQuestById(data.activeQuests.get(index)).requiredAmount) {
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct.message.reroll.already_completed").withStyle(net.minecraft.ChatFormatting.GREEN)
+                    Component.translatable("r3ct_daily.message.reroll.already_completed").withStyle(net.minecraft.ChatFormatting.GREEN)
             ));
             return;
         }
@@ -684,7 +537,7 @@ public class QuestManager {
                     1.0F, 1.0F, player.getRandom().nextLong()
             ));
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct.message.reroll.not_enough_points", costComp, pointsComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                    Component.translatable("r3ct_daily.message.reroll.not_enough_points", costComp, pointsComp).withStyle(net.minecraft.ChatFormatting.GREEN)
             ));
             return;
         }
@@ -702,7 +555,7 @@ public class QuestManager {
 
         if (candidates.isEmpty()) {
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct.message.reroll.no_quests_available").withStyle(net.minecraft.ChatFormatting.GREEN)
+                    Component.translatable("r3ct_daily.message.reroll.no_quests_available").withStyle(net.minecraft.ChatFormatting.GREEN)
             ));
             return;
         }
@@ -724,7 +577,7 @@ public class QuestManager {
         ));
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                Component.translatable("r3ct.message.reroll.success", costComp, pointsComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                Component.translatable("r3ct_daily.message.reroll.success", costComp, pointsComp).withStyle(net.minecraft.ChatFormatting.GREEN)
         ));
 
         server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
@@ -787,7 +640,7 @@ public class QuestManager {
                         data.lastStreakDate = yesterday.toString();
                         Component missedRewardComp = Component.literal(String.valueOf(missed)).withStyle(net.minecraft.ChatFormatting.AQUA);
                         freezeMessages.add(Component.empty().append(getPrefix()).append(
-                                Component.translatable("r3ct.message.rewards.freeze_used", missedRewardComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                                Component.translatable("r3ct_daily.message.rewards.freeze_used", missedRewardComp).withStyle(net.minecraft.ChatFormatting.GREEN)
                         ));
                         QuestManager.grantAdvancement(player, "r3ct_daily:rewards/safe_player");
                     } else {
@@ -795,7 +648,7 @@ public class QuestManager {
                         data.availableRewardFreezes = 0;
                         data.absoluteRewardStreak = 0;
                         freezeMessages.add(Component.empty().append(getPrefix()).append(
-                                Component.translatable("r3ct.message.rewards.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
+                                Component.translatable("r3ct_daily.message.rewards.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
                         ));
                     }
                 }
@@ -812,14 +665,14 @@ public class QuestManager {
                 data.lastQuestStreakDate = yesterday.toString();
                 Component missedComp = Component.literal(String.valueOf(missedDays)).withStyle(net.minecraft.ChatFormatting.AQUA);
                 freezeMessages.add(Component.empty().append(getPrefix()).append(
-                        Component.translatable("r3ct.message.quests.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                        Component.translatable("r3ct_daily.message.quests.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
                 ));
                 QuestManager.grantAdvancement(player, "r3ct_daily:quests/time_lord");
             } else {
                 data.questStreak = 0;
                 data.availableFreezes = 0;
                 freezeMessages.add(Component.empty().append(getPrefix()).append(
-                        Component.translatable("r3ct.message.quests.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
+                        Component.translatable("r3ct_daily.message.quests.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
                 ));
             }
         }
@@ -849,24 +702,24 @@ public class QuestManager {
                 data.questRewardsClaimed, data.claimedPointRewards
         ));
 
-        Component clickHereRewardsComp = Component.translatable("r3ct.message.click_here")
+        Component clickHereRewardsComp = Component.translatable("r3ct_daily.message.click_here")
                 .withStyle(net.minecraft.ChatFormatting.YELLOW, net.minecraft.ChatFormatting.BOLD)
                 .withStyle(style -> style
                         .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/daily rewards"))
-                        .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu"))));
+                        .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.translatable("r3ct_daily.message.rewards.open_menu"))));
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                Component.translatable("r3ct.message.rewards.new_reward").withStyle(net.minecraft.ChatFormatting.GREEN)
+                Component.translatable("r3ct_daily.message.rewards.new_reward").withStyle(net.minecraft.ChatFormatting.GREEN)
         ).append(clickHereRewardsComp));
 
-        Component clickHereQuestsComp = Component.translatable("r3ct.message.click_here")
+        Component clickHereQuestsComp = Component.translatable("r3ct_daily.message.click_here")
                 .withStyle(net.minecraft.ChatFormatting.YELLOW, net.minecraft.ChatFormatting.BOLD)
                 .withStyle(style -> style
                         .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/daily quests"))
-                        .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu"))));
+                        .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu"))));
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                Component.translatable("r3ct.message.quests.new_quests").withStyle(net.minecraft.ChatFormatting.GREEN)
+                Component.translatable("r3ct_daily.message.quests.new_quests").withStyle(net.minecraft.ChatFormatting.GREEN)
         ).append(clickHereQuestsComp));
 
         for (Component msg : freezeMessages) player.sendSystemMessage(msg);
