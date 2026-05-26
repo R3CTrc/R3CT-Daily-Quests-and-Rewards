@@ -24,7 +24,7 @@ public class DailyServerConfig {
     private static final File MECHANICS_FILE = CONFIG_DIR.resolve("r3ct_daily_server.json").toFile();
 
     private static final int QUESTS_VERSION = 2;
-    private static final int REWARDS_VERSION = 1;
+    private static final int REWARDS_VERSION = 2;
     private static final int QUEST_REWARDS_VERSION = 1;
     private static final int MECHANICS_VERSION = 1;
 
