@@ -2,8 +2,8 @@
   "parent": "r3ct_daily:quests/first_quest",
   "display": {
     "icon": { "id": "minecraft:diamond" },
-    "title": { "translate": "r3ct.advancement.lucky_drop.title" },
-    "description": { "translate": "r3ct.advancement.lucky_drop.desc" },
+    "title": { "translate": "r3ct_daily.advancement.lucky_drop.title" },
+    "description": { "translate": "r3ct_daily.advancement.lucky_drop.desc" },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true,

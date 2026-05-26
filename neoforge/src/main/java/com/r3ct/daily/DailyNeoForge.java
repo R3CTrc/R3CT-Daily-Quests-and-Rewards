@@ -96,7 +96,7 @@ public class DailyNeoForge {
         event.register(net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB, helper -> {
             helper.register(net.minecraft.resources.Identifier.parse("r3ct_daily:main_tab"),
                     net.minecraft.world.item.CreativeModeTab.builder()
-                            .title(net.minecraft.network.chat.Component.translatable("itemGroup.r3ct.main_tab"))
+                            .title(net.minecraft.network.chat.Component.translatable("itemGroup.r3ct_daily.main_tab"))
                             .icon(() -> new net.minecraft.world.item.ItemStack(ModItems.QUEST_SHIELD))
                             .displayItems((context, output) -> {
                                 output.accept(ModItems.QUEST_SHIELD);
@@ -136,7 +136,7 @@ public class DailyNeoForge {
 
                         Component missedComp = Component.literal(String.valueOf(missedRewards)).withStyle(net.minecraft.ChatFormatting.AQUA);
                         freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
-                                Component.translatable("r3ct.message.rewards.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                                Component.translatable("r3ct_daily.message.rewards.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
                         ));
                         QuestManager.grantAdvancement(player, "r3ct_daily:rewards/safe_player");
                     } else {
@@ -144,7 +144,7 @@ public class DailyNeoForge {
                         data.availableRewardFreezes = 0;
                         data.absoluteRewardStreak = 0;
                         freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
-                                Component.translatable("r3ct.message.rewards.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
+                                Component.translatable("r3ct_daily.message.rewards.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
                         ));
                     }
                 }
@@ -161,14 +161,14 @@ public class DailyNeoForge {
 
                     Component missedComp = Component.literal(String.valueOf(missedQuests)).withStyle(net.minecraft.ChatFormatting.AQUA);
                     freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct.message.quests.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                            Component.translatable("r3ct_daily.message.quests.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
                     ));
                     QuestManager.grantAdvancement(player, "r3ct_daily:quests/time_lord");
                 } else {
                     data.questStreak = 0;
                     data.availableFreezes = 0;
                     freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct.message.quests.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
+                            Component.translatable("r3ct_daily.message.quests.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
                     ));
                 }
             }
@@ -203,13 +203,13 @@ public class DailyNeoForge {
         server.execute(() -> {
             if (hasRewards) {
                 MutableComponent rewardMsg = Component.empty().append(QuestManager.getPrefix()).append(
-                        Component.translatable("r3ct.message.rewards.new_reward").withStyle(net.minecraft.ChatFormatting.GREEN)
-                ).append(Component.translatable("r3ct.message.click_here")
+                        Component.translatable("r3ct_daily.message.rewards.new_reward").withStyle(net.minecraft.ChatFormatting.GREEN)
+                ).append(Component.translatable("r3ct_daily.message.click_here")
                         .withStyle(Style.EMPTY
                                 .withColor(net.minecraft.ChatFormatting.YELLOW)
                                 .withBold(true)
                                 .withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
-                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu")))
+                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.rewards.open_menu")))
                         )
                 );
                 player.sendSystemMessage(rewardMsg);
@@ -217,13 +217,13 @@ public class DailyNeoForge {
 
             if (isFirstLoginToday) {
                 MutableComponent questMsg = Component.empty().append(QuestManager.getPrefix()).append(
-                        Component.translatable("r3ct.message.quests.new_quests").withStyle(net.minecraft.ChatFormatting.GREEN)
-                ).append(Component.translatable("r3ct.message.click_here")
+                        Component.translatable("r3ct_daily.message.quests.new_quests").withStyle(net.minecraft.ChatFormatting.GREEN)
+                ).append(Component.translatable("r3ct_daily.message.click_here")
                         .withStyle(Style.EMPTY
                                 .withColor(net.minecraft.ChatFormatting.YELLOW)
                                 .withBold(true)
                                 .withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
+                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
                         )
                 );
                 player.sendSystemMessage(questMsg);
@@ -234,13 +234,13 @@ public class DailyNeoForge {
             } else if (remainingQuests > 0) {
                 Component countComp = Component.literal(String.valueOf(remainingQuests)).withStyle(net.minecraft.ChatFormatting.YELLOW);
                 MutableComponent reminderMsg = Component.empty().append(QuestManager.getPrefix()).append(
-                        Component.translatable("r3ct.message.quests.remaining", countComp).withStyle(net.minecraft.ChatFormatting.GREEN)
-                ).append(" ").append(Component.translatable("r3ct.message.click_here")
+                        Component.translatable("r3ct_daily.message.quests.remaining", countComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                ).append(" ").append(Component.translatable("r3ct_daily.message.click_here")
                         .withStyle(Style.EMPTY
                                 .withColor(net.minecraft.ChatFormatting.YELLOW)
                                 .withBold(true)
                                 .withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
+                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
                         )
                 );
                 player.sendSystemMessage(reminderMsg);

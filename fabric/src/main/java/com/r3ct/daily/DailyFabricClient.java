@@ -73,7 +73,7 @@ public class DailyFabricClient implements ClientModInitializer {
 				minimizedHud = !minimizedHud;
 
 				if (client.player != null) {
-					Component message = Component.translatable("r3ct.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON");
+					Component message = Component.translatable("r3ct_daily.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON");
 					client.gui.setOverlayMessage(message, false);
 				}
 			}
@@ -184,7 +184,7 @@ public class DailyFabricClient implements ClientModInitializer {
 
 			if (clientQuestData == null || clientQuestData.activeQuests.isEmpty()) {
 				if (!minimizedHud) {
-					String loadingMsg = "§e" + Component.translatable("r3ct.hud.loading").getString();
+					String loadingMsg = "§e" + Component.translatable("r3ct_daily.hud.loading").getString();
 					guiGraphics.text(client.font, loadingMsg, virtualWidth - client.font.width(loadingMsg) - xOffset, currentY, baseColor, true);
 				}
 				guiGraphics.pose().popMatrix();
@@ -192,7 +192,7 @@ public class DailyFabricClient implements ClientModInitializer {
 			}
 
 			if (!minimizedHud) {
-				String title = "§e§l" + Component.translatable("r3ct.quests.header.daily_quests").getString();
+				String title = "§e§l" + Component.translatable("r3ct_daily.quests.header.daily_quests").getString();
 				guiGraphics.text(client.font, title, virtualWidth - client.font.width(title) - xOffset, currentY, baseColor, true);
 			}
 			currentY += 12;
@@ -204,7 +204,7 @@ public class DailyFabricClient implements ClientModInitializer {
 				int progress = clientQuestData.questProgress.get(i);
 				boolean done = progress >= q.requiredAmount;
 
-				String mark = done ? "§a" + Component.translatable("r3ct.quests.status.claimed").getString() : "§c" + Component.translatable("r3ct.quests.status.incomplete").getString();
+				String mark = done ? "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString() : "§c" + Component.translatable("r3ct_daily.quests.status.incomplete").getString();
 
 				if (minimizedHud) {
 					guiGraphics.text(client.font, mark, virtualWidth - client.font.width(mark) - xOffset, currentY, baseColor, true);

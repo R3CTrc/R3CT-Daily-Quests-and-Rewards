@@ -2,8 +2,8 @@
   "parent": "r3ct_daily:quests/hard_work",
   "display": {
     "icon": { "id": "minecraft:clock" },
-    "title": { "translate": "r3ct.advancement.perfect_day.title" },
-    "description": { "translate": "r3ct.advancement.perfect_day.desc" },
+    "title": { "translate": "r3ct_daily.advancement.perfect_day.title" },
+    "description": { "translate": "r3ct_daily.advancement.perfect_day.desc" },
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,

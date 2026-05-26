@@ -46,7 +46,7 @@ public class StreakShieldItem extends Item {
                     Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
 
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct.message.shield.quest.used", curComp, maxComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                            Component.translatable("r3ct_daily.message.shield.quest.used", curComp, maxComp).withStyle(net.minecraft.ChatFormatting.GREEN)
                     ));
 
                     if (data.availableFreezes == maxQuestShields) {
@@ -58,7 +58,7 @@ public class StreakShieldItem extends Item {
 
                     Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct.message.shield.quest.full", maxComp).withStyle(net.minecraft.ChatFormatting.RED)
+                            Component.translatable("r3ct_daily.message.shield.quest.full", maxComp).withStyle(net.minecraft.ChatFormatting.RED)
                     ));
 
                     return InteractionResult.FAIL;
@@ -76,7 +76,7 @@ public class StreakShieldItem extends Item {
                     Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
 
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct.message.shield.reward.used", curComp, maxComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                            Component.translatable("r3ct_daily.message.shield.reward.used", curComp, maxComp).withStyle(net.minecraft.ChatFormatting.GREEN)
                     ));
 
                     if (data.availableRewardFreezes == maxRewardShields) {
@@ -88,7 +88,7 @@ public class StreakShieldItem extends Item {
 
                     Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct.message.shield.reward.full", maxComp).withStyle(net.minecraft.ChatFormatting.RED)
+                            Component.translatable("r3ct_daily.message.shield.reward.full", maxComp).withStyle(net.minecraft.ChatFormatting.RED)
                     ));
 
                     return InteractionResult.FAIL;

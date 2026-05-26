@@ -11,7 +11,6 @@ import com.r3ct.daily.network.OpenQuestsPayload;
 import com.r3ct.daily.network.OpenRewardsPayload;
 import com.r3ct.daily.network.SyncQuestsPayload;
 import com.r3ct.daily.platform.Services;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -143,7 +142,7 @@ public class DailyCommands {
 
                     Component dayComp = Component.literal(String.valueOf(data.rewardDay)).withStyle(net.minecraft.ChatFormatting.YELLOW);
                     player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct.message.rewards.claimed_base", dayComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                            Component.translatable("r3ct_daily.message.rewards.claimed_base", dayComp).withStyle(net.minecraft.ChatFormatting.GREEN)
                     ));
 
                     for (ItemStack rewardStack : rewards) {
@@ -156,7 +155,7 @@ public class DailyCommands {
                         QuestManager.giveOrDrop(player, rewardStack);
 
                         player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append("- ").withStyle(net.minecraft.ChatFormatting.GRAY).append(
-                                Component.translatable("r3ct.message.quests.item_gained", amountComp, translatedItem).withStyle(net.minecraft.ChatFormatting.GREEN)
+                                Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, translatedItem).withStyle(net.minecraft.ChatFormatting.GREEN)
                         ));
 
                         if (!historyBuilder.isEmpty()) historyBuilder.append(",");
@@ -175,7 +174,7 @@ public class DailyCommands {
                         QuestManager.grantAdvancement(player, "r3ct_daily:rewards/rich_week");
                         QuestManager.giveOrDrop(player, new ItemStack(ModItems.REWARD_SHIELD));
                         player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                                Component.translatable("r3ct.message.rewards.shield_item_received").withStyle(net.minecraft.ChatFormatting.GREEN)
+                                Component.translatable("r3ct_daily.message.rewards.shield_item_received").withStyle(net.minecraft.ChatFormatting.GREEN)
                         ));
                     }
 
@@ -197,7 +196,7 @@ public class DailyCommands {
 
                         .then(Commands.literal("reload").executes(context -> {
                             DailyServerConfig.loadAll();
-                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.reload.success").withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.reload.success").withStyle(net.minecraft.ChatFormatting.GREEN), true);
                             return 1;
                         }))
 
@@ -212,9 +211,9 @@ public class DailyCommands {
                                     }
                                     if (anyCompleted) {
                                         syncPlayerData(target, ModState.getPlayerData(context.getSource().getServer(), target.getUUID()));
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_success", targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.forcecomplete.all_success", targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     } else {
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.all_already_done", targetName).withStyle(net.minecraft.ChatFormatting.RED), false);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.forcecomplete.all_already_done", targetName).withStyle(net.minecraft.ChatFormatting.RED), false);
                                     }
                                     return 1;
                                 }))
@@ -225,8 +224,8 @@ public class DailyCommands {
                                     Component indexComp = Component.literal(String.valueOf(index + 1)).withStyle(net.minecraft.ChatFormatting.YELLOW);
 
                                     boolean success = QuestManager.forceCompleteQuest(target, index, false);
-                                    if (success) context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_success", indexComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
-                                    else context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.forcecomplete.single_already_done", indexComp, targetName).withStyle(net.minecraft.ChatFormatting.RED), false);
+                                    if (success) context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.forcecomplete.single_success", indexComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                    else context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.forcecomplete.single_already_done", indexComp, targetName).withStyle(net.minecraft.ChatFormatting.RED), false);
                                     return 1;
                                 }))
                         ))
@@ -244,7 +243,7 @@ public class DailyCommands {
                             }
 
                             syncPlayerData(target, data);
-                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.test.reset_progress", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.test.reset_progress", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                             return 1;
                         })))
 
@@ -271,7 +270,7 @@ public class DailyCommands {
                             }
 
                             syncPlayerData(target, data);
-                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.test.new_quests", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.test.new_quests", Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW)).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                             return 1;
                         })))
 
@@ -287,7 +286,7 @@ public class DailyCommands {
                                     Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
                                     Component totalComp = Component.literal(String.valueOf(data.totalQuestPoints)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
 
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.add", amountComp, targetName, totalComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.points.add", amountComp, targetName, totalComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     return 1;
                                 }))))
                                 .then(Commands.literal("set").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -300,7 +299,7 @@ public class DailyCommands {
                                     Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
                                     Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
 
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.set", amountComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.points.set", amountComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     return 1;
                                 }))))
                                 .then(Commands.literal("remove").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(1)).executes(context -> {
@@ -314,7 +313,7 @@ public class DailyCommands {
                                     Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
                                     Component totalComp = Component.literal(String.valueOf(data.totalQuestPoints)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
 
-                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.points.remove", amountComp, targetName, totalComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                    context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.points.remove", amountComp, targetName, totalComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     return 1;
                                 }))))
                         )
@@ -331,7 +330,7 @@ public class DailyCommands {
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
                                             Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.YELLOW);
 
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.quests", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.streak.quests", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         }))))
                                         .then(Commands.literal("rewards").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -344,7 +343,7 @@ public class DailyCommands {
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
                                             Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.YELLOW);
 
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.streak.rewards", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.streak.rewards", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         }))))
                                 )
@@ -362,7 +361,7 @@ public class DailyCommands {
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
                                             Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
 
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.quests", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.shields.quests", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         }))))
                                         .then(Commands.literal("rewards").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> {
@@ -375,7 +374,7 @@ public class DailyCommands {
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
                                             Component amountComp = Component.literal(String.valueOf(amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
 
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.shields.rewards", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.shields.rewards", targetName, amountComp).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         }))))
                                 )
@@ -393,9 +392,9 @@ public class DailyCommands {
                                     if (!data.unlockedDimensions.contains(dim)) {
                                         data.unlockedDimensions.add(dim);
                                         syncPlayerData(target, data);
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.success", dimComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.dimensions.unlock.success", dimComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     } else {
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.unlock.fail", targetName, dimComp).withStyle(net.minecraft.ChatFormatting.RED), false);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.dimensions.unlock.fail", targetName, dimComp).withStyle(net.minecraft.ChatFormatting.RED), false);
                                     }
                                     return 1;
                                 }))))
@@ -410,9 +409,9 @@ public class DailyCommands {
                                     if (data.unlockedDimensions.contains(dim)) {
                                         data.unlockedDimensions.remove(dim);
                                         syncPlayerData(target, data);
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.success", dimComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.dimensions.revoke.success", dimComp, targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                     } else {
-                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.dimensions.revoke.fail", targetName, dimComp).withStyle(net.minecraft.ChatFormatting.RED), false);
+                                        context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.dimensions.revoke.fail", targetName, dimComp).withStyle(net.minecraft.ChatFormatting.RED), false);
                                     }
                                     return 1;
                                 }))))
@@ -429,7 +428,7 @@ public class DailyCommands {
                                             syncPlayerData(target, newData);
 
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(net.minecraft.ChatFormatting.YELLOW);
-                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct.command.admin.clear_data.success", targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.clear_data.success", targetName).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                                             return 1;
                                         })
                                 )

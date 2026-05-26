@@ -2,8 +2,8 @@
   "parent": "r3ct_daily:rewards/week_bonus",
   "display": {
     "icon": { "id": "minecraft:nether_star" },
-    "title": { "translate": "r3ct.advancement.cycle_end.title" },
-    "description": { "translate": "r3ct.advancement.cycle_end.desc" },
+    "title": { "translate": "r3ct_daily.advancement.cycle_end.title" },
+    "description": { "translate": "r3ct_daily.advancement.cycle_end.desc" },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,

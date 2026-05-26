@@ -15,7 +15,7 @@ public class ConfigServerScreen extends Screen {
     private final Screen parent;
 
     public ConfigServerScreen(Screen parent) {
-        super(Component.translatable("r3ct.config.server.title"));
+        super(Component.translatable("r3ct_daily.config.server.title"));
         this.parent = parent;
     }
 
@@ -26,16 +26,16 @@ public class ConfigServerScreen extends Screen {
         int centerX = this.width / 2 - buttonWidth / 2;
         int startY = this.height / 2 - 50;
 
-        this.addRenderableWidget(Button.builder(Component.translatable("r3ct.config.server.button.quests"), button -> openFile("r3ct_daily_quests.json"))
+        this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.quests"), button -> openFile("r3ct_daily_quests.json"))
                 .bounds(centerX, startY, buttonWidth, buttonHeight).build());
 
-        this.addRenderableWidget(Button.builder(Component.translatable("r3ct.config.server.button.rewards"), button -> openFile("r3ct_daily_rewards.json"))
+        this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.rewards"), button -> openFile("r3ct_daily_rewards.json"))
                 .bounds(centerX, startY + 25, buttonWidth, buttonHeight).build());
 
-        this.addRenderableWidget(Button.builder(Component.translatable("r3ct.config.server.button.quests_rewards"), button -> openFile("r3ct_daily_quests_rewards.json"))
+        this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.quests_rewards"), button -> openFile("r3ct_daily_quests_rewards.json"))
                 .bounds(centerX, startY + 50, buttonWidth, buttonHeight).build());
 
-        this.addRenderableWidget(Button.builder(Component.translatable("r3ct.config.server.button.mechanics"), button -> openFile("r3ct_daily_server.json"))
+        this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.mechanics"), button -> openFile("r3ct_daily_server.json"))
                 .bounds(centerX, startY + 75, buttonWidth, buttonHeight).build());
 
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose())
