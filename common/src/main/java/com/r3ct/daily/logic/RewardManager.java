@@ -263,7 +263,7 @@ public class RewardManager {
         List<Item> items = BuiltInRegistries.ITEM.stream()
                 .filter(i -> {
                     String path = BuiltInRegistries.ITEM.getKey(i).getPath();
-                    return path.endsWith("spawn_egg") && !path.contains("ender_dragon") && !path.contains("wither");
+                    return path.endsWith("spawn_egg") && !path.contains("ender_dragon") && !path.contains("wither") && !path.contains("warden");
                 })
                 .toList();
         return new ItemStack(items.isEmpty() ? Items.PAPER : items.get(RANDOM.nextInt(items.size())), amount);

@@ -7,8 +7,8 @@
     [
       { "item": "minecraft:coal", "min_amount": 8, "max_amount": 24, "weight": 100 },
       { "item": "minecraft:leather", "min_amount": 4, "max_amount": 16, "weight": 100 },
-      { "item": "minecraft:gold_ingot", "min_amount": 4, "max_amount": 8, "weight": 75 },
-      { "item": "minecraft:iron_ingot", "min_amount": 4, "max_amount": 8, "weight": 50 }
+      { "item": "minecraft:iron_ingot", "min_amount": 4, "max_amount": 8, "weight": 75 },
+      { "item": "minecraft:gold_ingot", "min_amount": 4, "max_amount": 8, "weight": 50 }
     ],
     [
       { "item": "minecraft:cooked_porkchop", "min_amount": 4, "max_amount": 8, "weight": 100 },
@@ -51,7 +51,8 @@
     ],
     [
       { "item": "r3ct_daily:random_trim_template", "min_amount": 1, "max_amount": 1, "weight": 100 },
-      { "item": "r3ct_daily:random_spawn_egg", "min_amount": 1, "max_amount": 1, "weight": 75 }
+      { "item": "r3ct_daily:random_spawn_egg", "min_amount": 1, "max_amount": 1, "weight": 75 },
+      { "item": "minecraft:totem_of_undying", "min_amount": 1, "max_amount": 1, "weight": 50 }
     ]
   ]
 }
