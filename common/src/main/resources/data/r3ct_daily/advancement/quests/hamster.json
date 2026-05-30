@@ -2,8 +2,8 @@
   "parent": "r3ct_daily:quests/time_lord",
   "display": {
     "icon": { "id": "minecraft:bundle" },
-    "title": { "translate": "r3ct.advancement.hamster.title" },
-    "description": { "translate": "r3ct.advancement.hamster.desc" },
+    "title": { "translate": "r3ct_daily.advancement.hamster.title" },
+    "description": { "translate": "r3ct_daily.advancement.hamster.desc" },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,

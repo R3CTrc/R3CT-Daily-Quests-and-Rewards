@@ -2,8 +2,8 @@
   "parent": "r3ct_daily:rewards/first_reward",
   "display": {
     "icon": { "id": "minecraft:nether_star" },
-    "title": { "translate": "r3ct.advancement.login_veteran.title" },
-    "description": { "translate": "r3ct.advancement.login_veteran.desc" },
+    "title": { "translate": "r3ct_daily.advancement.login_veteran.title" },
+    "description": { "translate": "r3ct_daily.advancement.login_veteran.desc" },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,

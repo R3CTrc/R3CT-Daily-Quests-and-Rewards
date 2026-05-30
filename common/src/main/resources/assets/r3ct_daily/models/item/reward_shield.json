@@ -4,7 +4,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"1": "r3ct_daily:item/reward_shield",
-		"particle": "r3ct:item/reward_shield"
+		"particle": "r3ct_daily:item/reward_shield"
 	},
 	"elements": [
 		{

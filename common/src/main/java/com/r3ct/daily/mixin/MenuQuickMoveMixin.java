@@ -52,7 +52,7 @@ public abstract class MenuQuickMoveMixin {
             QuestManager.handleAction(serverPlayer, "SMELT_ITEM", itemId, amountMoved);
 
             if (itemId.endsWith("_glazed_terracotta")) {
-                QuestManager.handleAction(serverPlayer, "SMELT_ITEM", "r3ct:glazed_terracotta", amountMoved);
+                QuestManager.handleAction(serverPlayer, "SMELT_ITEM", "r3ct_daily:glazed_terracotta", amountMoved);
             }
 
             if (isBlastFurnace) {

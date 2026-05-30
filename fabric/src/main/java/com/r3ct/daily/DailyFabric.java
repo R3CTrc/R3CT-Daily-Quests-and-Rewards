@@ -52,7 +52,7 @@ public class DailyFabric implements ModInitializer {
 				Identifier.parse("r3ct_daily:main_tab")
 		);
 		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, R3CT_TAB_KEY, FabricCreativeModeTab.builder()
-				.title(Component.translatable("itemGroup.r3ct.main_tab"))
+				.title(Component.translatable("itemGroup.r3ct_daily.main_tab"))
 				.icon(() -> new ItemStack(ModItems.QUEST_SHIELD))
 				.displayItems((context, output) -> {
 					output.accept(ModItems.QUEST_SHIELD);
@@ -112,13 +112,19 @@ public class DailyFabric implements ModInitializer {
 						if (data.availableRewardFreezes >= missedRewards) {
 							data.availableRewardFreezes -= (int)missedRewards;
 							data.lastStreakDate = yesterday.toString();
-							freezeMessages.add(Component.translatable("r3ct.message.rewards.freeze_used", "§b" + missedRewards));
+
+							Component missedComp = Component.literal(String.valueOf(missedRewards)).withStyle(net.minecraft.ChatFormatting.AQUA);
+							freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
+									Component.translatable("r3ct_daily.message.rewards.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+							));
 							QuestManager.grantAdvancement(player, "r3ct_daily:rewards/safe_player");
 						} else {
 							data.streak = 0;
 							data.availableRewardFreezes = 0;
 							data.absoluteRewardStreak = 0;
-							freezeMessages.add(Component.translatable("r3ct.message.rewards.streak_reset"));
+							freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
+									Component.translatable("r3ct_daily.message.rewards.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
+							));
 						}
 					}
 				}
@@ -131,12 +137,18 @@ public class DailyFabric implements ModInitializer {
 					if (data.availableFreezes >= missedQuests) {
 						data.availableFreezes -= (int)missedQuests;
 						data.lastQuestStreakDate = yesterday.toString();
-						freezeMessages.add(Component.translatable("r3ct.message.quests.freeze_used", "§b" + missedQuests));
+
+						Component missedComp = Component.literal(String.valueOf(missedQuests)).withStyle(net.minecraft.ChatFormatting.AQUA);
+						freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
+								Component.translatable("r3ct_daily.message.quests.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+						));
 						QuestManager.grantAdvancement(player, "r3ct_daily:quests/time_lord");
 					} else {
 						data.questStreak = 0;
 						data.availableFreezes = 0;
-						freezeMessages.add(Component.translatable("r3ct.message.quests.streak_reset"));
+						freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
+								Component.translatable("r3ct_daily.message.quests.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
+						));
 					}
 				}
 
@@ -169,37 +181,47 @@ public class DailyFabric implements ModInitializer {
 
 			server.execute(() -> {
 				if (hasRewards) {
-					MutableComponent rewardMsg = Component.translatable("r3ct.message.rewards.new_reward")
-							.append(Component.translatable("r3ct.message.click_here")
-									.withStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
-											.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.rewards.open_menu")))
-									)
-							);
+					MutableComponent rewardMsg = Component.empty().append(QuestManager.getPrefix()).append(
+							Component.translatable("r3ct_daily.message.rewards.new_reward").withStyle(net.minecraft.ChatFormatting.GREEN)
+					).append(Component.translatable("r3ct_daily.message.click_here")
+							.withStyle(Style.EMPTY
+									.withColor(net.minecraft.ChatFormatting.YELLOW)
+									.withBold(true)
+									.withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
+									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.rewards.open_menu")))
+							)
+					);
 					player.sendSystemMessage(rewardMsg);
 				}
 
 				if (isFirstLoginToday) {
-					MutableComponent questMsg = Component.translatable("r3ct.message.quests.new_quests")
-							.append(Component.translatable("r3ct.message.click_here")
-									.withStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-											.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
-									)
-							);
+					MutableComponent questMsg = Component.empty().append(QuestManager.getPrefix()).append(
+							Component.translatable("r3ct_daily.message.quests.new_quests").withStyle(net.minecraft.ChatFormatting.GREEN)
+					).append(Component.translatable("r3ct_daily.message.click_here")
+							.withStyle(Style.EMPTY
+									.withColor(net.minecraft.ChatFormatting.YELLOW)
+									.withBold(true)
+									.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
+									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
+							)
+					);
 					player.sendSystemMessage(questMsg);
 
 					for (Component msg : freezeMessages) {
 						player.sendSystemMessage(msg);
 					}
 				} else if (remainingQuests > 0) {
-					MutableComponent reminderMsg = Component.translatable("r3ct.message.quests.remaining", "§e" + remainingQuests)
-							.append(Component.translatable("r3ct.message.click_here")
-									.withStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-											.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct.message.quests.open_menu")))
-									)
-							);
+					Component countComp = Component.literal(String.valueOf(remainingQuests)).withStyle(net.minecraft.ChatFormatting.YELLOW);
+					MutableComponent reminderMsg = Component.empty().append(QuestManager.getPrefix()).append(
+							Component.translatable("r3ct_daily.message.quests.remaining", countComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+					).append(" ").append(Component.translatable("r3ct_daily.message.click_here")
+							.withStyle(Style.EMPTY
+									.withColor(net.minecraft.ChatFormatting.YELLOW)
+									.withBold(true)
+									.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
+									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
+							)
+					);
 					player.sendSystemMessage(reminderMsg);
 				}
 			});

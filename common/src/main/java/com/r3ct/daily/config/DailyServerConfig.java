@@ -20,10 +20,13 @@ public class DailyServerConfig {
 
     private static final File QUESTS_FILE = CONFIG_DIR.resolve("r3ct_daily_quests.json").toFile();
     private static final File REWARDS_FILE = CONFIG_DIR.resolve("r3ct_daily_rewards.json").toFile();
-    private static final File DAILY_QUEST_REWARDS_FILE = CONFIG_DIR.resolve("r3ct_daily_quests_rewards.json").toFile();
+    private static final File QUEST_REWARDS_FILE = CONFIG_DIR.resolve("r3ct_daily_quests_rewards.json").toFile();
     private static final File MECHANICS_FILE = CONFIG_DIR.resolve("r3ct_daily_server.json").toFile();
 
-    private static final int CONFIG_VERSION = 1;
+    private static final int QUESTS_VERSION = 2;
+    private static final int REWARDS_VERSION = 2;
+    private static final int QUEST_REWARDS_VERSION = 1;
+    private static final int MECHANICS_VERSION = 1;
 
     public static class RewardEntry {
         public String item;
@@ -103,7 +106,7 @@ public class DailyServerConfig {
     public static List<List<RewardEntry>> rewardsTier3 = new ArrayList<>();
     public static List<RewardEntry> dailyQuestRewards = new ArrayList<>();
 
-    private static void checkAndMigrate(File file, String resourceName) {
+    private static void checkAndMigrate(File file, String resourceName, int expectedVersion) {
         if (!file.exists()) {
             copyDefaultConfig(resourceName);
             return;
@@ -115,7 +118,7 @@ public class DailyServerConfig {
             if (element.isJsonObject()) {
                 JsonObject json = element.getAsJsonObject();
                 int version = json.has("version") ? json.get("version").getAsInt() : 0;
-                if (version < CONFIG_VERSION) {
+                if (version < expectedVersion) {
                     needsUpdate = true;
                 }
             } else {
@@ -145,10 +148,10 @@ public class DailyServerConfig {
                 Files.createDirectories(CONFIG_DIR);
             }
 
-            checkAndMigrate(QUESTS_FILE, "r3ct_daily_quests.json");
-            checkAndMigrate(REWARDS_FILE, "r3ct_daily_rewards.json");
-            checkAndMigrate(DAILY_QUEST_REWARDS_FILE, "r3ct_daily_quests_rewards.json");
-            checkAndMigrate(MECHANICS_FILE, "r3ct_daily_server.json");
+            checkAndMigrate(QUESTS_FILE, "r3ct_daily_quests.json", QUESTS_VERSION);
+            checkAndMigrate(REWARDS_FILE, "r3ct_daily_rewards.json", REWARDS_VERSION);
+            checkAndMigrate(QUEST_REWARDS_FILE, "r3ct_daily_quests_rewards.json", QUEST_REWARDS_VERSION);
+            checkAndMigrate(MECHANICS_FILE, "r3ct_daily_server.json", MECHANICS_VERSION);
 
             loadQuests();
             loadRewards();
@@ -197,9 +200,9 @@ public class DailyServerConfig {
 
     private static void loadDailyQuestRewards() {
         dailyQuestRewards.clear();
-        if (!DAILY_QUEST_REWARDS_FILE.exists()) return;
+        if (!QUEST_REWARDS_FILE.exists()) return;
 
-        try (FileReader reader = new FileReader(DAILY_QUEST_REWARDS_FILE)) {
+        try (FileReader reader = new FileReader(QUEST_REWARDS_FILE)) {
             JsonObject root = GSON.fromJson(reader, JsonObject.class);
             parseSimpleRewards(root.getAsJsonArray("rewards"), dailyQuestRewards);
         } catch (Exception e) {

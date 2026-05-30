@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Player.class)
 public abstract class PlayerTickMixin {
 
-    @Unique private net.minecraft.core.BlockPos flightStartPos = null;
+    @Unique private net.minecraft.core.BlockPos lastFlightPos = null;
     @Unique private double levitationStartY = -1;
     @Unique private double maxFallDistance = 0;
 
@@ -24,19 +24,26 @@ public abstract class PlayerTickMixin {
         if ((Object) this instanceof ServerPlayer player) {
 
             if (player.isFallFlying()) {
-                if (flightStartPos == null) {
-                    flightStartPos = player.blockPosition();
+                if (lastFlightPos == null) {
+                    lastFlightPos = player.blockPosition();
                 } else if (player.tickCount % 20 == 0) {
-                    double dist = Math.sqrt(player.blockPosition().distSqr(flightStartPos));
-                    QuestManager.handleAction(player, "ELYTRA_FLIGHT_NO_LAND", "any", (int) dist);
+                    double dist = Math.sqrt(player.blockPosition().distSqr(lastFlightPos));
+                    if (dist >= 1.0) {
+                        QuestManager.handleAction(player, "ELYTRA_FLIGHT_NO_LAND", "any", (int) dist);
+                    }
+                    lastFlightPos = player.blockPosition();
                 }
             } else {
-                flightStartPos = null;
+                if (lastFlightPos != null) {
+                    QuestManager.resetQuestProgress(player, "ELYTRA_FLIGHT_NO_LAND");
+                    lastFlightPos = null;
+                }
             }
 
             if (player.hasEffect(net.minecraft.world.effect.MobEffects.LEVITATION)) {
-                if (levitationStartY == -1) levitationStartY = player.getY();
-                else if (player.tickCount % 10 == 0) {
+                if (levitationStartY == -1 || player.onGround()) {
+                    levitationStartY = player.getY();
+                } else if (player.tickCount % 10 == 0) {
                     int heightGained = (int) (player.getY() - levitationStartY);
                     if (heightGained > 0) QuestManager.handleAction(player, "LEVITATION_HEIGHT", "any", heightGained);
                 }
@@ -70,6 +77,8 @@ public abstract class PlayerTickMixin {
                     }
                     maxFallDistance = 0;
                 }
+
+                QuestManager.resetQuestProgress(player, "LEVITATION_HEIGHT");
             }
 
             com.r3ct.daily.logic.QuestEventHandlers.onPlayerTick(player);

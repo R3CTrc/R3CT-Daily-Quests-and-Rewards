@@ -30,15 +30,15 @@ public abstract class BlockInteractMixin {
                 }
             }
 
-            if (state.is(net.minecraft.world.level.block.Blocks.TNT)) {
-                if (stack.is(net.minecraft.world.item.Items.FLINT_AND_STEEL) || stack.is(net.minecraft.world.item.Items.FIRE_CHARGE)) {
-                    QuestManager.handleAction(player, "IGNITE_TNT", "any", 1);
-                }
-            }
-
             if (state.is(net.minecraft.world.level.block.Blocks.JUKEBOX)) {
                 if (stack.has(net.minecraft.core.component.DataComponents.JUKEBOX_PLAYABLE)) {
                     QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
+                }
+            }
+
+            if (state.is(net.minecraft.world.level.block.Blocks.VAULT)) {
+                if (stack.is(net.minecraft.world.item.Items.TRIAL_KEY) || stack.is(net.minecraft.world.item.Items.OMINOUS_TRIAL_KEY)) {
+                    QuestManager.handleAction(player, "OPEN_VAULT", "any", 1);
                 }
             }
         }

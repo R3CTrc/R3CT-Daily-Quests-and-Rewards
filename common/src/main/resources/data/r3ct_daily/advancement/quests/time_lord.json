@@ -2,8 +2,8 @@
   "parent": "r3ct_daily:quests/root",
   "display": {
     "icon": { "id": "minecraft:blue_ice" },
-    "title": { "translate": "r3ct.advancement.time_lord.title" },
-    "description": { "translate": "r3ct.advancement.time_lord.desc" },
+    "title": { "translate": "r3ct_daily.advancement.time_lord.title" },
+    "description": { "translate": "r3ct_daily.advancement.time_lord.desc" },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true,

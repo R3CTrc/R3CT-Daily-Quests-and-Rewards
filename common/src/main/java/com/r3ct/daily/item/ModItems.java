@@ -22,8 +22,8 @@ public class ModItems {
             .stacksTo(16)
             .rarity(Rarity.EPIC)
             .component(DataComponents.LORE, new ItemLore(List.of(
-                    Component.translatable("item.r3ct.quest_shield.description").withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(false)),
-                    Component.translatable("r3ct.tooltip.shield_usage").withStyle(style -> style.withColor(ChatFormatting.DARK_GRAY).withItalic(false))
+                    Component.translatable("item.r3ct_daily.quest_shield.description").withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(false)),
+                    Component.translatable("r3ct_daily.tooltip.shield_usage").withStyle(style -> style.withColor(ChatFormatting.DARK_GRAY).withItalic(false))
             ))), true);
 
     public static final Item REWARD_SHIELD = new StreakShieldItem(new Item.Properties()
@@ -31,8 +31,8 @@ public class ModItems {
             .stacksTo(16)
             .rarity(Rarity.EPIC)
             .component(DataComponents.LORE, new ItemLore(List.of(
-                    Component.translatable("item.r3ct.reward_shield.description").withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(false)),
-                    Component.translatable("r3ct.tooltip.shield_usage").withStyle(style -> style.withColor(ChatFormatting.DARK_GRAY).withItalic(false))
+                    Component.translatable("item.r3ct_daily.reward_shield.description").withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(false)),
+                    Component.translatable("r3ct_daily.tooltip.shield_usage").withStyle(style -> style.withColor(ChatFormatting.DARK_GRAY).withItalic(false))
             ))), false);
 
     public static void register() {
