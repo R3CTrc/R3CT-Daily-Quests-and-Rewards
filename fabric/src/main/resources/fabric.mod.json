@@ -8,8 +8,8 @@
         "${mod_author}"
     ],
     "contact": {
-        "homepage": "https://r3ct.pl",
-        "sources": "https://github.com/r3ct/quests-mod"
+        "homepage": "https://github.com/R3CTrc",
+        "sources": "https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards"
     },
     "license": "${license}",
     "icon": "assets/r3ct_daily/icon.png",
@@ -31,8 +31,8 @@
     ],
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": "*",
         "minecraft": ">=${minecraft_version}",
-        "java": ">=${java_version}",
-        "fabric-api": "*"
+        "java": ">=${java_version}"
     }
 }

@@ -12,7 +12,7 @@ public class ConfigMainScreen extends Screen {
     private final Screen parent;
 
     public ConfigMainScreen(Screen parent) {
-        super(Component.translatable("r3ct.config.main.title"));
+        super(Component.translatable("r3ct_daily.config.main.title"));
         this.parent = parent;
     }
 
@@ -23,23 +23,23 @@ public class ConfigMainScreen extends Screen {
         int centerX = this.width / 2 - buttonWidth / 2;
         int startY = this.height / 2 - 30;
 
-        this.addRenderableWidget(Button.builder(Component.translatable("r3ct.config.main.client_button"), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.main.client_button"), button -> {
                     this.minecraft.setScreen(new ConfigClientScreen(this));
                 })
                 .bounds(centerX, startY, buttonWidth, buttonHeight)
-                .tooltip(Tooltip.create(Component.translatable("r3ct.config.main.client_tooltip")))
+                .tooltip(Tooltip.create(Component.translatable("r3ct_daily.config.main.client_tooltip")))
                 .build());
 
         boolean isSingleplayer = this.minecraft != null && this.minecraft.hasSingleplayerServer();
 
-        Button serverButton = Button.builder(Component.translatable("r3ct.config.main.server_button"), button -> {
+        Button serverButton = Button.builder(Component.translatable("r3ct_daily.config.main.server_button"), button -> {
                     this.minecraft.setScreen(new ConfigServerScreen(this));
                 })
                 .bounds(centerX, startY + 25, buttonWidth, buttonHeight)
                 .tooltip(Tooltip.create(
                         isSingleplayer
-                                ? Component.translatable("r3ct.config.main.server_tooltip")
-                                : Component.translatable("r3ct.config.main.server_tooltip_disabled").withStyle(ChatFormatting.RED)
+                                ? Component.translatable("r3ct_daily.config.main.server_tooltip")
+                                : Component.translatable("r3ct_daily.config.main.server_tooltip_disabled").withStyle(ChatFormatting.RED)
                 ))
                 .build();
 

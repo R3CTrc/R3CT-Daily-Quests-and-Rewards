@@ -22,7 +22,7 @@ public class PlayerData {
     public int maxQuestStreak = 0;
     public int absoluteRewardStreak = 0;
     public int maxRewardStreak = 0;
-    public String lastKnownName = Component.translatable("r3ct.misc.none").getString();
+    public String lastKnownName = Component.translatable("r3ct_daily.misc.none").getString();
 
     public String lastQuestDate = "";
     public int questStreak = 0;
@@ -131,7 +131,7 @@ public class PlayerData {
         data.maxQuestStreak = nbt.getInt("maxQuestStreak").orElse(0);
         data.absoluteRewardStreak = nbt.getInt("absoluteRewardStreak").orElse(0);
         data.maxRewardStreak = nbt.getInt("maxRewardStreak").orElse(0);
-        data.lastKnownName = nbt.getString("lastKnownName").orElse(Component.translatable("r3ct.misc.none").getString());
+        data.lastKnownName = nbt.getString("lastKnownName").orElse(Component.translatable("r3ct_daily.misc.none").getString());
 
         data.perfectDaysCount = nbt.getInt("perfectDaysCount").orElse(0);
         data.availableFreezes = nbt.getInt("availableFreezes").orElse(0);

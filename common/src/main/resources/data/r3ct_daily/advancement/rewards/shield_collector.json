@@ -2,8 +2,8 @@
   "parent": "r3ct_daily:rewards/safe_player",
   "display": {
     "icon": { "id": "minecraft:golden_carrot" },
-    "title": { "translate": "r3ct.advancement.shield_collector.title" },
-    "description": { "translate": "r3ct.advancement.shield_collector.desc" },
+    "title": { "translate": "r3ct_daily.advancement.shield_collector.title" },
+    "description": { "translate": "r3ct_daily.advancement.shield_collector.desc" },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,

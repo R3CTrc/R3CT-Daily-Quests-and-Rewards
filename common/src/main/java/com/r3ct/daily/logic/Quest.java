@@ -49,7 +49,7 @@ public class Quest {
         ItemStack rewardStack = new ItemStack(item, this.rewardAmount);
 
         if (this.rawRewardId.startsWith("r3ct_daily:")) {
-            rewardStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.translatable("r3ct.item.special_reward"));
+            rewardStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.translatable("r3ct_daily.item.special_reward"));
         }
 
         return rewardStack;

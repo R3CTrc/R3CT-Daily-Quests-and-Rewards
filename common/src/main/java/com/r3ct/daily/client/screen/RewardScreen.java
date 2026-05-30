@@ -30,7 +30,7 @@ public class RewardScreen extends Screen {
     private static float animatedCollected = 0.0f;
 
     public RewardScreen(PlayerData data, OpenRewardsPayload payload) {
-        super(Component.translatable("r3ct.rewards.title"));
+        super(Component.translatable("r3ct_daily.rewards.title"));
         this.data = data;
         this.payload = payload;
     }
@@ -64,7 +64,7 @@ public class RewardScreen extends Screen {
         guiGraphics.fill(leftPos + imageWidth - 4, topPos + 2, leftPos + imageWidth - 2, topPos + imageHeight - 2, 0xFF555555);
         guiGraphics.fill(leftPos + 2, topPos + imageHeight - 4, leftPos + imageWidth - 2, topPos + imageHeight - 2, 0xFF555555);
 
-        String headerText = "§l" + Component.translatable("r3ct.rewards.header.rewards").getString();
+        String headerText = "§l" + Component.translatable("r3ct_daily.rewards.header.rewards").getString();
         guiGraphics.drawString(this.font, headerText, (this.width / 2) - (this.font.width(headerText) / 2), topPos + 12, 0xFF404040, false);
 
         guiGraphics.fill(leftPos + 12, topPos + 30, leftPos + imageWidth - 12, topPos + 90, 0xFF8B8B8B);
@@ -108,7 +108,7 @@ public class RewardScreen extends Screen {
                 else kolorTekstu = 0xFFFF55FF;
             }
 
-            String dayTxt = Component.translatable("r3ct.rewards.day", i).getString();
+            String dayTxt = Component.translatable("r3ct_daily.rewards.day", i).getString();
             guiGraphics.drawString(this.font, dayTxt, (slotX + 9) - (this.font.width(dayTxt) / 2), slotY + 25, kolorTekstu, true);
 
             if (czyMoznaOdebrac) {
@@ -128,8 +128,8 @@ public class RewardScreen extends Screen {
         if (Math.abs(targetStreak - animatedStreak) < 0.05f) animatedStreak = targetStreak;
 
         String streakColorCode = (targetStreak < 3) ? "§2" : (targetStreak < 7 ? "§6" : "§c");
-        guiGraphics.drawString(this.font, "§l" + Component.translatable("r3ct.rewards.bar.streak").getString(), bar1X, barY - 32, 0xFF404040, false);
-        guiGraphics.drawString(this.font, "§8" + Component.translatable("r3ct.rewards.bar.days").getString() + ": " + streakColorCode + targetStreak + "§8/7", bar1X, barY - 10, 0xFFFFFFFF, false);
+        guiGraphics.drawString(this.font, "§l" + Component.translatable("r3ct_daily.rewards.bar.streak").getString(), bar1X, barY - 32, 0xFF404040, false);
+        guiGraphics.drawString(this.font, "§8" + Component.translatable("r3ct_daily.rewards.bar.days").getString() + ": " + streakColorCode + targetStreak + "§8/7", bar1X, barY - 10, 0xFFFFFFFF, false);
 
         int sColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
         guiGraphics.fill(bar1X, barY, bar1X + bWidth, barY + 8, 0xFF373737);
@@ -142,8 +142,8 @@ public class RewardScreen extends Screen {
             guiGraphics.fill(tickX, barY, tickX + 1, barY + 8, 0xFF000000);
         }
 
-        String multidrawString = data.streak >= 7 ? "§6§l" + Component.translatable("r3ct.quests.multiplier.active").getString() : "§8" + Component.translatable("r3ct.quests.multiplier.inactive").getString();
-        guiGraphics.drawString(this.font, multidrawString, bar1X, barY + 12, 0xFFFFFFFF, data.streak >= 7);
+        String multiText = data.streak >= 7 ? "§6§l" + Component.translatable("r3ct_daily.quests.multiplier.active").getString() : "§8" + Component.translatable("r3ct_daily.quests.multiplier.inactive").getString();
+        guiGraphics.drawString(this.font, multiText, bar1X, barY + 12, 0xFFFFFFFF, data.streak >= 7);
 
         int displayCollected = data.totalCollected % 21;
         if (displayCollected == 0 && data.totalCollected > 0) {
@@ -154,8 +154,8 @@ public class RewardScreen extends Screen {
         if (Math.abs(displayCollected - animatedCollected) < 0.05f) animatedCollected = displayCollected;
 
         int bar2X = leftPos + 173;
-        guiGraphics.drawString(this.font, "§l" + Component.translatable("r3ct.rewards.bar.bonus").getString(), bar2X, barY - 32, 0xFF404040, false);
-        guiGraphics.drawString(this.font, "§8" + Component.translatable("r3ct.quests.tooltip.streak.progress").getString() + " §d" + displayCollected + "§8/21", bar2X, barY - 10, 0xFFFFFFFF, false);
+        guiGraphics.drawString(this.font, "§l" + Component.translatable("r3ct_daily.rewards.bar.bonus").getString(), bar2X, barY - 32, 0xFF404040, false);
+        guiGraphics.drawString(this.font, "§8" + Component.translatable("r3ct_daily.quests.tooltip.streak.progress").getString() + " §d" + displayCollected + "§8/21", bar2X, barY - 10, 0xFFFFFFFF, false);
 
         guiGraphics.fill(bar2X, barY, bar2X + bWidth, barY + 8, 0xFF373737);
 
@@ -169,7 +169,7 @@ public class RewardScreen extends Screen {
 
         renderBonusMilestones(guiGraphics, bar2X, barY, bWidth, mouseX, mouseY);
 
-        String arrowText = Component.translatable("r3ct.leaderboard.button.quests_prev").getString();
+        String arrowText = Component.translatable("r3ct_daily.leaderboard.button.quests_prev").getString();
         int textWidth = this.font.width(arrowText);
         int arrowX = leftPos - 15 - textWidth;
         int arrowY = (this.height / 2) - 4;
@@ -187,7 +187,7 @@ public class RewardScreen extends Screen {
         guiGraphics.renderItem(new ItemStack(Items.MOJANG_BANNER_PATTERN), trophyX, trophyY);
 
         int midX = leftPos + (imageWidth / 2);
-        String backText = Component.translatable("r3ct.quests.button.close").getString();
+        String backText = Component.translatable("r3ct_daily.quests.button.close").getString();
         int backWidth = this.font.width(backText);
         int backX = midX - (backWidth / 2);
         int backY = topPos + imageHeight + 8;
@@ -209,7 +209,7 @@ public class RewardScreen extends Screen {
         }
 
         int[] thresholds = {7, 14, 21};
-        String rewLabel = Component.translatable("r3ct.quests.tooltip.reward").getString();
+        String rewLabel = Component.translatable("r3ct_daily.quests.tooltip.reward").getString();
 
         DailyServerConfig.MilestoneReward[] mr = {
                 DailyServerConfig.mechanics.milestones.bonus_7,
@@ -224,7 +224,7 @@ public class RewardScreen extends Screen {
         for (int i = 0; i < 3; i++) {
             String rewardColor = mr[i].getFormattedColor();
 
-            titles[i] = rewardColor + "§l" + Component.translatable("r3ct.rewards.tooltip.bonus.title", thresholds[i]).getString();
+            titles[i] = rewardColor + "§l" + Component.translatable("r3ct_daily.rewards.tooltip.bonus.title", thresholds[i]).getString();
             ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
             rewards[i] = "§f" + rewLabel + " " + rewardColor + mr[i].amount + "x " + stack.getHoverName().getString();
             amountsStr[i] = rewardColor + "x" + mr[i].amount;
@@ -244,9 +244,9 @@ public class RewardScreen extends Screen {
 
         if (trophyHover) {
             List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tTooltip = new ArrayList<>();
-            tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
+            tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
             tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-            tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
+            tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
             guiGraphics.renderTooltip(this.font, tTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
         }
 
@@ -282,7 +282,7 @@ public class RewardScreen extends Screen {
             int mX = (t == 21) ? (x + bWidth - 1) : (x + (int)(t * (bWidth / 21.0)));
 
             g.fill(mX, y - 2, mX + 1, y + 10, 0xFFFFFFFF);
-            String txtDay = "§8" + t + " " + Component.translatable("r3ct.leaderboard.tooltip.days").getString();
+            String txtDay = "§8" + t + " " + Component.translatable("r3ct_daily.leaderboard.tooltip.days").getString();
             g.drawString(this.font, txtDay, mX - (this.font.width(txtDay) / 2), y + 12, 0xFFFFFFFF, false);
 
             int totalW = 18 + this.font.width(amounts[i]);
@@ -326,17 +326,17 @@ public class RewardScreen extends Screen {
         boolean czyMoznaOdebrac = (day == data.rewardDay) && !juzDzisiajOdebrane;
 
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct.rewards.tooltip.day.title", day).getString()).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.rewards.tooltip.day.title", day).getString()).getVisualOrderText()));
 
-        String statusRaw = czyOdebrane ? "§a" + Component.translatable("r3ct.rewards.status.claimed").getString() : (czyMoznaOdebrac ? "§e" + Component.translatable("r3ct.rewards.status.claimable").getString() : "§c" + Component.translatable("r3ct.rewards.status.locked").getString());
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct.rewards.tooltip.status").getString() + " " + statusRaw).getVisualOrderText()));
+        String statusRaw = czyOdebrane ? "§a" + Component.translatable("r3ct_daily.rewards.status.claimed").getString() : (czyMoznaOdebrac ? "§e" + Component.translatable("r3ct_daily.rewards.status.claimable").getString() : "§c" + Component.translatable("r3ct_daily.rewards.status.locked").getString());
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.rewards.tooltip.status").getString() + " " + statusRaw).getVisualOrderText()));
 
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
         if (czyOdebrane) {
             String zHisto = (data.claimedRewardHistory != null && data.claimedRewardHistory.size() > day - 1) ? data.claimedRewardHistory.get(day - 1) : "";
             if (zHisto != null && !zHisto.isEmpty()) {
-                tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.content").getString()).getVisualOrderText()));
+                tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString()).getVisualOrderText()));
 
                 String[] items = zHisto.split(",");
                 for (String itemStr : items) {
@@ -354,17 +354,17 @@ public class RewardScreen extends Screen {
                     }
                 }
             } else {
-                tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.content").getString() + " §8(" + Component.translatable("r3ct.rewards.tooltip.no_data").getString() + ")").getVisualOrderText()));
+                tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §8(" + Component.translatable("r3ct_daily.rewards.tooltip.no_data").getString() + ")").getVisualOrderText()));
             }
         } else if (day == 7) {
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.content").getString() + " §d" + Component.translatable("r3ct.rewards.tooltip.epic_rewards").getString()).getVisualOrderText()));
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§b+ 1 " + Component.translatable("r3ct.rewards.tooltip.shield").getString()).getVisualOrderText()));
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §d" + Component.translatable("r3ct_daily.rewards.tooltip.epic_rewards").getString()).getVisualOrderText()));
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§b+ 1 " + Component.translatable("r3ct_daily.rewards.tooltip.shield").getString()).getVisualOrderText()));
         } else {
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.content").getString() + " §7§k???").getVisualOrderText()));
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §7§k???").getVisualOrderText()));
         }
 
         if (czyMoznaOdebrac && data.streak >= 7) {
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct.quests.tooltip.streak.multi_active").getString()).getVisualOrderText()));
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.streak.multi_active").getString()).getVisualOrderText()));
         }
 
         guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
@@ -372,30 +372,30 @@ public class RewardScreen extends Screen {
 
     private void renderStreakTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct.rewards.tooltip.streak.title").getString()).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.rewards.tooltip.streak.title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
         if (data.streak >= 7) {
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct.quests.tooltip.streak.multi_active").getString()).getVisualOrderText()));
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.streak.multi_active").getString()).getVisualOrderText()));
         } else {
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.streak.req1").getString()).getVisualOrderText()));
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.streak.req2").getString()).getVisualOrderText()));
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req1").getString()).getVisualOrderText()));
+            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req2").getString()).getVisualOrderText()));
         }
 
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct.quests.tooltip.streak.freeze_title").getString()).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.streak.freeze_desc1").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.rewards.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.freeze_desc1").getString()).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
         int maxRewardShields = payload.maxRewardShields();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
 
         guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
     }
 
     private void renderBonusTooltip(GuiGraphics guiGraphics, int absoluteCollected, int mouseX, int mouseY) {
         List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct.rewards.tooltip.bonus_main.title").getString()).getVisualOrderText()));
+        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct_daily.rewards.tooltip.bonus_main.title").getString()).getVisualOrderText()));
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
         DailyServerConfig.MilestoneReward[] mr = {
@@ -427,7 +427,7 @@ public class RewardScreen extends Screen {
         int visualCurrent = absoluteCollected - (cycle * 21);
         if (visualCurrent > targetDay) visualCurrent = targetDay;
 
-        return Component.literal(prefix + Math.min(visualCurrent, targetDay) + "/" + targetDay + " " + Component.translatable("r3ct.leaderboard.tooltip.days").getString() + " §8- " + color + reward);
+        return Component.literal(prefix + Math.min(visualCurrent, targetDay) + "/" + targetDay + " " + Component.translatable("r3ct_daily.leaderboard.tooltip.days").getString() + " §8- " + color + reward);
     }
 
     private void renderSimpleTooltip(GuiGraphics guiGraphics, String title, String info, int mouseX, int mouseY) {
@@ -464,7 +464,7 @@ public class RewardScreen extends Screen {
                 }
             }
 
-            String arrowText = Component.translatable("r3ct.leaderboard.button.quests_prev").getString();
+            String arrowText = Component.translatable("r3ct_daily.leaderboard.button.quests_prev").getString();
             int textWidth = this.font.width(arrowText);
             int arrowX = leftPos - 15 - textWidth;
             int arrowY = (this.height / 2) - 4;
@@ -526,7 +526,7 @@ public class RewardScreen extends Screen {
             }
 
             int midX = leftPos + (imageWidth / 2);
-            String backText = Component.translatable("r3ct.quests.button.close").getString();
+            String backText = Component.translatable("r3ct_daily.quests.button.close").getString();
             int backWidth = this.font.width(backText);
             int backX = midX - (backWidth / 2);
             int backY = topPos + imageHeight + 8;
