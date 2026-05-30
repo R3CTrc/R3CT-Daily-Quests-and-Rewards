@@ -14,12 +14,20 @@ public class QuestEventHandlers {
 
     public static void onDimensionChange(ServerPlayer player, String dimId) {
         net.minecraft.server.MinecraftServer server = player.level().getServer();
+
         if (server == null) return;
 
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
 
         if (!data.unlockedDimensions.contains(dimId)) {
             data.unlockedDimensions.add(dimId);
+
+            String translationKey = "r3ct_daily.dimension." + dimId.replace(':', '.');
+            net.minecraft.network.chat.Component dimComp = net.minecraft.network.chat.Component.translatable(translationKey).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+
+            player.sendSystemMessage(net.minecraft.network.chat.Component.empty().append(QuestManager.getPrefix()).append(
+                    net.minecraft.network.chat.Component.translatable("r3ct_daily.message.dimension_discovered", dimComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+            ));
 
             server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
         }
@@ -42,25 +50,25 @@ public class QuestEventHandlers {
 
         QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", blockId, 1);
 
-        if (state.is(net.minecraft.tags.BlockTags.OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:oak_logs", 1);
-        else if (state.is(net.minecraft.tags.BlockTags.BIRCH_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:birch_logs", 1);
-        else if (state.is(net.minecraft.tags.BlockTags.SPRUCE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:spruce_logs", 1);
-        else if (state.is(net.minecraft.tags.BlockTags.JUNGLE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:jungle_logs", 1);
-        else if (state.is(net.minecraft.tags.BlockTags.ACACIA_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:acacia_logs", 1);
-        else if (state.is(net.minecraft.tags.BlockTags.DARK_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:dark_oak_logs", 1);
-        else if (state.is(net.minecraft.tags.BlockTags.MANGROVE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:mangrove_logs", 1);
-        else if (state.is(net.minecraft.tags.BlockTags.CHERRY_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:cherry_logs", 1);
-        else if (state.is(net.minecraft.tags.BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:pale_oak_logs", 1);
+        if (state.is(net.minecraft.tags.BlockTags.OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:oak_logs", 1);
+        else if (state.is(net.minecraft.tags.BlockTags.BIRCH_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:birch_logs", 1);
+        else if (state.is(net.minecraft.tags.BlockTags.SPRUCE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:spruce_logs", 1);
+        else if (state.is(net.minecraft.tags.BlockTags.JUNGLE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:jungle_logs", 1);
+        else if (state.is(net.minecraft.tags.BlockTags.ACACIA_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:acacia_logs", 1);
+        else if (state.is(net.minecraft.tags.BlockTags.DARK_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:dark_oak_logs", 1);
+        else if (state.is(net.minecraft.tags.BlockTags.MANGROVE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:mangrove_logs", 1);
+        else if (state.is(net.minecraft.tags.BlockTags.CHERRY_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:cherry_logs", 1);
+        else if (state.is(net.minecraft.tags.BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:pale_oak_logs", 1);
 
-        if (state.is(net.minecraft.tags.BlockTags.COAL_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:coal_ores", 1);
-        if (state.is(net.minecraft.tags.BlockTags.IRON_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:iron_ores", 1);
-        if (state.is(net.minecraft.tags.BlockTags.GOLD_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:gold_ores", 1);
-        if (state.is(net.minecraft.tags.BlockTags.COPPER_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:copper_ores", 1);
-        if (state.is(net.minecraft.tags.BlockTags.DIAMOND_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:diamond_ores", 1);
-        if (state.is(net.minecraft.tags.BlockTags.LAPIS_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:lapis_ores", 1);
-        if (state.is(net.minecraft.tags.BlockTags.REDSTONE_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:redstone_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.COAL_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:coal_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.IRON_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:iron_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.GOLD_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:gold_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.COPPER_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:copper_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.DIAMOND_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:diamond_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.LAPIS_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:lapis_ores", 1);
+        if (state.is(net.minecraft.tags.BlockTags.REDSTONE_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:redstone_ores", 1);
 
-        if (blockId.equals("minecraft:nether_quartz_ore")) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct:nether_quartz_ores", 1);
+        if (blockId.equals("minecraft:nether_quartz_ore")) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:nether_quartz_ores", 1);
     }
 
     public static void onEntityDeath(ServerPlayer serverPlayer, Entity victim) {
@@ -136,15 +144,16 @@ public class QuestEventHandlers {
                                 boolean matches = invId.equals(q.target) || q.target.equals("any");
 
                                 if (!matches) {
-                                    if (q.target.equals("r3ct:mushrooms") && (invId.equals("minecraft:red_mushroom") || invId.equals("minecraft:brown_mushroom"))) matches = true;
-                                    else if (q.target.equals("r3ct:sniffer_seeds") && (invId.equals("minecraft:torchflower_seeds") || invId.equals("minecraft:pitcher_pod"))) matches = true;
-                                    else if (q.target.equals("r3ct:flowers") && invStack.is(net.minecraft.tags.ItemTags.FLOWERS)) matches = true;
-                                    else if (q.target.equals("r3ct:leaves") && invStack.is(net.minecraft.tags.ItemTags.LEAVES)) matches = true;
-                                    else if (q.target.equals("r3ct:raw_fishes") && invStack.is(net.minecraft.tags.ItemTags.FISHES)) matches = true;
-                                    else if (q.target.equals("r3ct:eggs") && (invId.equals("minecraft:egg") || invId.equals("minecraft:brown_egg") || invId.equals("minecraft:blue_egg"))) matches = true;
+                                    if (q.target.equals("r3ct_daily:mushrooms") && (invId.equals("minecraft:red_mushroom") || invId.equals("minecraft:brown_mushroom"))) matches = true;
+                                    else if (q.target.equals("r3ct_daily:sniffer_seeds") && (invId.equals("minecraft:torchflower_seeds") || invId.equals("minecraft:pitcher_pod"))) matches = true;
+                                    else if (q.target.equals("r3ct_daily:flowers") && invStack.is(net.minecraft.tags.ItemTags.FLOWERS)) matches = true;
+                                    else if (q.target.equals("r3ct_daily:leaves") && invStack.is(net.minecraft.tags.ItemTags.LEAVES)) matches = true;
+                                    else if (q.target.equals("r3ct_daily:raw_fishes") && invStack.is(net.minecraft.tags.ItemTags.FISHES)) matches = true;
+                                    else if (q.target.equals("r3ct_daily:eggs") && (invId.equals("minecraft:egg") || invId.equals("minecraft:brown_egg") || invId.equals("minecraft:blue_egg"))) matches = true;
+                                    else if (q.target.equals("r3ct_daily:froglights") && (invId.equals("minecraft:ochre_froglight") || invId.equals("minecraft:verdant_froglight") || invId.equals("minecraft:pearlescent_froglight"))) matches = true;
                                 }
 
-                                if (q.target.equals("r3ct:full_beehive") && (invId.equals("minecraft:beehive") || invId.equals("minecraft:bee_nest"))) {
+                                if (q.target.equals("r3ct_daily:full_beehive") && (invId.equals("minecraft:beehive") || invId.equals("minecraft:bee_nest"))) {
                                     var beesData = invStack.get(net.minecraft.core.component.DataComponents.BEES);
                                     if (beesData != null && beesData.bees().size() >= 3) {
                                         matches = true;
@@ -175,8 +184,8 @@ public class QuestEventHandlers {
                 QuestManager.handleAction(player, "TIME_IN_BIOME", biomeId, 1);
 
                 if (biomeId.contains("frozen") || biomeId.contains("snowy") || biomeId.contains("ice") || biomeId.contains("grove") || biomeId.contains("slopes") || biomeId.contains("peaks")) {
-                    QuestManager.handleAction(player, "VISIT_BIOME", "r3ct:frozen_biomes", 1);
-                    QuestManager.handleAction(player, "TIME_IN_BIOME", "r3ct:frozen_biomes", 1);
+                    QuestManager.handleAction(player, "VISIT_BIOME", "r3ct_daily:frozen_biomes", 1);
+                    QuestManager.handleAction(player, "TIME_IN_BIOME", "r3ct_daily:frozen_biomes", 1);
                 }
                 if (biomeId.contains("ocean")) {
                     QuestManager.handleAction(player, "TIME_IN_BIOME", "ocean", 1);

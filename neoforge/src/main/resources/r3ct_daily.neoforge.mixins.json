@@ -2,10 +2,9 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.r3ct.daily.mixin",
-  "compatibilityLevel": "JAVA_18",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [],
-  "client": [
-  ],
+  "client": [],
   "server": [],
   "injectors": {
     "defaultRequire": 1

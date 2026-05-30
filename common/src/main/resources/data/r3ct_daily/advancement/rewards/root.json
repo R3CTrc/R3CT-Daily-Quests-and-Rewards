@@ -1,8 +1,8 @@
 {
   "display": {
     "icon": { "id": "minecraft:chest" },
-    "title": { "translate": "r3ct.advancement.rewards_root.title" },
-    "description": { "translate": "r3ct.advancement.rewards_root.desc" },
+    "title": { "translate": "r3ct_daily.advancement.rewards_root.title" },
+    "description": { "translate": "r3ct_daily.advancement.rewards_root.desc" },
     "background": "minecraft:block/amethyst_block",
     "show_toast": false,
     "announce_to_chat": false,

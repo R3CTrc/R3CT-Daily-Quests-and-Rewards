@@ -2,8 +2,8 @@
   "parent": "r3ct_daily:rewards/root",
   "display": {
     "icon": { "id": "minecraft:shield" },
-    "title": { "translate": "r3ct.advancement.safe_player.title" },
-    "description": { "translate": "r3ct.advancement.safe_player.desc" },
+    "title": { "translate": "r3ct_daily.advancement.safe_player.title" },
+    "description": { "translate": "r3ct_daily.advancement.safe_player.desc" },
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,

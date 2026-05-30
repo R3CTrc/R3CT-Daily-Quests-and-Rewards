@@ -22,6 +22,7 @@ public abstract class PlayerStatMixin {
     @Unique private int horseCmBuffer = 0;
     @Unique private int minecartCmBuffer = 0;
     @Unique private int striderCmBuffer = 0;
+    @Unique private int pigCmBuffer = 0;
 
     @Inject(method = "awardStat(Lnet/minecraft/stats/Stat;I)V", at = @At("HEAD"))
     private void onAwardStat(Stat<?> stat, int amount, CallbackInfo ci) {
@@ -33,13 +34,13 @@ public abstract class PlayerStatMixin {
             QuestManager.handleAction(serverPlayer, "CRAFT_ITEM", itemId, amount);
 
             if (itemId.contains("_banner_pattern")) {
-                QuestManager.handleAction(serverPlayer, "CRAFT_ITEM", "r3ct:banner_patterns", amount);
+                QuestManager.handleAction(serverPlayer, "CRAFT_ITEM", "r3ct_daily:banner_patterns", amount);
             }
             if (itemId.contains("_harness")) {
-                QuestManager.handleAction(serverPlayer, "CRAFT_ITEM", "r3ct:harnesses", amount);
+                QuestManager.handleAction(serverPlayer, "CRAFT_ITEM", "r3ct_daily:harnesses", amount);
             }
             if (itemId.equals("minecraft:clock") || itemId.equals("minecraft:compass")) {
-                QuestManager.handleAction(serverPlayer, "CRAFT_ITEM", "r3ct:clock_or_compass", amount);
+                QuestManager.handleAction(serverPlayer, "CRAFT_ITEM", "r3ct_daily:clock_or_compass", amount);
             }
 
             if (itemId.contains("_fence") || itemId.contains("_fence_gate")) {
@@ -54,10 +55,6 @@ public abstract class PlayerStatMixin {
             String itemId = BuiltInRegistries.ITEM.getKey(item).toString();
 
             QuestManager.handleAction(serverPlayer, "BREAK_ITEM", itemId, amount);
-
-            if (itemId.endsWith("_boots")) {
-                QuestManager.handleAction(serverPlayer, "BREAK_ITEM", "r3ct:boots", amount);
-            }
         }
 
         if (stat.getType() == Stats.CUSTOM && stat.getValue() instanceof net.minecraft.resources.Identifier statId) {
@@ -71,61 +68,72 @@ public abstract class PlayerStatMixin {
                 case "minecraft:walk_one_cm":
                 case "minecraft:crouch_one_cm":
                     walkCmBuffer += amount;
-                    blocks = walkCmBuffer / 100;
-                    if (blocks > 0) {
+                    if (walkCmBuffer >= 100) {
+                        blocks = walkCmBuffer / 100;
                         QuestManager.handleAction(serverPlayer, "WALK_DISTANCE", "any", blocks);
                         QuestManager.handleAction(serverPlayer, "WALK_OR_SPRINT_DISTANCE", "any", blocks);
-                        walkCmBuffer %= 100;
+                        walkCmBuffer -= (blocks * 100);
                     }
                     break;
                 case "minecraft:sprint_one_cm":
                     sprintCmBuffer += amount;
-                    blocks = sprintCmBuffer / 100;
-                    if (blocks > 0) {
+                    if (sprintCmBuffer >= 100) {
+                        blocks = sprintCmBuffer / 100;
                         QuestManager.handleAction(serverPlayer, "SPRINT_DISTANCE", "any", blocks);
                         QuestManager.handleAction(serverPlayer, "WALK_OR_SPRINT_DISTANCE", "any", blocks);
-                        sprintCmBuffer %= 100;
+                        sprintCmBuffer -= (blocks * 100);
                     }
                     break;
                 case "minecraft:swim_one_cm":
                     swimCmBuffer += amount;
-                    blocks = swimCmBuffer / 100;
-                    if (blocks > 0) {
+                    if (swimCmBuffer >= 100) {
+                        blocks = swimCmBuffer / 100;
                         QuestManager.handleAction(serverPlayer, "SWIM_DISTANCE", "any", blocks);
-                        swimCmBuffer %= 100;
+                        swimCmBuffer -= (blocks * 100);
                     }
                     break;
                 case "minecraft:boat_one_cm":
                     boatCmBuffer += amount;
-                    blocks = boatCmBuffer / 100;
-                    if (blocks > 0) {
+                    if (boatCmBuffer >= 100) {
+                        blocks = boatCmBuffer / 100;
                         QuestManager.handleAction(serverPlayer, "BOAT_DISTANCE", "any", blocks);
-                        boatCmBuffer %= 100;
+                        boatCmBuffer -= (blocks * 100);
                     }
                     break;
                 case "minecraft:minecart_one_cm":
                     minecartCmBuffer += amount;
-                    blocks = minecartCmBuffer / 100;
-                    if (blocks > 0) {
+                    if (minecartCmBuffer >= 100) {
+                        blocks = minecartCmBuffer / 100;
                         QuestManager.handleAction(serverPlayer, "MINECART_DISTANCE", "any", blocks);
-                        minecartCmBuffer %= 100;
+                        minecartCmBuffer -= (blocks * 100);
                     }
                     break;
                 case "minecraft:horse_one_cm":
                     horseCmBuffer += amount;
-                    blocks = horseCmBuffer / 100;
-                    if (blocks > 0) {
+                    if (horseCmBuffer >= 100) {
+                        blocks = horseCmBuffer / 100;
                         QuestManager.handleAction(serverPlayer, "HORSE_DISTANCE", "any", blocks);
-                        horseCmBuffer %= 100;
+                        horseCmBuffer -= (blocks * 100);
                     }
                     break;
                 case "minecraft:strider_one_cm":
                     striderCmBuffer += amount;
-                    blocks = striderCmBuffer / 100;
-                    if (blocks > 0) {
+                    if (striderCmBuffer >= 100) {
+                        blocks = striderCmBuffer / 100;
                         QuestManager.handleAction(serverPlayer, "STRIDER_DISTANCE", "any", blocks);
-                        striderCmBuffer %= 100;
+                        striderCmBuffer -= (blocks * 100);
                     }
+                    break;
+                case "minecraft:pig_one_cm":
+                    pigCmBuffer += amount;
+                    if (pigCmBuffer >= 100) {
+                        blocks = pigCmBuffer / 100;
+                        QuestManager.handleAction(serverPlayer, "PIG_DISTANCE", "any", blocks);
+                        pigCmBuffer -= (blocks * 100);
+                    }
+                    break;
+                case "minecraft:bell_ring":
+                    QuestManager.handleAction(serverPlayer, "RING_BELL", "any", amount);
                     break;
             }
         }

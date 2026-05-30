@@ -1,13 +1,14 @@
 {
   "_comment_version": "Do not change the version number! It is used for automatic config updates.",
-  "version": 1,
+  "version": 2,
 
   "_comment_days_1_to_4": "Rewards given for logging in on days 1, 2, 3, and 4. 'weight' determines drop chance (higher = more common).",
   "days_1_to_4": [
     [
+      { "item": "minecraft:coal", "min_amount": 8, "max_amount": 24, "weight": 100 },
       { "item": "minecraft:leather", "min_amount": 4, "max_amount": 16, "weight": 100 },
-      { "item": "minecraft:iron_ingot", "min_amount": 4, "max_amount": 8, "weight": 100 },
-      { "item": "minecraft:gold_ingot", "min_amount": 4, "max_amount": 8, "weight": 100 }
+      { "item": "minecraft:iron_ingot", "min_amount": 4, "max_amount": 8, "weight": 75 },
+      { "item": "minecraft:gold_ingot", "min_amount": 4, "max_amount": 8, "weight": 50 }
     ],
     [
       { "item": "minecraft:cooked_porkchop", "min_amount": 4, "max_amount": 8, "weight": 100 },
@@ -16,36 +17,42 @@
       { "item": "minecraft:cooked_mutton", "min_amount": 4, "max_amount": 8, "weight": 100 }
     ],
     [
-      { "item": "r3ct_daily:random_potion", "min_amount": 1, "max_amount": 1, "weight": 100 }
+      { "item": "r3ct_daily:random_potion", "min_amount": 1, "max_amount": 1, "weight": 100 },
+      { "item": "minecraft:experience_bottle", "min_amount": 2, "max_amount": 4, "weight": 75 }
     ]
   ],
 
   "_comment_days_5_to_6": "Better rewards given for logging in on days 5 and 6. 'weight' determines drop chance (higher = more common).",
   "days_5_to_6": [
     [
-      { "item": "r3ct_daily:random_disc", "min_amount": 1, "max_amount": 1, "weight": 100 },
-      { "item": "r3ct_daily:random_spawn_egg", "min_amount": 1, "max_amount": 1, "weight": 100 },
-      { "item": "r3ct_daily:random_head", "min_amount": 1, "max_amount": 1, "weight": 100 }
+      { "item": "minecraft:emerald", "min_amount": 8, "max_amount": 16, "weight": 100 },
+      { "item": "minecraft:diamond", "min_amount": 4, "max_amount": 8, "weight": 75 }
     ],
     [
       { "item": "minecraft:golden_carrot", "min_amount": 4, "max_amount": 8, "weight": 100 },
-      { "item": "minecraft:golden_apple", "min_amount": 2, "max_amount": 4, "weight": 100 }
+      { "item": "minecraft:cake", "min_amount": 1, "max_amount": 1, "weight": 50 }
     ],
     [
-      { "item": "r3ct_daily:random_enchanted_book", "min_amount": 1, "max_amount": 1, "weight": 100 }
+      { "item": "r3ct_daily:random_enchanted_book", "min_amount": 1, "max_amount": 1, "weight": 100 },
+      { "item": "r3ct_daily:random_disc", "min_amount": 1, "max_amount": 1, "weight": 100 },
+      { "item": "r3ct_daily:random_head", "min_amount": 1, "max_amount": 1, "weight": 75 }
     ]
   ],
 
   "_comment_day_7": "The best rewards given for logging in on day 7. 'weight' determines drop chance (higher = more common).",
   "day_7": [
     [
-      { "item": "minecraft:netherite_scrap", "min_amount": 2, "max_amount": 2, "weight": 100 }
+      { "item": "minecraft:netherite_scrap", "min_amount": 1, "max_amount": 2, "weight": 75 },
+      { "item": "minecraft:diamond", "min_amount": 8, "max_amount": 16, "weight": 100 }
     ],
     [
-      { "item": "minecraft:enchanted_golden_apple", "min_amount": 1, "max_amount": 1, "weight": 100 }
+      { "item": "minecraft:golden_apple", "min_amount": 4, "max_amount": 8, "weight": 100 },
+      { "item": "minecraft:enchanted_golden_apple", "min_amount": 1, "max_amount": 1, "weight": 25 }
     ],
     [
-      { "item": "r3ct_daily:random_trim_template", "min_amount": 1, "max_amount": 1, "weight": 100 }
+      { "item": "r3ct_daily:random_trim_template", "min_amount": 1, "max_amount": 1, "weight": 100 },
+      { "item": "r3ct_daily:random_spawn_egg", "min_amount": 1, "max_amount": 1, "weight": 75 },
+      { "item": "minecraft:totem_of_undying", "min_amount": 1, "max_amount": 1, "weight": 50 }
     ]
   ]
 }

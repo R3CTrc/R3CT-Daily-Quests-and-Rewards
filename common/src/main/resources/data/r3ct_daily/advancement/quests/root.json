@@ -1,8 +1,8 @@
 {
   "display": {
     "icon": { "id": "minecraft:writable_book" },
-    "title": { "translate": "r3ct.advancement.root.title" },
-    "description": { "translate": "r3ct.advancement.root.desc" },
+    "title": { "translate": "r3ct_daily.advancement.root.title" },
+    "description": { "translate": "r3ct_daily.advancement.root.desc" },
     "background": "minecraft:block/bookshelf",
     "show_toast": false,
     "announce_to_chat": false,
