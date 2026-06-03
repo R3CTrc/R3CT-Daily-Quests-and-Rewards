@@ -13,6 +13,7 @@ import org.jspecify.annotations.NonNull;
 public class ConfigClientScreen extends Screen {
     private final Screen parent;
     private Button enableHudButton;
+    private Button alignmentButton;
     private EditBox xOffsetBox;
     private EditBox yOffsetBox;
     private EditBox hudScaleBox;
@@ -40,27 +41,36 @@ public class ConfigClientScreen extends Screen {
         ).bounds(rightColumnX, 50, widgetWidth, widgetHeight).build();
         this.addRenderableWidget(this.enableHudButton);
 
-        this.xOffsetBox = new EditBox(this.font, rightColumnX, 80, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.hud_x"));
+        this.alignmentButton = Button.builder(
+                getAlignmentButtonText(),
+                button -> {
+                    DailyClientConfig.getInstance().hudAlignment = DailyClientConfig.getInstance().hudAlignment.equals("right") ? "left" : "right";
+                    button.setMessage(getAlignmentButtonText());
+                }
+        ).bounds(rightColumnX, 80, widgetWidth, widgetHeight).build();
+        this.addRenderableWidget(this.alignmentButton);
+
+        this.xOffsetBox = new EditBox(this.font, rightColumnX, 110, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.hud_x"));
         this.xOffsetBox.setValue(String.valueOf(DailyClientConfig.getInstance().hudXOffset));
         this.addRenderableWidget(this.xOffsetBox);
 
-        this.yOffsetBox = new EditBox(this.font, rightColumnX, 110, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.hud_y"));
+        this.yOffsetBox = new EditBox(this.font, rightColumnX, 140, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.hud_y"));
         this.yOffsetBox.setValue(String.valueOf(DailyClientConfig.getInstance().hudYOffset));
         this.addRenderableWidget(this.yOffsetBox);
 
-        this.hudScaleBox = new EditBox(this.font, rightColumnX, 140, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.hud_scale"));
+        this.hudScaleBox = new EditBox(this.font, rightColumnX, 170, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.hud_scale"));
         this.hudScaleBox.setValue(String.valueOf(DailyClientConfig.getInstance().hudScale));
         this.addRenderableWidget(this.hudScaleBox);
 
-        this.questScaleBox = new EditBox(this.font, rightColumnX, 170, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.quest_scale"));
+        this.questScaleBox = new EditBox(this.font, rightColumnX, 200, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.quest_scale"));
         this.questScaleBox.setValue(String.valueOf(DailyClientConfig.getInstance().questScreenScale));
         this.addRenderableWidget(this.questScaleBox);
 
-        this.rewardScaleBox = new EditBox(this.font, rightColumnX, 200, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.reward_scale"));
+        this.rewardScaleBox = new EditBox(this.font, rightColumnX, 230, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.reward_scale"));
         this.rewardScaleBox.setValue(String.valueOf(DailyClientConfig.getInstance().rewardScreenScale));
         this.addRenderableWidget(this.rewardScaleBox);
 
-        this.leaderboardScaleBox = new EditBox(this.font, rightColumnX, 230, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.leaderboard_scale"));
+        this.leaderboardScaleBox = new EditBox(this.font, rightColumnX, 260, widgetWidth, widgetHeight, Component.translatable("r3ct_daily.config.entry.leaderboard_scale"));
         this.leaderboardScaleBox.setValue(String.valueOf(DailyClientConfig.getInstance().leaderboardScreenScale));
         this.addRenderableWidget(this.leaderboardScaleBox);
 
@@ -78,6 +88,11 @@ public class ConfigClientScreen extends Screen {
         }
     }
 
+    private Component getAlignmentButtonText() {
+        boolean isRight = DailyClientConfig.getInstance().hudAlignment.equals("right");
+        return Component.translatable(isRight ? "r3ct_daily.config.alignment.right" : "r3ct_daily.config.alignment.left");
+    }
+
     @Override
     public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.fill(0, 0, this.width, this.height, 0x99000000);
@@ -89,12 +104,13 @@ public class ConfigClientScreen extends Screen {
         int leftColumnX = this.width / 2 - 160;
 
         guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.enable_hud"), leftColumnX, 50 + 6, 0xFFFFFFFF);
-        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.hud_x"), leftColumnX, 80 + 6, 0xFFFFFFFF);
-        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.hud_y"), leftColumnX, 110 + 6, 0xFFFFFFFF);
-        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.hud_scale"), leftColumnX, 140 + 6, 0xFFFFFFFF);
-        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.quest_scale"), leftColumnX, 170 + 6, 0xFFFFFFFF);
-        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.reward_scale"), leftColumnX, 200 + 6, 0xFFFFFFFF);
-        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.leaderboard_scale"), leftColumnX, 230 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.hud_alignment"), leftColumnX, 80 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.hud_x"), leftColumnX, 110 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.hud_y"), leftColumnX, 140 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.hud_scale"), leftColumnX, 170 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.quest_scale"), leftColumnX, 200 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.reward_scale"), leftColumnX, 230 + 6, 0xFFFFFFFF);
+        guiGraphics.text(this.font, Component.translatable("r3ct_daily.config.entry.leaderboard_scale"), leftColumnX, 260 + 6, 0xFFFFFFFF);
     }
 
     @Override
