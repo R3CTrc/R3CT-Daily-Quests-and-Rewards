@@ -5,6 +5,9 @@
   "_comment_hud": "Enable or disable the on-screen quests HUD.",
   "enableHud": true,
 
+  "_comment_hud_alignment": "Set to 'left' or 'right' to align the HUD.",
+  "hudAlignment": "right",
+
   "_comment_hud_position": "X and Y offset for the HUD position on the screen (X=10 and Y=70 is default position).",
   "hudXOffset": 10,
   "hudYOffset": 70,
