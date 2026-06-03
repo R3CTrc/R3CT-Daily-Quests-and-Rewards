@@ -87,6 +87,7 @@ public class DailyNeoForgeClient {
             int screenWidth = event.getGuiGraphics().guiWidth();
             int rawXOffset = DailyClientConfig.getInstance().hudXOffset;
             int rawYOffset = DailyClientConfig.getInstance().hudYOffset;
+            boolean isRight = DailyClientConfig.getInstance().hudAlignment.equals("right");
 
             double currentGuiScale = Math.max(1.0, client.getWindow().getGuiScale());
             float targetGuiScale = 2.0f;
@@ -112,7 +113,8 @@ public class DailyNeoForgeClient {
             if (clientQuestData == null || clientQuestData.activeQuests.isEmpty()) {
                 if (!minimizedHud) {
                     String loadingMsg = "§e" + Component.translatable("r3ct_daily.hud.loading").getString();
-                    event.getGuiGraphics().drawString(client.font, loadingMsg, virtualWidth - client.font.width(loadingMsg) - xOffset, currentY, baseColor, true);
+                    int xPos = isRight ? virtualWidth - client.font.width(loadingMsg) - xOffset : xOffset;
+                    event.getGuiGraphics().drawString(client.font, loadingMsg, xPos, currentY, baseColor, true);
                 }
                 event.getGuiGraphics().pose().popMatrix();
                 return;
@@ -120,7 +122,8 @@ public class DailyNeoForgeClient {
 
             if (!minimizedHud) {
                 String title = "§e§l" + Component.translatable("r3ct_daily.quests.header.daily_quests").getString();
-                event.getGuiGraphics().drawString(client.font, title, virtualWidth - client.font.width(title) - xOffset, currentY, baseColor, true);
+                int xPos = isRight ? virtualWidth - client.font.width(title) - xOffset : xOffset;
+                event.getGuiGraphics().drawString(client.font, title, xPos, currentY, baseColor, true);
             }
             currentY += 12;
 
@@ -134,7 +137,8 @@ public class DailyNeoForgeClient {
                 String mark = done ? "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString() : "§c" + Component.translatable("r3ct_daily.quests.status.incomplete").getString();
 
                 if (minimizedHud) {
-                    event.getGuiGraphics().drawString(client.font, mark, virtualWidth - client.font.width(mark) - xOffset, currentY, baseColor, true);
+                    int xPos = isRight ? virtualWidth - client.font.width(mark) - xOffset : xOffset;
+                    event.getGuiGraphics().drawString(client.font, mark, xPos, currentY, baseColor, true);
                 } else {
                     String questName = (q.name != null && !q.name.isEmpty()) ? Component.translatable(q.name).getString() : Component.translatable(q.description).getString().split(" ")[0];
                     String diffIndicator = (q.difficulty == 0) ? "§2★ " : (q.difficulty == 1 ? "§6★ " : "§4★ ");
@@ -146,8 +150,15 @@ public class DailyNeoForgeClient {
                         progressColor = "§7";
                     }
 
-                    String lineText = diffIndicator + progressColor + questName + " (" + progress + "/" + q.requiredAmount + ") " + mark;
-                    event.getGuiGraphics().drawString(client.font, lineText, virtualWidth - client.font.width(lineText) - xOffset, currentY, baseColor, true);
+                    String lineText;
+                    if (isRight) {
+                        lineText = diffIndicator + progressColor + questName + " (" + progress + "/" + q.requiredAmount + ") " + mark;
+                    } else {
+                        lineText = mark + " " + diffIndicator + progressColor + questName + " (" + progress + "/" + q.requiredAmount + ")";
+                    }
+
+                    int xPos = isRight ? virtualWidth - client.font.width(lineText) - xOffset : xOffset;
+                    event.getGuiGraphics().drawString(client.font, lineText, xPos, currentY, baseColor, true);
                 }
                 currentY += 10;
             }
