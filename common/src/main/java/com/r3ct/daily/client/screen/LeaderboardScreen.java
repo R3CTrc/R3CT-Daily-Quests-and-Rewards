@@ -66,6 +66,26 @@ public class LeaderboardScreen extends Screen {
         renderList(guiGraphics, leftList, leftPos + 15, topPos + 50, mouseX, mouseY);
         renderList(guiGraphics, rightList, midX + 15, topPos + 50, mouseX, mouseY);
 
+        String switchText = Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.button.rewards_next" : "r3ct_daily.leaderboard.button.quests_prev").getString();
+        int switchWidth = this.font.width(switchText);
+        int switchX = (boardType == 0) ? leftPos + boardWidth + 15 : leftPos - 15 - switchWidth;
+        int switchY = (this.height / 2) - 4;
+
+        boolean switchHover = mouseX >= switchX && mouseX <= switchX + switchWidth && mouseY >= switchY - 2 && mouseY <= switchY + 10;
+        int switchColor = switchHover ? 0xFFFFFFFF : 0xFFAAAAAA;
+        guiGraphics.drawString(this.font, switchText, switchX, switchY, switchColor, true);
+
+        String backText = Component.translatable("r3ct_daily.leaderboard.button.back").getString();
+        int backWidth = this.font.width(backText);
+        int backX = midX - (backWidth / 2);
+        int backY = topPos + boardHeight + 8;
+
+        boolean backHover = mouseX >= backX - 2 && mouseX <= backX + backWidth + 2 && mouseY >= backY - 2 && mouseY <= backY + 10;
+        int backColor = backHover ? 0xFFFF5555 : 0xFFAAAAAA;
+        guiGraphics.drawString(this.font, backText, backX, backY, backColor, true);
+
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+
         if (hoveredEntry != null) {
             java.util.List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tt = new java.util.ArrayList<>();
 
@@ -88,26 +108,6 @@ public class LeaderboardScreen extends Screen {
             head.set(net.minecraft.core.component.DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createUnresolved(hoveredEntry.name()));
             guiGraphics.renderItem(head, mouseX + 11, mouseY - 14);
         }
-
-        String switchText = Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.button.rewards_next" : "r3ct_daily.leaderboard.button.quests_prev").getString();
-        int switchWidth = this.font.width(switchText);
-        int switchX = (boardType == 0) ? leftPos + boardWidth + 15 : leftPos - 15 - switchWidth;
-        int switchY = (this.height / 2) - 4;
-
-        boolean switchHover = mouseX >= switchX && mouseX <= switchX + switchWidth && mouseY >= switchY - 2 && mouseY <= switchY + 10;
-        int switchColor = switchHover ? 0xFFFFFFFF : 0xFFAAAAAA;
-        guiGraphics.drawString(this.font, switchText, switchX, switchY, switchColor, true);
-
-        String backText = Component.translatable("r3ct_daily.leaderboard.button.back").getString();
-        int backWidth = this.font.width(backText);
-        int backX = midX - (backWidth / 2);
-        int backY = topPos + boardHeight + 8;
-
-        boolean backHover = mouseX >= backX - 2 && mouseX <= backX + backWidth + 2 && mouseY >= backY - 2 && mouseY <= backY + 10;
-        int backColor = backHover ? 0xFFFF5555 : 0xFFAAAAAA;
-        guiGraphics.drawString(this.font, backText, backX, backY, backColor, true);
-
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         guiGraphics.pose().popMatrix();
     }
