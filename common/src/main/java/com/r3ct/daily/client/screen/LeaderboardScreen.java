@@ -85,6 +85,8 @@ public class LeaderboardScreen extends Screen {
         int backColor = backHover ? 0xFFFF5555 : 0xFFAAAAAA;
         guiGraphics.text(this.font, backText, backX, backY, backColor, true);
 
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+
         if (hoveredEntry != null) {
             java.util.List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tt = new java.util.ArrayList<>();
 
@@ -107,8 +109,6 @@ public class LeaderboardScreen extends Screen {
             head.set(net.minecraft.core.component.DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createUnresolved(hoveredEntry.name()));
             guiGraphics.item(head, mouseX + 11, mouseY - 14);
         }
-
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
         guiGraphics.pose().popMatrix();
     }
