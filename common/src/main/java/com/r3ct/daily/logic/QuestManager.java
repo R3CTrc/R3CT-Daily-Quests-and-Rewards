@@ -345,14 +345,14 @@ public class QuestManager {
 
         DailyServerConfig.MilestoneReward mr = null;
         if (threshold == 50) {
-            mr = DailyServerConfig.mechanics.milestones.point_50;
+            mr = DailyServerConfig.milestones.point_50;
         } else if (threshold == 100) {
-            mr = DailyServerConfig.mechanics.milestones.point_100;
+            mr = DailyServerConfig.milestones.point_100;
         } else if (threshold == 150) {
-            mr = DailyServerConfig.mechanics.milestones.point_150;
+            mr = DailyServerConfig.milestones.point_150;
         } else if (threshold == 200) {
             QuestManager.grantAdvancement(player, "r3ct_daily:quests/points_hunter");
-            mr = DailyServerConfig.mechanics.milestones.point_200;
+            mr = DailyServerConfig.milestones.point_200;
         }
 
         if (mr != null) {

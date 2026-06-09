@@ -20,12 +20,10 @@ public class DailyServerConfig {
 
     private static final File QUESTS_FILE = CONFIG_DIR.resolve("r3ct_daily_quests.json").toFile();
     private static final File REWARDS_FILE = CONFIG_DIR.resolve("r3ct_daily_rewards.json").toFile();
-    private static final File QUEST_REWARDS_FILE = CONFIG_DIR.resolve("r3ct_daily_quests_rewards.json").toFile();
     private static final File MECHANICS_FILE = CONFIG_DIR.resolve("r3ct_daily_server.json").toFile();
 
     private static final int QUESTS_VERSION = 2;
     private static final int REWARDS_VERSION = 2;
-    private static final int QUEST_REWARDS_VERSION = 1;
     private static final int MECHANICS_VERSION = 1;
 
     public static class RewardEntry {
@@ -75,7 +73,6 @@ public class DailyServerConfig {
         public QuestsSettings quests = new QuestsSettings();
         public StreaksSettings streaks = new StreaksSettings();
         public TechnicalSettings technical = new TechnicalSettings();
-        public MilestoneRewardsConfig milestones = new MilestoneRewardsConfig();
     }
 
     public static class MilestoneReward {
@@ -88,18 +85,22 @@ public class DailyServerConfig {
         }
     }
 
-    public static class MilestoneRewardsConfig {
+    public static class MilestonesConfig {
         public MilestoneReward point_50 = new MilestoneReward("minecraft:amethyst_shard", 32, "&d");
         public MilestoneReward point_100 = new MilestoneReward("minecraft:emerald", 16, "&a");
         public MilestoneReward point_150 = new MilestoneReward("minecraft:diamond", 8, "&b");
         public MilestoneReward point_200 = new MilestoneReward("minecraft:netherite_scrap", 4, "&c");
+    }
 
+    public static class BonusesConfig {
         public MilestoneReward bonus_7 = new MilestoneReward("minecraft:emerald", 32, "&a");
         public MilestoneReward bonus_14 = new MilestoneReward("minecraft:diamond", 16, "&b");
         public MilestoneReward bonus_21 = new MilestoneReward("minecraft:netherite_scrap", 4, "&c");
     }
 
     public static MechanicsConfig mechanics = new MechanicsConfig();
+    public static MilestonesConfig milestones = new MilestonesConfig();
+    public static BonusesConfig bonuses = new BonusesConfig();
 
     public static List<List<RewardEntry>> rewardsTier1 = new ArrayList<>();
     public static List<List<RewardEntry>> rewardsTier2 = new ArrayList<>();
@@ -150,12 +151,10 @@ public class DailyServerConfig {
 
             checkAndMigrate(QUESTS_FILE, "r3ct_daily_quests.json", QUESTS_VERSION);
             checkAndMigrate(REWARDS_FILE, "r3ct_daily_rewards.json", REWARDS_VERSION);
-            checkAndMigrate(QUEST_REWARDS_FILE, "r3ct_daily_quests_rewards.json", QUEST_REWARDS_VERSION);
             checkAndMigrate(MECHANICS_FILE, "r3ct_daily_server.json", MECHANICS_VERSION);
 
             loadQuests();
             loadRewards();
-            loadDailyQuestRewards();
             loadMechanics();
 
         } catch (Exception e) {
@@ -186,6 +185,7 @@ public class DailyServerConfig {
 
     private static void loadRewards() {
         rewardsTier1.clear(); rewardsTier2.clear(); rewardsTier3.clear();
+        dailyQuestRewards.clear();
         if (!REWARDS_FILE.exists()) return;
 
         try (FileReader reader = new FileReader(REWARDS_FILE)) {
@@ -193,20 +193,21 @@ public class DailyServerConfig {
             parseRewards(root.getAsJsonArray("days_1_to_4"), rewardsTier1);
             parseRewards(root.getAsJsonArray("days_5_to_6"), rewardsTier2);
             parseRewards(root.getAsJsonArray("day_7"), rewardsTier3);
+
+            if (root.has("quest_completion")) {
+                parseSimpleRewards(root.getAsJsonArray("quest_completion"), dailyQuestRewards);
+            }
+
+            if (root.has("milestones")) {
+                milestones = GSON.fromJson(root.get("milestones"), MilestonesConfig.class);
+            }
+
+            if (root.has("bonuses")) {
+                bonuses = GSON.fromJson(root.get("bonuses"), BonusesConfig.class);
+            }
+
         } catch (Exception e) {
             Constants.LOG.error("Error loading r3ct_daily_rewards.json!", e);
-        }
-    }
-
-    private static void loadDailyQuestRewards() {
-        dailyQuestRewards.clear();
-        if (!QUEST_REWARDS_FILE.exists()) return;
-
-        try (FileReader reader = new FileReader(QUEST_REWARDS_FILE)) {
-            JsonObject root = GSON.fromJson(reader, JsonObject.class);
-            parseSimpleRewards(root.getAsJsonArray("rewards"), dailyQuestRewards);
-        } catch (Exception e) {
-            Constants.LOG.error("Error loading r3ct_daily_quests_rewards.json!", e);
         }
     }
 

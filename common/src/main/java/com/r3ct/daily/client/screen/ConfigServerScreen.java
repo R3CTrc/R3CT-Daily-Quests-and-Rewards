@@ -24,7 +24,7 @@ public class ConfigServerScreen extends Screen {
         int buttonWidth = 200;
         int buttonHeight = 20;
         int centerX = this.width / 2 - buttonWidth / 2;
-        int startY = this.height / 2 - 50;
+        int startY = this.height / 2 - 35;
 
         this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.quests"), button -> openFile("r3ct_daily_quests.json"))
                 .bounds(centerX, startY, buttonWidth, buttonHeight).build());
@@ -32,14 +32,11 @@ public class ConfigServerScreen extends Screen {
         this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.rewards"), button -> openFile("r3ct_daily_rewards.json"))
                 .bounds(centerX, startY + 25, buttonWidth, buttonHeight).build());
 
-        this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.quests_rewards"), button -> openFile("r3ct_daily_quests_rewards.json"))
+        this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.mechanics"), button -> openFile("r3ct_daily_server.json"))
                 .bounds(centerX, startY + 50, buttonWidth, buttonHeight).build());
 
-        this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.config.server.button.mechanics"), button -> openFile("r3ct_daily_server.json"))
-                .bounds(centerX, startY + 75, buttonWidth, buttonHeight).build());
-
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose())
-                .bounds(centerX, startY + 110, buttonWidth, buttonHeight).build());
+                .bounds(centerX, startY + 90, buttonWidth, buttonHeight).build());
     }
 
     private void openFile(String fileName) {

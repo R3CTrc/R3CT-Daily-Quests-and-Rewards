@@ -294,12 +294,12 @@ public class RewardManager {
         DailyServerConfig.MilestoneReward mr = null;
         if (bonusDay == 7) {
             QuestManager.grantAdvancement(player, "r3ct_daily:rewards/week_bonus");
-            mr = DailyServerConfig.mechanics.milestones.bonus_7;
+            mr = DailyServerConfig.bonuses.bonus_7;
         } else if (bonusDay == 14) {
-            mr = DailyServerConfig.mechanics.milestones.bonus_14;
+            mr = DailyServerConfig.bonuses.bonus_14;
         } else if (bonusDay == 21) {
             QuestManager.grantAdvancement(player, "r3ct_daily:rewards/cycle_end");
-            mr = DailyServerConfig.mechanics.milestones.bonus_21;
+            mr = DailyServerConfig.bonuses.bonus_21;
         }
 
         if (mr != null) {

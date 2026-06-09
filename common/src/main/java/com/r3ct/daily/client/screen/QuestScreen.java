@@ -237,10 +237,10 @@ public class QuestScreen extends Screen {
         String rewLabel = Component.translatable("r3ct_daily.quests.tooltip.reward").getString();
 
         DailyServerConfig.MilestoneReward[] mr = {
-                DailyServerConfig.mechanics.milestones.point_50,
-                DailyServerConfig.mechanics.milestones.point_100,
-                DailyServerConfig.mechanics.milestones.point_150,
-                DailyServerConfig.mechanics.milestones.point_200
+                DailyServerConfig.milestones.point_50,
+                DailyServerConfig.milestones.point_100,
+                DailyServerConfig.milestones.point_150,
+                DailyServerConfig.milestones.point_200
         };
 
         String[] tooltips = new String[4];
@@ -286,10 +286,10 @@ public class QuestScreen extends Screen {
     private void renderPointMilestones(GuiGraphicsExtractor g, int x, int y, int bWidth, int mouseX, int mouseY) {
         int[] thresholds = {50, 100, 150, 200};
         DailyServerConfig.MilestoneReward[] rewards = {
-                DailyServerConfig.mechanics.milestones.point_50,
-                DailyServerConfig.mechanics.milestones.point_100,
-                DailyServerConfig.mechanics.milestones.point_150,
-                DailyServerConfig.mechanics.milestones.point_200
+                DailyServerConfig.milestones.point_50,
+                DailyServerConfig.milestones.point_100,
+                DailyServerConfig.milestones.point_150,
+                DailyServerConfig.milestones.point_200
         };
 
         ItemStack[] icons = new ItemStack[4];
@@ -397,10 +397,10 @@ public class QuestScreen extends Screen {
             int[] thresholds = {50, 100, 150, 200};
 
             DailyServerConfig.MilestoneReward[] mr = {
-                    DailyServerConfig.mechanics.milestones.point_50,
-                    DailyServerConfig.mechanics.milestones.point_100,
-                    DailyServerConfig.mechanics.milestones.point_150,
-                    DailyServerConfig.mechanics.milestones.point_200
+                    DailyServerConfig.milestones.point_50,
+                    DailyServerConfig.milestones.point_100,
+                    DailyServerConfig.milestones.point_150,
+                    DailyServerConfig.milestones.point_200
             };
 
             for (int i = 0; i < 4; i++) {
@@ -564,10 +564,10 @@ public class QuestScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
         DailyServerConfig.MilestoneReward[] mr = {
-                DailyServerConfig.mechanics.milestones.point_50,
-                DailyServerConfig.mechanics.milestones.point_100,
-                DailyServerConfig.mechanics.milestones.point_150,
-                DailyServerConfig.mechanics.milestones.point_200
+                DailyServerConfig.milestones.point_50,
+                DailyServerConfig.milestones.point_100,
+                DailyServerConfig.milestones.point_150,
+                DailyServerConfig.milestones.point_200
         };
         int[] thresholds = {50, 100, 150, 200};
 
