@@ -234,14 +234,18 @@ public class DailyServerConfig {
             com.google.gson.JsonArray bucketArray = array.get(i).getAsJsonArray();
             List<RewardEntry> bucket = new ArrayList<>();
             for (int j = 0; j < bucketArray.size(); j++) {
-                com.google.gson.JsonObject obj = bucketArray.get(j).getAsJsonObject();
-                bucket.add(new RewardEntry(
-                        obj.get("item").getAsString(),
-                        obj.get("min_amount").getAsInt(),
-                        obj.get("max_amount").getAsInt(),
-                        obj.get("weight").getAsInt(),
-                        obj.has("color") ? obj.get("color").getAsString() : "&b"
-                ));
+                try {
+                    com.google.gson.JsonObject obj = bucketArray.get(j).getAsJsonObject();
+                    bucket.add(new RewardEntry(
+                            obj.get("item").getAsString(),
+                            obj.get("min_amount").getAsInt(),
+                            obj.get("max_amount").getAsInt(),
+                            obj.get("weight").getAsInt(),
+                            obj.has("color") ? obj.get("color").getAsString() : "&b"
+                    ));
+                } catch (Exception e) {
+                    Constants.LOG.error("Error loading reward entry in list (group: " + i + ", item: " + j + "). Skipping entry.", e);
+                }
             }
             tierList.add(bucket);
         }
@@ -250,6 +254,7 @@ public class DailyServerConfig {
     private static void parseSimpleRewards(com.google.gson.JsonArray array, List<RewardEntry> list) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
+            try {
             com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
             list.add(new RewardEntry(
                     obj.get("item").getAsString(),
@@ -258,6 +263,9 @@ public class DailyServerConfig {
                     obj.get("weight").getAsInt(),
                     obj.has("color") ? obj.get("color").getAsString() : "&b"
             ));
+            } catch (Exception e) {
+                Constants.LOG.error("Error loading simple reward entry (index: " + i + "). Skipping entry.", e);
+            }
         }
     }
 
