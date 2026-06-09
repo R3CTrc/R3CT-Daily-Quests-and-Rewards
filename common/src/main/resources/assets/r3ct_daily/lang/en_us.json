@@ -41,8 +41,7 @@
   "r3ct_daily.config.main.server_tooltip_disabled": "Server settings are only available in Singleplayer!",
   "r3ct_daily.config.server.title": "Server Configuration",
   "r3ct_daily.config.server.button.quests": "Quests Configuration",
-  "r3ct_daily.config.server.button.rewards": "Daily Rewards Configuration",
-  "r3ct_daily.config.server.button.quests_rewards": "Quest Rewards Configuration",
+  "r3ct_daily.config.server.button.rewards": "Rewards Configuration",
   "r3ct_daily.config.server.button.mechanics": "Server Mechanics Configuration",
 
   "r3ct_daily.leaderboard.title": "Leaderboard",

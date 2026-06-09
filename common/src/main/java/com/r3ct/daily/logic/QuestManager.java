@@ -233,7 +233,7 @@ public class QuestManager {
 
         int baseXp = (q.difficulty == 0) ? DailyServerConfig.mechanics.quests.xpPerQuestEasy :
                 (q.difficulty == 1) ? DailyServerConfig.mechanics.quests.xpPerQuestMedium :
-                        DailyServerConfig.mechanics.quests.xpPerQuestHard;
+                DailyServerConfig.mechanics.quests.xpPerQuestHard;
 
         int xpReward = baseXp * multi;
         player.giveExperiencePoints(xpReward);
@@ -345,14 +345,14 @@ public class QuestManager {
 
         DailyServerConfig.MilestoneReward mr = null;
         if (threshold == 50) {
-            mr = DailyServerConfig.mechanics.milestones.point_50;
+            mr = DailyServerConfig.milestones.point_50;
         } else if (threshold == 100) {
-            mr = DailyServerConfig.mechanics.milestones.point_100;
+            mr = DailyServerConfig.milestones.point_100;
         } else if (threshold == 150) {
-            mr = DailyServerConfig.mechanics.milestones.point_150;
+            mr = DailyServerConfig.milestones.point_150;
         } else if (threshold == 200) {
             QuestManager.grantAdvancement(player, "r3ct_daily:quests/points_hunter");
-            mr = DailyServerConfig.mechanics.milestones.point_200;
+            mr = DailyServerConfig.milestones.point_200;
         }
 
         if (mr != null) {
@@ -524,7 +524,7 @@ public class QuestManager {
 
         int cost = (oldQuest.difficulty == 0) ? DailyServerConfig.mechanics.quests.rerollCostEasy :
                 (oldQuest.difficulty == 1) ? DailyServerConfig.mechanics.quests.rerollCostMedium :
-                        DailyServerConfig.mechanics.quests.rerollCostHard;
+                DailyServerConfig.mechanics.quests.rerollCostHard;
 
         Component costComp = Component.literal(String.valueOf(cost)).withStyle(net.minecraft.ChatFormatting.RED);
         Component pointsComp = Component.literal(String.valueOf(data.totalQuestPoints)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
