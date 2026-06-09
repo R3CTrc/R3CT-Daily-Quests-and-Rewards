@@ -212,9 +212,9 @@ public class RewardScreen extends Screen {
         String rewLabel = Component.translatable("r3ct_daily.quests.tooltip.reward").getString();
 
         DailyServerConfig.MilestoneReward[] mr = {
-                DailyServerConfig.mechanics.milestones.bonus_7,
-                DailyServerConfig.mechanics.milestones.bonus_14,
-                DailyServerConfig.mechanics.milestones.bonus_21
+                DailyServerConfig.bonuses.bonus_7,
+                DailyServerConfig.bonuses.bonus_14,
+                DailyServerConfig.bonuses.bonus_21
         };
 
         String[] titles = new String[3];
@@ -256,9 +256,9 @@ public class RewardScreen extends Screen {
     private void renderBonusMilestones(GuiGraphics g, int x, int y, int bWidth, int mouseX, int mouseY) {
         int[] thresholds = {7, 14, 21};
         DailyServerConfig.MilestoneReward[] mr = {
-                DailyServerConfig.mechanics.milestones.bonus_7,
-                DailyServerConfig.mechanics.milestones.bonus_14,
-                DailyServerConfig.mechanics.milestones.bonus_21
+                DailyServerConfig.bonuses.bonus_7,
+                DailyServerConfig.bonuses.bonus_14,
+                DailyServerConfig.bonuses.bonus_21
         };
 
         ItemStack[] icons = new ItemStack[3];
@@ -399,9 +399,9 @@ public class RewardScreen extends Screen {
         tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
         DailyServerConfig.MilestoneReward[] mr = {
-                DailyServerConfig.mechanics.milestones.bonus_7,
-                DailyServerConfig.mechanics.milestones.bonus_14,
-                DailyServerConfig.mechanics.milestones.bonus_21
+                DailyServerConfig.bonuses.bonus_7,
+                DailyServerConfig.bonuses.bonus_14,
+                DailyServerConfig.bonuses.bonus_21
         };
         int[] thresholds = {7, 14, 21};
 
@@ -498,9 +498,9 @@ public class RewardScreen extends Screen {
             int bWidth = 135;
             int[] thresholds = {7, 14, 21};
             DailyServerConfig.MilestoneReward[] mr = {
-                    DailyServerConfig.mechanics.milestones.bonus_7,
-                    DailyServerConfig.mechanics.milestones.bonus_14,
-                    DailyServerConfig.mechanics.milestones.bonus_21
+                    DailyServerConfig.bonuses.bonus_7,
+                    DailyServerConfig.bonuses.bonus_14,
+                    DailyServerConfig.bonuses.bonus_21
             };
             int cycle = (data.totalCollected == 0) ? 0 : (data.totalCollected - 1) / 21;
             for (int i = 0; i < 3; i++) {
