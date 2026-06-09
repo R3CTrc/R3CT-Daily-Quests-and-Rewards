@@ -20,13 +20,11 @@ public class DailyServerConfig {
 
     private static final File QUESTS_FILE = CONFIG_DIR.resolve("r3ct_daily_quests.json").toFile();
     private static final File REWARDS_FILE = CONFIG_DIR.resolve("r3ct_daily_rewards.json").toFile();
-    private static final File QUEST_REWARDS_FILE = CONFIG_DIR.resolve("r3ct_daily_quests_rewards.json").toFile();
     private static final File MECHANICS_FILE = CONFIG_DIR.resolve("r3ct_daily_server.json").toFile();
 
     private static final int QUESTS_VERSION = 2;
     private static final int REWARDS_VERSION = 2;
-    private static final int QUEST_REWARDS_VERSION = 1;
-    private static final int MECHANICS_VERSION = 1;
+    private static final int MECHANICS_VERSION = 2;
 
     public static class RewardEntry {
         public String item;
@@ -75,7 +73,6 @@ public class DailyServerConfig {
         public QuestsSettings quests = new QuestsSettings();
         public StreaksSettings streaks = new StreaksSettings();
         public TechnicalSettings technical = new TechnicalSettings();
-        public MilestoneRewardsConfig milestones = new MilestoneRewardsConfig();
     }
 
     public static class MilestoneReward {
@@ -88,18 +85,22 @@ public class DailyServerConfig {
         }
     }
 
-    public static class MilestoneRewardsConfig {
+    public static class MilestonesConfig {
         public MilestoneReward point_50 = new MilestoneReward("minecraft:amethyst_shard", 32, "&d");
         public MilestoneReward point_100 = new MilestoneReward("minecraft:emerald", 16, "&a");
         public MilestoneReward point_150 = new MilestoneReward("minecraft:diamond", 8, "&b");
         public MilestoneReward point_200 = new MilestoneReward("minecraft:netherite_scrap", 4, "&c");
+    }
 
+    public static class BonusesConfig {
         public MilestoneReward bonus_7 = new MilestoneReward("minecraft:emerald", 32, "&a");
         public MilestoneReward bonus_14 = new MilestoneReward("minecraft:diamond", 16, "&b");
         public MilestoneReward bonus_21 = new MilestoneReward("minecraft:netherite_scrap", 4, "&c");
     }
 
     public static MechanicsConfig mechanics = new MechanicsConfig();
+    public static MilestonesConfig milestones = new MilestonesConfig();
+    public static BonusesConfig bonuses = new BonusesConfig();
 
     public static List<List<RewardEntry>> rewardsTier1 = new ArrayList<>();
     public static List<List<RewardEntry>> rewardsTier2 = new ArrayList<>();
@@ -150,12 +151,10 @@ public class DailyServerConfig {
 
             checkAndMigrate(QUESTS_FILE, "r3ct_daily_quests.json", QUESTS_VERSION);
             checkAndMigrate(REWARDS_FILE, "r3ct_daily_rewards.json", REWARDS_VERSION);
-            checkAndMigrate(QUEST_REWARDS_FILE, "r3ct_daily_quests_rewards.json", QUEST_REWARDS_VERSION);
             checkAndMigrate(MECHANICS_FILE, "r3ct_daily_server.json", MECHANICS_VERSION);
 
             loadQuests();
             loadRewards();
-            loadDailyQuestRewards();
             loadMechanics();
 
         } catch (Exception e) {
@@ -186,6 +185,7 @@ public class DailyServerConfig {
 
     private static void loadRewards() {
         rewardsTier1.clear(); rewardsTier2.clear(); rewardsTier3.clear();
+        dailyQuestRewards.clear();
         if (!REWARDS_FILE.exists()) return;
 
         try (FileReader reader = new FileReader(REWARDS_FILE)) {
@@ -193,20 +193,21 @@ public class DailyServerConfig {
             parseRewards(root.getAsJsonArray("days_1_to_4"), rewardsTier1);
             parseRewards(root.getAsJsonArray("days_5_to_6"), rewardsTier2);
             parseRewards(root.getAsJsonArray("day_7"), rewardsTier3);
+
+            if (root.has("quest_completion")) {
+                parseSimpleRewards(root.getAsJsonArray("quest_completion"), dailyQuestRewards);
+            }
+
+            if (root.has("milestones")) {
+                milestones = GSON.fromJson(root.get("milestones"), MilestonesConfig.class);
+            }
+
+            if (root.has("bonuses")) {
+                bonuses = GSON.fromJson(root.get("bonuses"), BonusesConfig.class);
+            }
+
         } catch (Exception e) {
             Constants.LOG.error("Error loading r3ct_daily_rewards.json!", e);
-        }
-    }
-
-    private static void loadDailyQuestRewards() {
-        dailyQuestRewards.clear();
-        if (!QUEST_REWARDS_FILE.exists()) return;
-
-        try (FileReader reader = new FileReader(QUEST_REWARDS_FILE)) {
-            JsonObject root = GSON.fromJson(reader, JsonObject.class);
-            parseSimpleRewards(root.getAsJsonArray("rewards"), dailyQuestRewards);
-        } catch (Exception e) {
-            Constants.LOG.error("Error loading r3ct_daily_quests_rewards.json!", e);
         }
     }
 
@@ -233,14 +234,18 @@ public class DailyServerConfig {
             com.google.gson.JsonArray bucketArray = array.get(i).getAsJsonArray();
             List<RewardEntry> bucket = new ArrayList<>();
             for (int j = 0; j < bucketArray.size(); j++) {
-                com.google.gson.JsonObject obj = bucketArray.get(j).getAsJsonObject();
-                bucket.add(new RewardEntry(
-                        obj.get("item").getAsString(),
-                        obj.get("min_amount").getAsInt(),
-                        obj.get("max_amount").getAsInt(),
-                        obj.get("weight").getAsInt(),
-                        obj.has("color") ? obj.get("color").getAsString() : "&b"
-                ));
+                try {
+                    com.google.gson.JsonObject obj = bucketArray.get(j).getAsJsonObject();
+                    bucket.add(new RewardEntry(
+                            obj.get("item").getAsString(),
+                            obj.get("min_amount").getAsInt(),
+                            obj.get("max_amount").getAsInt(),
+                            obj.get("weight").getAsInt(),
+                            obj.has("color") ? obj.get("color").getAsString() : "&b"
+                    ));
+                } catch (Exception e) {
+                    Constants.LOG.error("Error loading reward entry in list (group: " + i + ", item: " + j + "). Skipping entry.", e);
+                }
             }
             tierList.add(bucket);
         }
@@ -249,14 +254,18 @@ public class DailyServerConfig {
     private static void parseSimpleRewards(com.google.gson.JsonArray array, List<RewardEntry> list) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
-            com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
-            list.add(new RewardEntry(
-                    obj.get("item").getAsString(),
-                    obj.get("min_amount").getAsInt(),
-                    obj.get("max_amount").getAsInt(),
-                    obj.get("weight").getAsInt(),
-                    obj.has("color") ? obj.get("color").getAsString() : "&b"
-            ));
+            try {
+                com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
+                list.add(new RewardEntry(
+                        obj.get("item").getAsString(),
+                        obj.get("min_amount").getAsInt(),
+                        obj.get("max_amount").getAsInt(),
+                        obj.get("weight").getAsInt(),
+                        obj.has("color") ? obj.get("color").getAsString() : "&b"
+                ));
+            } catch (Exception e) {
+                Constants.LOG.error("Error loading simple reward entry (index: " + i + "). Skipping entry.", e);
+            }
         }
     }
 
@@ -264,29 +273,29 @@ public class DailyServerConfig {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
             try {
-            com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
-            int diffInt = obj.get("difficulty").getAsInt();
+                com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
+                int diffInt = obj.get("difficulty").getAsInt();
 
-            String itemStr = obj.get("reward_item").getAsString();
-            int rewardAmount = obj.get("reward_amount").getAsInt();
+                String itemStr = obj.get("reward_item").getAsString();
+                int rewardAmount = obj.get("reward_amount").getAsInt();
 
-            Quest q = new Quest(
-                    obj.get("id").getAsString(),
-                    obj.has("name") ? obj.get("name").getAsString() : "Quest",
-                    obj.get("description").getAsString(),
-                    obj.get("amount").getAsInt(),
-                    diffInt,
-                    obj.get("points").getAsInt(),
-                    rewardAmount,
-                    dimension,
-                    obj.get("action_type").getAsString(),
-                    obj.has("target") ? obj.get("target").getAsString() : "any",
-                    itemStr
-            );
+                Quest q = new Quest(
+                        obj.get("id").getAsString(),
+                        obj.has("name") ? obj.get("name").getAsString() : "Quest",
+                        obj.get("description").getAsString(),
+                        obj.get("amount").getAsInt(),
+                        diffInt,
+                        obj.get("points").getAsInt(),
+                        rewardAmount,
+                        dimension,
+                        obj.get("action_type").getAsString(),
+                        obj.has("target") ? obj.get("target").getAsString() : "any",
+                        itemStr
+                );
 
-            if (diffInt == 0) QuestManager.EASY_QUESTS.add(q);
-            else if (diffInt == 1) QuestManager.MEDIUM_QUESTS.add(q);
-            else QuestManager.HARD_QUESTS.add(q);
+                if (diffInt == 0) QuestManager.EASY_QUESTS.add(q);
+                else if (diffInt == 1) QuestManager.MEDIUM_QUESTS.add(q);
+                else QuestManager.HARD_QUESTS.add(q);
             } catch (Exception e) {
                 Constants.LOG.error("Error loading quest (index: " + i + ") in dimension " + dimension + ". Skipping quest.", e);
             }

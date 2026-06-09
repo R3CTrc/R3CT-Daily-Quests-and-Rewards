@@ -54,5 +54,31 @@
       { "item": "r3ct_daily:random_spawn_egg", "min_amount": 1, "max_amount": 1, "weight": 75 },
       { "item": "minecraft:totem_of_undying", "min_amount": 1, "max_amount": 1, "weight": 50 }
     ]
-  ]
+  ],
+
+  "_comment_quest_completion": "Loot pool from which ONE item is drawn for completing 3 daily quests. 'weight' determines drop chance (higher = more common). Supports '&' color codes.",
+  "quest_completion": [
+    { "item": "minecraft:coal", "min_amount": 16, "max_amount": 24, "weight": 100, "color": "&8" },
+    { "item": "minecraft:iron_ingot", "min_amount": 8, "max_amount": 16, "weight": 100, "color": "&f" },
+    { "item": "minecraft:gold_ingot", "min_amount": 8, "max_amount": 16, "weight": 100, "color": "&e" },
+    { "item": "minecraft:lapis_lazuli", "min_amount": 4, "max_amount": 16, "weight": 100, "color": "&9" },
+    { "item": "minecraft:amethyst_shard", "min_amount": 4, "max_amount": 16, "weight": 100, "color": "&d" },
+    { "item": "minecraft:emerald", "min_amount": 4, "max_amount": 8, "weight": 100, "color": "&a" },
+    { "item": "minecraft:diamond", "min_amount": 1, "max_amount": 4, "weight": 100, "color": "&b" }
+  ],
+
+  "_comment_milestones": "Rewards for reaching specific Total Points thresholds. Supports '&' color codes.",
+  "milestones": {
+    "point_50":  { "item": "minecraft:amethyst_shard", "amount": 32, "color": "&d" },
+    "point_100": { "item": "minecraft:emerald", "amount": 16, "color": "&a" },
+    "point_150": { "item": "minecraft:diamond", "amount": 8, "color": "&b" },
+    "point_200": { "item": "minecraft:netherite_scrap", "amount": 4, "color": "&c" }
+  },
+
+  "_comment_bonuses": "Guaranteed bonus rewards for reaching specific Total Login Days. Supports '&' color codes.",
+  "bonuses": {
+    "bonus_7":   { "item": "minecraft:emerald", "amount": 32, "color": "&a" },
+    "bonus_14":  { "item": "minecraft:diamond", "amount": 16, "color": "&b" },
+    "bonus_21":  { "item": "minecraft:netherite_scrap", "amount": 4, "color": "&c" }
+  }
 }

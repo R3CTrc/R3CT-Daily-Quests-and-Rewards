@@ -41,8 +41,7 @@
   "r3ct_daily.config.main.server_tooltip_disabled": "Ustawienia serwera są dostępne tylko w trybie Singleplayer!",
   "r3ct_daily.config.server.title": "Konfiguracja Serwera",
   "r3ct_daily.config.server.button.quests": "Konfiguracja Questów",
-  "r3ct_daily.config.server.button.rewards": "Konfiguracja Nagród Dziennych",
-  "r3ct_daily.config.server.button.quests_rewards": "Konfiguracja Nagród z Questów",
+  "r3ct_daily.config.server.button.rewards": "Konfiguracja Nagród",
   "r3ct_daily.config.server.button.mechanics": "Konfiguracja Mechanik Serwera",
 
   "r3ct_daily.leaderboard.title": "Tablica Wyników",
