@@ -24,20 +24,20 @@ public class DailyServerConfig {
 
     private static final int QUESTS_VERSION = 2;
     private static final int REWARDS_VERSION = 2;
-    private static final int MECHANICS_VERSION = 1;
+    private static final int MECHANICS_VERSION = 2;
 
     public static class RewardEntry {
         public String item;
         public int minAmount;
         public int maxAmount;
-        public int weight;
+        public int chance;
         public String color;
 
         public RewardEntry(String i, int min, int max, int w, String c) {
             this.item = i;
             this.minAmount = min;
             this.maxAmount = max;
-            this.weight = w;
+            this.chance = w;
             this.color = c;
         }
 
@@ -240,7 +240,7 @@ public class DailyServerConfig {
                             obj.get("item").getAsString(),
                             obj.get("min_amount").getAsInt(),
                             obj.get("max_amount").getAsInt(),
-                            obj.get("weight").getAsInt(),
+                            obj.get("chance").getAsInt(),
                             obj.has("color") ? obj.get("color").getAsString() : "&b"
                     ));
                 } catch (Exception e) {
@@ -260,7 +260,7 @@ public class DailyServerConfig {
                     obj.get("item").getAsString(),
                     obj.get("min_amount").getAsInt(),
                     obj.get("max_amount").getAsInt(),
-                    obj.get("weight").getAsInt(),
+                    obj.get("chance").getAsInt(),
                     obj.has("color") ? obj.get("color").getAsString() : "&b"
             ));
             } catch (Exception e) {
