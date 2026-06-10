@@ -422,14 +422,14 @@ public class QuestManager {
 
         Random rand = new Random();
         int totalWeight = 0;
-        for (DailyServerConfig.RewardEntry entry : DailyServerConfig.dailyQuestRewards) totalWeight += entry.weight;
+        for (DailyServerConfig.RewardEntry entry : DailyServerConfig.dailyQuestRewards) totalWeight += entry.chance;
 
         DailyServerConfig.RewardEntry selectedEntry = DailyServerConfig.dailyQuestRewards.get(0);
         if (totalWeight > 0) {
             int roll = rand.nextInt(totalWeight);
             int cursor = 0;
             for (DailyServerConfig.RewardEntry entry : DailyServerConfig.dailyQuestRewards) {
-                cursor += entry.weight;
+                cursor += entry.chance;
                 if (roll < cursor) { selectedEntry = entry; break; }
             }
         }

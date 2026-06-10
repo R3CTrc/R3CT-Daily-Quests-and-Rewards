@@ -219,13 +219,13 @@ public class RewardManager {
 
     private static DailyServerConfig.RewardEntry getRandomEntry(List<DailyServerConfig.RewardEntry> bucket) {
         int totalWeight = 0;
-        for (DailyServerConfig.RewardEntry entry : bucket) totalWeight += entry.weight;
+        for (DailyServerConfig.RewardEntry entry : bucket) totalWeight += entry.chance;
         if (totalWeight <= 0) return bucket.get(RANDOM.nextInt(bucket.size()));
 
         int roll = RANDOM.nextInt(totalWeight);
         int cursor = 0;
         for (DailyServerConfig.RewardEntry entry : bucket) {
-            cursor += entry.weight;
+            cursor += entry.chance;
             if (roll < cursor) return entry;
         }
         return bucket.get(0);
