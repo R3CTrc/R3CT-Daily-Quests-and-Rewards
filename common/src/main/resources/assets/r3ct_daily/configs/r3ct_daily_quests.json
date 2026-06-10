@@ -834,6 +834,18 @@
       "reward_amount": 2
     },
     {
+      "id": "gornik_amator",
+      "name": "r3ct_daily.quest.gornik_amator.name",
+      "description": "r3ct_daily.quest.gornik_amator.desc",
+      "difficulty": 0,
+      "action_type": "BREAK_BLOCK",
+      "target": "any",
+      "amount": 250,
+      "points": 1,
+      "reward_item": "minecraft:iron_ingot",
+      "reward_amount": 8
+    },
+    {
       "id": "zaklinacz",
       "name": "r3ct_daily.quest.enchanter.name",
       "description": "r3ct_daily.quest.enchanter.desc",
@@ -1972,6 +1984,18 @@
       "points": 2,
       "reward_item": "minecraft:emerald",
       "reward_amount": 5
+    },
+    {
+      "id": "koparka",
+      "name": "r3ct_daily.quest.koparka.name",
+      "description": "r3ct_daily.quest.koparka.desc",
+      "difficulty": 1,
+      "action_type": "BREAK_BLOCK",
+      "target": "any",
+      "amount": 1000,
+      "points": 2,
+      "reward_item": "r3ct_daily:efficiency_3_book",
+      "reward_amount": 1
     },
     {
       "id": "niezniszczalny_sprzet",

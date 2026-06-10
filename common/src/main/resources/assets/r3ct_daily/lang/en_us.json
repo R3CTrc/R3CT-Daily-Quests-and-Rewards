@@ -780,5 +780,9 @@
   "r3ct_daily.quest.blado_to_widze.name": "Pale Vision",
   "r3ct_daily.quest.blado_to_widze.desc": "Visit biome: Pale Garden.",
   "r3ct_daily.quest.wszedzie_grzyb.name": "Mushrooms Everywhere",
-  "r3ct_daily.quest.wszedzie_grzyb.desc": "Visit biome: Mushroom Fields."
+  "r3ct_daily.quest.wszedzie_grzyb.desc": "Visit biome: Mushroom Fields.",
+  "r3ct_daily.quest.gornik_amator.name": "Amateur Miner",
+  "r3ct_daily.quest.gornik_amator.desc": "Mine 250 blocks.",
+  "r3ct_daily.quest.koparka.name": "Excavator",
+  "r3ct_daily.quest.koparka.desc": "Mine 1000 blocks."
 }
