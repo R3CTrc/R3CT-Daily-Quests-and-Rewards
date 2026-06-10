@@ -780,5 +780,9 @@
   "r3ct_daily.quest.reanimacja.name": "Reanimacja",
   "r3ct_daily.quest.reanimacja.desc": "Wytwórz kryształ endu.",
   "r3ct_daily.quest.fioletowe_fortece.name": "Fioletowe fortece",
-  "r3ct_daily.quest.fioletowe_fortece.desc": "Odwiedź biom: Wyżyny Endu (End Highlands)."
+  "r3ct_daily.quest.fioletowe_fortece.desc": "Odwiedź biom: Wyżyny Endu (End Highlands).",
+  "r3ct_daily.quest.gornik_amator.name": "Górnik Amator",
+  "r3ct_daily.quest.gornik_amator.desc": "Wykop 250 dowolnych bloków.",
+  "r3ct_daily.quest.koparka.name": "Koparka",
+  "r3ct_daily.quest.koparka.desc": "Wykop 1000 dowolnych bloków."
 }
