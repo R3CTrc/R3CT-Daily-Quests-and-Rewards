@@ -81,7 +81,7 @@
 
   "_comment_milestones": "Rewards for reaching specific Total Points thresholds.",
   "milestones": {
-    "point_50":  { "item": "minecraft:iron_ingot", "amount": 64, "color": "&d" },
+    "point_50":  { "item": "minecraft:iron_ingot", "amount": 64, "color": "&f" },
     "point_100": { "item": "minecraft:emerald", "amount": 32, "color": "&a" },
     "point_150": { "item": "minecraft:diamond", "amount": 16, "color": "&b" },
     "point_200": { "item": "minecraft:netherite_scrap", "amount": 2, "color": "&c" }
