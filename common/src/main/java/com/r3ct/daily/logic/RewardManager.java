@@ -233,7 +233,7 @@ public class RewardManager {
 
     private static ItemStack getRandomItemWithKeyword(String keyword, int amount) {
         List<Item> items = BuiltInRegistries.ITEM.stream()
-                .filter(i -> BuiltInRegistries.ITEM.getKey(i).getPath().endsWith(keyword))
+                .filter(i -> BuiltInRegistries.ITEM.getKey(i).getPath().contains(keyword))
                 .toList();
         return new ItemStack(items.isEmpty() ? Items.PAPER : items.get(RANDOM.nextInt(items.size())), amount);
     }

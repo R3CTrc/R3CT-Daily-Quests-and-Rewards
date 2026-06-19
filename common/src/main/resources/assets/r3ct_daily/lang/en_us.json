@@ -616,7 +616,7 @@
   "r3ct_daily.quest.wszyscy_zdrowi.name": "Everyone Healthy?",
   "r3ct_daily.quest.wszyscy_zdrowi.desc": "Craft 12 flint and steel. Yes, 12.",
   "r3ct_daily.quest.nie_uciekniesz.name": "You Won't Escape",
-  "r3ct_daily.quest.nie_uciekniesz.desc": "Craft 2 leads using slime balls and string.",
+  "r3ct_daily.quest.nie_uciekniesz.desc": "Craft 2 leads.",
   "r3ct_daily.quest.bylo_warto.name": "Was It Worth It?",
   "r3ct_daily.quest.bylo_warto.desc": "Craft a diamond hoe.",
   "r3ct_daily.quest.kaboom.name": "Kaboom?",
@@ -784,5 +784,7 @@
   "r3ct_daily.quest.gornik_amator.name": "Amateur Miner",
   "r3ct_daily.quest.gornik_amator.desc": "Mine 250 blocks.",
   "r3ct_daily.quest.koparka.name": "Excavator",
-  "r3ct_daily.quest.koparka.desc": "Mine 1000 blocks."
+  "r3ct_daily.quest.koparka.desc": "Mine 1000 blocks.",
+  "r3ct_daily.quest.dj.name": "DJ",
+  "r3ct_daily.quest.dj.desc": "Play any music disc in a Jukebox."
 }

@@ -141,10 +141,8 @@ public abstract class PlayerStatMixin {
         if (stat.getType() == Stats.ITEM_USED && stat.getValue() instanceof Item item) {
             String itemId = BuiltInRegistries.ITEM.getKey(item).toString();
 
-            QuestManager.handleAction(serverPlayer, "USE_ITEM", itemId, amount);
-
-            if (itemId.equals("minecraft:egg") || itemId.equals("minecraft:brown_egg") || itemId.equals("minecraft:blue_egg")) {
-                QuestManager.handleAction(serverPlayer, "THROW_EGG", "any", amount);
+            if (itemId.equals("minecraft:goat_horn")) {
+                QuestManager.handleAction(serverPlayer, "BLOW_HORN", "any", amount);
             }
         }
     }

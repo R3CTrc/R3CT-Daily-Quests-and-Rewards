@@ -632,7 +632,7 @@
   "r3ct_daily.quest.wszyscy_zdrowi.name": "Wszyscy zdrowi?",
   "r3ct_daily.quest.wszyscy_zdrowi.desc": "Stwórz 12 sztuk zapalniczek. Tak, 12.",
   "r3ct_daily.quest.nie_uciekniesz.name": "Nie uciekniesz",
-  "r3ct_daily.quest.nie_uciekniesz.desc": "Stwórz 2 smycze używając kul szlamu i sznurka.",
+  "r3ct_daily.quest.nie_uciekniesz.desc": "Stwórz 2 smycze.",
   "r3ct_daily.quest.bylo_warto.name": "Było warto?",
   "r3ct_daily.quest.bylo_warto.desc": "Stwórz diamentową motykę.",
   "r3ct_daily.quest.kaboom.name": "Kaboom?",
@@ -784,5 +784,7 @@
   "r3ct_daily.quest.gornik_amator.name": "Górnik Amator",
   "r3ct_daily.quest.gornik_amator.desc": "Wykop 250 dowolnych bloków.",
   "r3ct_daily.quest.koparka.name": "Koparka",
-  "r3ct_daily.quest.koparka.desc": "Wykop 1000 dowolnych bloków."
+  "r3ct_daily.quest.koparka.desc": "Wykop 1000 dowolnych bloków.",
+  "r3ct_daily.quest.dj.name": "DJ",
+  "r3ct_daily.quest.dj.desc": "Odtwórz dowolną płytę w szafie grającej."
 }

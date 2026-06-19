@@ -826,9 +826,9 @@
       "name": "r3ct_daily.quest.pobudka.name",
       "description": "r3ct_daily.quest.pobudka.desc",
       "difficulty": 0,
-      "action_type": "USE_ITEM",
-      "target": "minecraft:goat_horn",
-      "amount": 1,
+      "action_type": "BLOW_HORN",
+      "target": "any",
+      "amount": 3,
       "points": 1,
       "reward_item": "minecraft:emerald",
       "reward_amount": 2
@@ -1995,6 +1995,18 @@
       "amount": 1000,
       "points": 2,
       "reward_item": "r3ct_daily:efficiency_3_book",
+      "reward_amount": 1
+    },
+    {
+      "id": "dj",
+      "name": "r3ct_daily.quest.dj.name",
+      "description": "r3ct_daily.quest.dj.desc",
+      "difficulty": 1,
+      "action_type": "PLAY_JUKEBOX",
+      "target": "any",
+      "amount": 1,
+      "points": 1,
+      "reward_item": "minecraft:note_block",
       "reward_amount": 1
     },
     {

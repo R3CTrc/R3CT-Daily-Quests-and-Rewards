@@ -15,10 +15,10 @@ public abstract class SlotMixin {
 
     @Inject(method = "onTake", at = @At("HEAD"))
     private void onTakeItemFromSlot(Player player, ItemStack stack, CallbackInfo ci) {
+
         if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
 
             net.minecraft.world.inventory.AbstractContainerMenu menu = serverPlayer.containerMenu;
-
             net.minecraft.world.inventory.Slot currentSlot = (net.minecraft.world.inventory.Slot) (Object) this;
 
             int amount = stack.getCount();
@@ -26,22 +26,9 @@ public abstract class SlotMixin {
 
             if (menu instanceof net.minecraft.world.inventory.LoomMenu loomMenu) {
                 if (loomMenu.getSlot(3) == currentSlot) {
-                    QuestManager.handleAction(serverPlayer, "USE_LOOM", itemId, 1);
+                    QuestManager.handleAction(serverPlayer, "USE_LOOM", itemId, amount);
                 }
             }
-
-            else if (menu instanceof net.minecraft.world.inventory.GrindstoneMenu grindstoneMenu) {
-                if (grindstoneMenu.getSlot(2) == currentSlot) {
-                    QuestManager.handleAction(serverPlayer, "GRINDSTONE_ITEM", itemId, 1);
-                }
-            }
-
-            else if (menu instanceof net.minecraft.world.inventory.SmithingMenu smithingMenu) {
-                if (smithingMenu.getSlot(3) == currentSlot) {
-                    QuestManager.handleAction(serverPlayer, "TRIM_ARMOR", itemId, 1);
-                }
-            }
-
             else if (menu instanceof net.minecraft.world.inventory.FurnaceMenu furnaceMenu) {
                 if (furnaceMenu.getSlot(2) == currentSlot) {
                     handleSmelting(serverPlayer, itemId, amount, false);
@@ -61,7 +48,6 @@ public abstract class SlotMixin {
     }
 
     private void handleSmelting(ServerPlayer player, String itemId, int amount, boolean isBlastFurnace) {
-
         QuestManager.handleAction(player, "SMELT_ITEM", itemId, amount);
 
         if (itemId.endsWith("_glazed_terracotta")) {
