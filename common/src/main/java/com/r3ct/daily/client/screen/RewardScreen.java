@@ -129,19 +129,11 @@ public class RewardScreen extends Screen {
         if (Math.abs(targetStreak - animatedStreak) < 0.05f) animatedStreak = targetStreak;
 
         String streakColorCode = (targetStreak < 3) ? "§2" : (targetStreak < 7 ? "§6" : "§c");
-        guiGraphics.text(this.font, "§l" + Component.translatable("r3ct_daily.rewards.bar.streak").getString(), bar1X, barY - 32, 0xFF404040, false);
-        guiGraphics.text(this.font, "§8" + Component.translatable("r3ct_daily.rewards.bar.days").getString() + ": " + streakColorCode + targetStreak + "§8/7", bar1X, barY - 10, 0xFFFFFFFF, false);
-
         int sColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
-        guiGraphics.fill(bar1X, barY, bar1X + bWidth, barY + 8, 0xFF373737);
 
-        int sProg = (int)((animatedStreak / 7.0f) * (bWidth - 2));
-        if (sProg > 0) guiGraphics.fill(bar1X + 1, barY + 1, bar1X + 1 + sProg, barY + 7, sColor);
-
-        for (int j = 1; j < 7; j++) {
-            int tickX = bar1X + (int)(j * (bWidth / 7.0));
-            guiGraphics.fill(tickX, barY, tickX + 1, barY + 8, 0xFF000000);
-        }
+        String lblStreak = Component.translatable("r3ct_daily.rewards.bar.streak").getString();
+        String valStreak = streakColorCode + targetStreak + "§0/7";
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar1X, barY, animatedStreak, 7, lblStreak, valStreak, sColor, bWidth, 1, new int[]{});
 
         String multiText = data.streak >= 7 ? "§6§l" + Component.translatable("r3ct_daily.quests.multiplier.active").getString() : "§8" + Component.translatable("r3ct_daily.quests.multiplier.inactive").getString();
         guiGraphics.text(this.font, multiText, bar1X, barY + 12, 0xFFFFFFFF, data.streak >= 7);
@@ -155,18 +147,10 @@ public class RewardScreen extends Screen {
         if (Math.abs(displayCollected - animatedCollected) < 0.05f) animatedCollected = displayCollected;
 
         int bar2X = leftPos + 173;
-        guiGraphics.text(this.font, "§l" + Component.translatable("r3ct_daily.rewards.bar.bonus").getString(), bar2X, barY - 32, 0xFF404040, false);
-        guiGraphics.text(this.font, "§8" + Component.translatable("r3ct_daily.quests.tooltip.streak.progress").getString() + " §d" + displayCollected + "§8/21", bar2X, barY - 10, 0xFFFFFFFF, false);
 
-        guiGraphics.fill(bar2X, barY, bar2X + bWidth, barY + 8, 0xFF373737);
-
-        int tProg = (int)((animatedCollected / 21.0f) * (bWidth - 2));
-        if (tProg > 0) guiGraphics.fill(bar2X + 1, barY + 1, bar2X + 1 + tProg, barY + 7, 0xFFFF55FF);
-
-        for (int j = 1; j < 21; j++) {
-            int tickX = bar2X + (int)(j * (bWidth / 21.0));
-            guiGraphics.fill(tickX, barY, tickX + 1, barY + 8, 0xFF000000);
-        }
+        String lblBonus = Component.translatable("r3ct_daily.rewards.bar.bonus").getString();
+        String valBonus = "§d" + displayCollected + "§0/21";
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar2X, barY, animatedCollected, 21, lblBonus, valBonus, 0xFFFF55FF, bWidth, 1, new int[]{});
 
         renderBonusMilestones(guiGraphics, bar2X, barY, bWidth, mouseX, mouseY);
 

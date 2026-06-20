@@ -26,6 +26,7 @@ public class QuestManager {
     public static final List<Quest> EASY_QUESTS = new ArrayList<>();
     public static final List<Quest> MEDIUM_QUESTS = new ArrayList<>();
     public static final List<Quest> HARD_QUESTS = new ArrayList<>();
+    public static final java.util.Map<String, Quest> QUEST_MAP = new java.util.concurrent.ConcurrentHashMap<>();
 
     public static final Set<String> PLACED_BLOCKS = java.util.Collections.synchronizedSet(
             java.util.Collections.newSetFromMap(new java.util.LinkedHashMap<String, Boolean>(1000, 0.75f, true) {
@@ -53,10 +54,7 @@ public class QuestManager {
     public static void init() {}
 
     public static Quest getQuestById(String id) {
-        for (Quest q : EASY_QUESTS) if (q.id.equals(id)) return q;
-        for (Quest q : MEDIUM_QUESTS) if (q.id.equals(id)) return q;
-        for (Quest q : HARD_QUESTS) if (q.id.equals(id)) return q;
-        return null;
+        return QUEST_MAP.get(id);
     }
 
     public static List<Quest> generateDailyQuests(PlayerData data, java.util.UUID playerUuid, java.time.LocalDate date) {
@@ -100,9 +98,14 @@ public class QuestManager {
             daily.add(availableHard.get(0));
         }
 
-        while (daily.size() < 5 && !availableEasy.isEmpty()) {
-            if (daily.containsAll(availableEasy)) break;
-            Quest extra = availableEasy.get(random.nextInt(availableEasy.size()));
+        List<Quest> allAvailable = new ArrayList<>();
+        allAvailable.addAll(availableEasy);
+        allAvailable.addAll(availableMedium);
+        allAvailable.addAll(availableHard);
+
+        while (daily.size() < 5 && !allAvailable.isEmpty()) {
+            if (daily.containsAll(allAvailable)) break;
+            Quest extra = allAvailable.get(random.nextInt(allAvailable.size()));
             if (!daily.contains(extra)) daily.add(extra);
         }
 
@@ -190,20 +193,12 @@ public class QuestManager {
         }
 
         if (needsSync) {
-            server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
-            Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
-                    data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                    data.activeQuests, data.questProgress, data.streak,
-                    data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
-                    data.questRewardsClaimed, data.claimedPointRewards
-            ));
+            syncPlayerQuests(player, data);
         }
     }
 
     public static boolean isLocationValid(ServerPlayer player, String location) {
-        if (location == null || location.isEmpty() || location.equalsIgnoreCase("any")) {
-            return true;
-        }
+        if (location == null || location.isEmpty() || location.equalsIgnoreCase("any")) return true;
 
         net.minecraft.server.level.ServerLevel level = player.level();
         net.minecraft.core.BlockPos pos = player.blockPosition();
@@ -213,11 +208,10 @@ public class QuestManager {
             net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome> currentBiome = level.getBiome(pos);
 
             if (biomeId.startsWith("#")) {
-                net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> tagKey = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BIOME, net.minecraft.resources.Identifier.parse(biomeId.substring(1)));
+                net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> tagKey = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BIOME, net.minecraft.resources.Identifier.parse(biomeId.substring(1).toLowerCase(java.util.Locale.ROOT)));
                 return currentBiome.is(tagKey);
-            }
-            else {
-                net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> resKey = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.BIOME, net.minecraft.resources.Identifier.parse(biomeId));
+            } else {
+                net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> resKey = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.BIOME, net.minecraft.resources.Identifier.parse(biomeId.toLowerCase(java.util.Locale.ROOT)));
                 return currentBiome.is(resKey);
             }
         }
@@ -226,12 +220,11 @@ public class QuestManager {
             String structureId = location.substring(10);
 
             if (structureId.startsWith("#")) {
-                net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tagKey = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE, net.minecraft.resources.Identifier.parse(structureId.substring(1)));
+                net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tagKey = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE, net.minecraft.resources.Identifier.parse(structureId.substring(1).toLowerCase(java.util.Locale.ROOT)));
                 return level.structureManager().getStructureWithPieceAt(pos, tagKey).isValid();
-            }
-            else {
+            } else {
                 var lookup = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
-                var structureKey = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.STRUCTURE, net.minecraft.resources.Identifier.parse(structureId));
+                var structureKey = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.STRUCTURE, net.minecraft.resources.Identifier.parse(structureId.toLowerCase(java.util.Locale.ROOT)));
                 var structureHolder = lookup.get(structureKey);
 
                 if (structureHolder.isPresent()) {
@@ -245,12 +238,7 @@ public class QuestManager {
     }
 
     private static void completeQuest(ServerPlayer player, PlayerData data, Quest q) {
-        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
-                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP),
-                net.minecraft.sounds.SoundSource.PLAYERS,
-                player.getX(), player.getY(), player.getZ(),
-                1.0F, 1.0F, player.getRandom().nextLong()
-        ));
+        playSound(player, net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, 1.0F, 1.0F);
         Component questNameComp = Component.translatable(q.name).withStyle(net.minecraft.ChatFormatting.YELLOW);
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.quests.completed", questNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
@@ -299,24 +287,13 @@ public class QuestManager {
             int newProg = currentProg + taken;
             data.questProgress.set(questIndex, newProg);
 
-            player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
-                    net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP),
-                    net.minecraft.sounds.SoundSource.PLAYERS,
-                    player.getX(), player.getY(), player.getZ(),
-                    0.5F, 1.0F, player.getRandom().nextLong()
-            ));
+            playSound(player, net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP, 0.5F, 1.0F);
 
             if (newProg >= q.requiredAmount) {
                 completeQuest(player, data, q);
             }
 
-            server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
-            com.r3ct.daily.platform.Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
-                    data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                    data.activeQuests, data.questProgress, data.streak,
-                    data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
-                    data.questRewardsClaimed, data.claimedPointRewards
-            ));
+            syncPlayerQuests(player, data);
         }
     }
 
@@ -335,18 +312,13 @@ public class QuestManager {
 
         data.questRewardsClaimed.set(index, true);
 
-        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
-                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP),
-                net.minecraft.sounds.SoundSource.PLAYERS,
-                player.getX(), player.getY(), player.getZ(),
-                1.0F, 1.0F, player.getRandom().nextLong()
-        ));
+        playSound(player, net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, 1.0F, 1.0F);
 
         int multi = (data.questStreak >= 7) ? 2 : 1;
 
         int baseXp = (q.difficulty == 0) ? DailyServerConfig.mechanics.quests.xpPerQuestEasy :
                 (q.difficulty == 1) ? DailyServerConfig.mechanics.quests.xpPerQuestMedium :
-                        DailyServerConfig.mechanics.quests.xpPerQuestHard;
+                DailyServerConfig.mechanics.quests.xpPerQuestHard;
 
         int xpReward = baseXp * multi;
         player.giveExperiencePoints(xpReward);
@@ -369,12 +341,9 @@ public class QuestManager {
 
         while (remainingToGive > 0) {
             int currentStackSize = Math.min(remainingToGive, maxStack);
-
             ItemStack splitStack = rewardToGive.copy();
             splitStack.setCount(currentStackSize);
-
             giveOrDrop(player, splitStack);
-
             remainingToGive -= currentStackSize;
         }
 
@@ -430,13 +399,7 @@ public class QuestManager {
         }
         QuestManager.grantAdvancement(player, "r3ct_daily:quests/first_quest");
 
-        server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
-        Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
-                data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                data.activeQuests, data.questProgress, data.streak,
-                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
-                data.questRewardsClaimed, data.claimedPointRewards
-        ));
+        syncPlayerQuests(player, data);
     }
 
     public static void claimPointReward(ServerPlayer player, int threshold) {
@@ -449,12 +412,7 @@ public class QuestManager {
 
         data.claimedPointRewards.add(threshold);
 
-        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
-                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP),
-                net.minecraft.sounds.SoundSource.PLAYERS,
-                player.getX(), player.getY(), player.getZ(),
-                1.0F, 1.0F, player.getRandom().nextLong()
-        ));
+        playSound(player, net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, 1.0F, 1.0F);
 
         DailyServerConfig.MilestoneReward mr = null;
         if (threshold == 50) {
@@ -496,13 +454,7 @@ public class QuestManager {
             ));
         }
 
-        server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
-        Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
-                data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                data.activeQuests, data.questProgress, data.streak,
-                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
-                data.questRewardsClaimed, data.claimedPointRewards
-        ));
+        syncPlayerQuests(player, data);
     }
 
     private static void giveDailyReward(ServerPlayer player, PlayerData data) {
@@ -513,12 +465,8 @@ public class QuestManager {
         }
         data.lastQuestStreakDate = java.time.LocalDate.now().toString();
 
-        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
-                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_TWINKLE),
-                net.minecraft.sounds.SoundSource.PLAYERS,
-                player.getX(), player.getY(), player.getZ(),
-                1.0F, 1.2F, player.getRandom().nextLong()
-        ));
+        playSound(player, net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_TWINKLE, 1.0F, 1.2F);
+
         Component multiComp = (multi > 1) ? Component.translatable("r3ct_daily.message.quests.streak_bonus").withStyle(net.minecraft.ChatFormatting.GOLD) : Component.empty();
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.quests.daily_reward", multiComp).withStyle(net.minecraft.ChatFormatting.GREEN)
@@ -637,18 +585,13 @@ public class QuestManager {
 
         int cost = (oldQuest.difficulty == 0) ? DailyServerConfig.mechanics.quests.rerollCostEasy :
                 (oldQuest.difficulty == 1) ? DailyServerConfig.mechanics.quests.rerollCostMedium :
-                        DailyServerConfig.mechanics.quests.rerollCostHard;
+                DailyServerConfig.mechanics.quests.rerollCostHard;
 
         Component costComp = Component.literal(String.valueOf(cost)).withStyle(net.minecraft.ChatFormatting.RED);
         Component pointsComp = Component.literal(String.valueOf(data.totalQuestPoints)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
 
         if (data.totalQuestPoints < cost) {
-            player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
-                    net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BASS.value()),
-                    net.minecraft.sounds.SoundSource.PLAYERS,
-                    player.getX(), player.getY(), player.getZ(),
-                    1.0F, 1.0F, player.getRandom().nextLong()
-            ));
+            playSound(player, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BASS.value(), 1.0F, 1.0F);
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                     Component.translatable("r3ct_daily.message.reroll.not_enough_points", costComp, pointsComp).withStyle(net.minecraft.ChatFormatting.GREEN)
             ));
@@ -682,24 +625,13 @@ public class QuestManager {
         data.questProgress.set(index, 0);
         data.questRewardsClaimed.set(index, false);
 
-        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
-                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK.value()),
-                net.minecraft.sounds.SoundSource.PLAYERS,
-                player.getX(), player.getY(), player.getZ(),
-                1.0F, 1.0F, player.getRandom().nextLong()
-        ));
+        playSound(player, net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK.value(), 1.0F, 1.0F);
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.reroll.success", costComp, pointsComp).withStyle(net.minecraft.ChatFormatting.GREEN)
         ));
 
-        server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
-        Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
-                data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                data.activeQuests, data.questProgress, data.streak,
-                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
-                data.questRewardsClaimed, data.claimedPointRewards
-        ));
+        syncPlayerQuests(player, data);
     }
 
     public static boolean forceCompleteQuest(ServerPlayer player, int index, boolean skipSync) {
@@ -718,13 +650,7 @@ public class QuestManager {
             completeQuest(player, data, q);
 
             if (!skipSync) {
-                server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
-                Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
-                        data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                        data.activeQuests, data.questProgress, data.streak,
-                        data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
-                        data.questRewardsClaimed, data.claimedPointRewards
-                ));
+                syncPlayerQuests(player, data);
             }
             return true;
         }
@@ -806,14 +732,7 @@ public class QuestManager {
             }
         }
 
-        server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
-
-        Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
-                data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                data.activeQuests, data.questProgress, data.streak,
-                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
-                data.questRewardsClaimed, data.claimedPointRewards
-        ));
+        syncPlayerQuests(player, data);
 
         Component clickHereRewardsComp = Component.translatable("r3ct_daily.message.click_here")
                 .withStyle(net.minecraft.ChatFormatting.YELLOW, net.minecraft.ChatFormatting.BOLD)
@@ -857,13 +776,29 @@ public class QuestManager {
         }
 
         if (needsSync) {
-            server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
-            Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
-                    data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                    data.activeQuests, data.questProgress, data.streak,
-                    data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
-                    data.questRewardsClaimed, data.claimedPointRewards
-            ));
+            syncPlayerQuests(player, data);
         }
+    }
+
+    public static void playSound(ServerPlayer player, net.minecraft.sounds.SoundEvent sound, float volume, float pitch) {
+        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
+                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound),
+                net.minecraft.sounds.SoundSource.PLAYERS,
+                player.getX(), player.getY(), player.getZ(),
+                volume, pitch, player.getRandom().nextLong()
+        ));
+    }
+
+    public static void syncPlayerQuests(ServerPlayer player, PlayerData data) {
+        net.minecraft.server.MinecraftServer server = player.level().getServer();
+        if (server != null) {
+            server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+        }
+        Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
+                data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
+                data.activeQuests, data.questProgress, data.streak,
+                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
+                data.questRewardsClaimed, data.claimedPointRewards
+        ));
     }
 }

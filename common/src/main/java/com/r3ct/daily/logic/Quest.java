@@ -43,7 +43,7 @@ public class Quest {
             item = Items.NETHER_STAR;
         } else {
             Identifier itemId = Identifier.parse(
-                    this.rawRewardId.contains(":") ? this.rawRewardId : "minecraft:" + this.rawRewardId
+                    (this.rawRewardId.contains(":") ? this.rawRewardId : "minecraft:" + this.rawRewardId).toLowerCase(java.util.Locale.ROOT)
             );
             item = BuiltInRegistries.ITEM.getOptional(itemId).orElse(Items.DIRT);
         }

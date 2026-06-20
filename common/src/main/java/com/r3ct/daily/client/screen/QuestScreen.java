@@ -159,7 +159,7 @@ public class QuestScreen extends Screen {
         if (Math.abs(targetDaily - animatedDaily) < 0.05f) animatedDaily = targetDaily;
 
         String dailyText = "§2" + targetDaily + "§0/3";
-        drawRewardStyleBar(guiGraphics, rightTextX, dailyY, animatedDaily, 3, Component.translatable("r3ct_daily.quests.bar.daily").getString(), dailyText, 0xFF55FF55, barW, 1, new int[]{});
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, dailyY, animatedDaily, 3, Component.translatable("r3ct_daily.quests.bar.daily").getString(), dailyText, 0xFF55FF55, barW, 1, new int[]{});
 
         int streakY = topPos + 155;
         int targetStreak = Math.min(data.questStreak, 7);
@@ -169,7 +169,7 @@ public class QuestScreen extends Screen {
         String streakColor = (targetStreak < 3) ? "§2" : (targetStreak < 7 ? "§6" : "§c");
         String streakText = streakColor + targetStreak + "§0/7";
         int streakBarColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
-        drawRewardStyleBar(guiGraphics, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barW, 1, new int[]{});
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barW, 1, new int[]{});
 
         String qMultiText = data.questStreak >= 7 ? "§6§l" + Component.translatable("r3ct_daily.quests.multiplier.active").getString() : "§0" + Component.translatable("r3ct_daily.quests.multiplier.inactive").getString();
         guiGraphics.text(this.font, qMultiText, rightTextX, streakY + 14, 0xFF000000, false);
@@ -180,7 +180,7 @@ public class QuestScreen extends Screen {
         if (Math.abs(targetPoints - animatedPoints) < 0.05f) animatedPoints = targetPoints;
 
         String ptsText = "§d" + targetPoints + "§0/200";
-        drawRewardStyleBar(guiGraphics, rightTextX, lifeY, animatedPoints, 200, Component.translatable("r3ct_daily.quests.bar.points").getString(), ptsText, 0xFFFF55FF, barW, 10, new int[]{50, 100, 150, 200});
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, lifeY, animatedPoints, 200, Component.translatable("r3ct_daily.quests.bar.points").getString(), ptsText, 0xFFFF55FF, barW, 10, new int[]{50, 100, 150, 200});
 
         renderPointMilestones(guiGraphics, rightTextX, lifeY, barW, mouseX, mouseY);
 
@@ -605,25 +605,6 @@ public class QuestScreen extends Screen {
         boolean claimed = data.claimedPointRewards.contains(target);
         String prefix = claimed ? "§a[ ✔ ] §a" : ((current >= target) ? "§e[ ! ] §e" : "§7[ ] §f");
         return Component.literal(prefix + Math.min(current, target) + "/" + target + " " + Component.translatable("r3ct_daily.unit.points").getString() + " §8- " + color + reward);
-    }
-
-    private void drawRewardStyleBar(GuiGraphicsExtractor g, int x, int y, float val, int max, String label, String valueText, int color, int bWidth, int tickStep, int[] labelsToDraw) {
-        g.text(this.font, "§0" + label + ": " + valueText, x, y - 12, 0xFF000000, false);
-        g.fill(x, y, x + bWidth, y + 8, 0xFF373737);
-        int w = (int)((Math.min(val, max) / (float)max) * (bWidth - 2));
-        if (w > 0) g.fill(x + 1, y + 1, x + 1 + w, y + 7, color | 0xFF000000);
-
-        for (int p = tickStep; p < max; p += tickStep) {
-            int tickX = x + (int)((p / (float)max) * (bWidth - 2));
-            g.fill(tickX, y, tickX + 1, y + 8, 0xFF000000);
-        }
-
-        for (int p : labelsToDraw) {
-            int tickX = x + (int)((p / (float)max) * (bWidth - 2));
-            g.fill(tickX, y - 2, tickX + 1, y + 10, 0xFFFFFFFF);
-            String pStr = String.valueOf(p);
-            g.text(this.font, "§0" + pStr, tickX - (this.font.width(pStr) / 2), y + 13, 0xFF000000, false);
-        }
     }
 
     @Override

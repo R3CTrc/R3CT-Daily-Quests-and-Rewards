@@ -212,6 +212,7 @@ public class DailyServerConfig {
     }
 
     private static void loadQuests() {
+        QuestManager.QUEST_MAP.clear();
         QuestManager.EASY_QUESTS.clear();
         QuestManager.MEDIUM_QUESTS.clear();
         QuestManager.HARD_QUESTS.clear();
@@ -273,33 +274,47 @@ public class DailyServerConfig {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
             try {
-            com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
-            int diffInt = obj.get("difficulty").getAsInt();
+                com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
 
-            String itemStr = obj.get("reward_item").getAsString();
-            int rewardAmount = obj.get("reward_amount").getAsInt();
+                int diffInt = getInt(obj, "difficulty");
 
-            Quest q = new Quest(
-                    obj.get("id").getAsString(),
-                    obj.has("name") ? obj.get("name").getAsString() : "Quest",
-                    obj.get("description").getAsString(),
-                    obj.get("amount").getAsInt(),
-                    diffInt,
-                    obj.get("points").getAsInt(),
-                    rewardAmount,
-                    dimension,
-                    obj.get("required_location").getAsString(),
-                    obj.get("action_type").getAsString(),
-                    obj.has("target") ? obj.get("target").getAsString() : "any",
-                    itemStr
-            );
+                Quest q = new Quest(
+                        getString(obj, "id"),
+                        getString(obj, "name"),
+                        getString(obj, "description"),
+                        getInt(obj, "amount"),
+                        diffInt,
+                        getInt(obj, "points"),
+                        getInt(obj, "reward_amount"),
+                        dimension,
+                        getString(obj, "required_location"),
+                        getString(obj, "action_type"),
+                        getString(obj, "target"),
+                        getString(obj, "reward_item")
+                );
 
-            if (diffInt == 0) QuestManager.EASY_QUESTS.add(q);
-            else if (diffInt == 1) QuestManager.MEDIUM_QUESTS.add(q);
-            else QuestManager.HARD_QUESTS.add(q);
+                if (diffInt == 0) QuestManager.EASY_QUESTS.add(q);
+                else if (diffInt == 1) QuestManager.MEDIUM_QUESTS.add(q);
+                else QuestManager.HARD_QUESTS.add(q);
+                QuestManager.QUEST_MAP.put(q.id, q);
+
             } catch (Exception e) {
-                Constants.LOG.error("Error loading quest (index: " + i + ") in dimension " + dimension + ". Skipping quest.", e);
+                Constants.LOG.error("Error loading quest (index: " + i + ") in dimension " + dimension + ". Skipping quest. Reason: " + e.getMessage());
             }
         }
+    }
+
+    private static String getString(JsonObject obj, String key) {
+        if (!obj.has(key) || obj.get(key).isJsonNull()) {
+            throw new IllegalArgumentException("Missing required string field: '" + key + "'");
+        }
+        return obj.get(key).getAsString();
+    }
+
+    private static int getInt(JsonObject obj, String key) {
+        if (!obj.has(key) || obj.get(key).isJsonNull()) {
+            throw new IllegalArgumentException("Missing required integer field: '" + key + "'");
+        }
+        return obj.get(key).getAsInt();
     }
 }
