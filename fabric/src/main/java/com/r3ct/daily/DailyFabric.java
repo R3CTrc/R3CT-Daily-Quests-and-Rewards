@@ -67,6 +67,8 @@ public class DailyFabric implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(com.r3ct.daily.network.OpenQuestsPayload.ID, com.r3ct.daily.network.OpenQuestsPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(com.r3ct.daily.network.SyncQuestsPayload.ID, com.r3ct.daily.network.SyncQuestsPayload.CODEC);
 
+		PayloadTypeRegistry.serverboundPlay().register(com.r3ct.daily.network.SubmitQuestItemPayload.TYPE, com.r3ct.daily.network.SubmitQuestItemPayload.STREAM_CODEC);
+
 		PayloadTypeRegistry.serverboundPlay().register(com.r3ct.daily.network.RequestLeaderboardPayload.ID, com.r3ct.daily.network.RequestLeaderboardPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(com.r3ct.daily.network.LeaderboardResponsePayload.ID, com.r3ct.daily.network.LeaderboardResponsePayload.CODEC);
 
@@ -79,6 +81,12 @@ public class DailyFabric implements ModInitializer {
 					LeaderboardManager.lastLeaderboardUpdateTick = currentTick;
 				}
 				Services.PLATFORM.sendToPlayer(context.player(), type == 0 ? LeaderboardManager.cachedQuestsBoard : LeaderboardManager.cachedRewardsBoard);
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(com.r3ct.daily.network.SubmitQuestItemPayload.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				QuestManager.submitQuestItem(context.player(), payload.questIndex(), payload.slotIndex());
 			});
 		});
 

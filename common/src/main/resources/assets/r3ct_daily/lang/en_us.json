@@ -21,6 +21,14 @@
   "r3ct_daily.hud.loading": "Loading quests...",
   "r3ct_daily.message.hud_toggle": "Quest HUD: %s",
 
+  "r3ct_daily.gui.submit_items": "[SUBMIT]",
+  "r3ct_daily.gui.confirm_submit": "Confirm Submission",
+  "r3ct_daily.gui.select_item": "Select Item to Submit",
+  "r3ct_daily.gui.submit_question": "Are you sure you want to submit %sx %s?",
+  "r3ct_daily.gui.yes": "Yes",
+  "r3ct_daily.gui.no": "No",
+  "r3ct_daily.gui.cancel": "Cancel",
+
   "r3ct_daily.config.title": "R3CT Daily Quests & Rewards - Configuration",
   "r3ct_daily.config.category.hud": "HUD Interface",
   "r3ct_daily.config.entry.enable_hud": "Enable Quests HUD",

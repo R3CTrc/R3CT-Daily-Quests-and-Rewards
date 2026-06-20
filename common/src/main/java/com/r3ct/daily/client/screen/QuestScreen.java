@@ -1,5 +1,6 @@
 package com.r3ct.daily.client.screen;
 
+import com.r3ct.daily.client.QuestSubmitHelper;
 import com.r3ct.daily.config.DailyClientConfig;
 import com.r3ct.daily.network.OpenQuestsPayload;
 import com.r3ct.daily.platform.Services;
@@ -76,6 +77,7 @@ public class QuestScreen extends Screen {
             int progress = data.questProgress.get(i);
             boolean done = progress >= q.requiredAmount;
             boolean claimed = data.questRewardsClaimed.size() > i && data.questRewardsClaimed.get(i);
+            boolean canSubmit = !done && q.actionType.equals("SUBMIT_ITEMS") && QuestSubmitHelper.countItems(q.target) > 0;
 
             String locName = net.minecraft.client.resources.language.I18n.get(q.name);
             String locDesc = net.minecraft.client.resources.language.I18n.get(q.description);
@@ -83,9 +85,10 @@ public class QuestScreen extends Screen {
             String name = (locName != null && !locName.isEmpty()) ? locName.toUpperCase() : locDesc.split(" ")[0].toUpperCase();
             int qY = topPos + 45 + (i * 55);
 
-            if (done && !claimed) {
+            if ((done && !claimed) || canSubmit) {
                 int alpha = (int) (127 + 60 * Math.sin(time / 150.0));
-                int glowColor = (alpha << 24) | 0x00AA00;
+                int rgb = (done && !claimed) ? 0x00AA00 : 0x00AAFF;
+                int glowColor = (alpha << 24) | rgb;
                 guiGraphics.fill(leftTextX - 2, qY - 3, midX - 12, qY + 45, glowColor);
             }
 
@@ -117,7 +120,7 @@ public class QuestScreen extends Screen {
             }
 
             String diffIndicator = (q.difficulty == 0) ? "§2★ " : (q.difficulty == 1 ? "§6★ " : "§4★ ");
-            int titleColor = (done && !claimed) ? 0xFF005500 : 0xFF000000;
+            int titleColor = (done && !claimed) ? 0xFF005500 : (canSubmit ? 0xFF0044AA : 0xFF000000);
             guiGraphics.text(this.font, diffIndicator + " §0" + name, leftTextX, qY, titleColor, false);
 
             int color = done ? 0xFF555555 : (q.difficulty == 0 ? 0xFF00AA00 : (q.difficulty == 1 ? 0xFFFFAA00 : 0xFFAA0000));
@@ -131,7 +134,13 @@ public class QuestScreen extends Screen {
             }
 
             String mark;
-            if (!done) mark = "§c" + Component.translatable("r3ct_daily.quests.status.incomplete").getString();
+            if (!done) {
+                if (canSubmit) {
+                    mark = (time % 1000 < 500) ? "§f" + Component.translatable("r3ct_daily.gui.submit_items").getString() : "§b" + Component.translatable("r3ct_daily.gui.submit_items").getString();
+                } else {
+                    mark = "§c" + Component.translatable("r3ct_daily.quests.status.incomplete").getString();
+                }
+            }
             else if (claimed) mark = "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString();
             else mark = (time % 1000 < 500) ? "§e" + Component.translatable("r3ct_daily.quests.status.claim").getString() : "§6" + Component.translatable("r3ct_daily.quests.status.claim").getString();
 
@@ -366,7 +375,8 @@ public class QuestScreen extends Screen {
                 Quest q = QuestManager.getQuestById(data.activeQuests.get(i));
                 if (q == null) continue;
 
-                boolean done = data.questProgress.get(i) >= q.requiredAmount;
+                int currentProgress = data.questProgress.get(i);
+                boolean done = currentProgress >= q.requiredAmount;
                 boolean claimed = data.questRewardsClaimed.size() > i && data.questRewardsClaimed.get(i);
 
                 int btnSize = 14;
@@ -386,6 +396,14 @@ public class QuestScreen extends Screen {
                             this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
                             this.minecraft.player.connection.sendCommand("daily claimquest " + i);
                             return true;
+                        }
+                    } else if (!done && q.actionType.equals("SUBMIT_ITEMS")) {
+                        if (this.minecraft != null && this.minecraft.player != null) {
+                            if (QuestSubmitHelper.countItems(q.target) > 0) {
+                                this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                                QuestSubmitHelper.handleQuestSubmitClick(this, q, i, currentProgress);
+                                return true;
+                            }
                         }
                     }
                 }

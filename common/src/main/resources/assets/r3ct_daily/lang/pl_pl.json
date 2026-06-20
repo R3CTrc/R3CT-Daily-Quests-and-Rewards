@@ -21,6 +21,14 @@
   "r3ct_daily.hud.loading": "Ładowanie zadań...",
   "r3ct_daily.message.hud_toggle": "HUD Zadań: %s",
 
+  "r3ct_daily.gui.submit_items": "[ODDAJ]",
+  "r3ct_daily.gui.confirm_submit": "Potwierdzenie Oddania",
+  "r3ct_daily.gui.select_item": "Wybierz przedmiot do oddania",
+  "r3ct_daily.gui.submit_question": "Czy na pewno chcesz oddać %sx %s?",
+  "r3ct_daily.gui.yes": "Tak",
+  "r3ct_daily.gui.no": "Nie",
+  "r3ct_daily.gui.cancel": "Anuluj",
+
   "r3ct_daily.config.title": "R3CT Daily Quests & Rewards - Konfiguracja",
   "r3ct_daily.config.category.hud": "Interfejs HUD",
   "r3ct_daily.config.entry.enable_hud": "Włącz HUD Zadań",

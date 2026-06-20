@@ -7,6 +7,7 @@ import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.item.ModItems;
 import com.r3ct.daily.network.SyncQuestsPayload;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -205,6 +206,69 @@ public class QuestManager {
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.quests.completed", questNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
         ));
+    }
+
+    public static void submitQuestItem(ServerPlayer player, int questIndex, int slotIndex) {
+        net.minecraft.server.MinecraftServer server = player.level().getServer();
+        if (server == null) return;
+        PlayerData data = ModState.getPlayerData(server, player.getUUID());
+
+        if (questIndex < 0 || questIndex >= data.activeQuests.size()) return;
+        if (data.questRewardsClaimed.get(questIndex)) return;
+
+        Quest q = getQuestById(data.activeQuests.get(questIndex));
+        if (q == null || !q.actionType.equals("SUBMIT_ITEMS")) return;
+
+        int currentProg = data.questProgress.get(questIndex);
+        if (currentProg >= q.requiredAmount) return;
+
+        int needed = q.requiredAmount - currentProg;
+        int taken = 0;
+
+        net.minecraft.world.entity.player.Inventory inv = player.getInventory();
+
+        if (slotIndex >= 0) {
+            ItemStack stack = inv.getItem(slotIndex);
+            if (!stack.isEmpty() && net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().equals(q.target)) {
+                int toTake = Math.min(needed, stack.getCount());
+                stack.shrink(toTake);
+                taken += toTake;
+            }
+        } else {
+            for (int i = 0; i < inv.getContainerSize(); i++) {
+                ItemStack stack = inv.getItem(i);
+                if (!stack.isEmpty() && net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().equals(q.target)) {
+                    int toTake = Math.min(needed - taken, stack.getCount());
+                    stack.shrink(toTake);
+                    taken += toTake;
+                    if (taken >= needed) break;
+                }
+            }
+        }
+
+        if (taken > 0) {
+            int newProg = currentProg + taken;
+            data.questProgress.set(questIndex, newProg);
+
+            player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
+                    net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP),
+                    net.minecraft.sounds.SoundSource.PLAYERS,
+                    player.getX(), player.getY(), player.getZ(),
+                    0.5F, 1.0F, player.getRandom().nextLong()
+            ));
+
+            if (newProg >= q.requiredAmount) {
+                completeQuest(player, data, q);
+            }
+
+            server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+            com.r3ct.daily.platform.Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
+                    data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
+                    data.activeQuests, data.questProgress, data.streak,
+                    data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
+                    data.questRewardsClaimed, data.claimedPointRewards
+            ));
+        }
     }
 
     public static void claimQuestReward(ServerPlayer player, int index) {

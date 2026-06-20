@@ -86,6 +86,14 @@ public class DailyNeoForge {
                 }
             });
         });
+
+        registrar.playToServer(com.r3ct.daily.network.SubmitQuestItemPayload.TYPE, com.r3ct.daily.network.SubmitQuestItemPayload.STREAM_CODEC, (payload, context) -> {
+            context.enqueueWork(() -> {
+                if (context.player() instanceof ServerPlayer player) {
+                    QuestManager.submitQuestItem(player, payload.questIndex(), payload.slotIndex());
+                }
+            });
+        });
     }
 
     private void onRegister(net.neoforged.neoforge.registries.RegisterEvent event) {
