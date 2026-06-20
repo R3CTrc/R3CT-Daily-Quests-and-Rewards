@@ -24,7 +24,7 @@ public class DailyServerConfig {
 
     private static final int QUESTS_VERSION = 2;
     private static final int REWARDS_VERSION = 2;
-    private static final int MECHANICS_VERSION = 2;
+    private static final int MECHANICS_VERSION = 3;
 
     public static class RewardEntry {
         public String item;
@@ -34,7 +34,7 @@ public class DailyServerConfig {
         public String color;
 
         public RewardEntry(String i, int min, int max, int w, String c) {
-            this.item = i;
+            this.item = i != null ? i.toLowerCase(java.util.Locale.ROOT) : "minecraft:paper";
             this.minAmount = min;
             this.maxAmount = max;
             this.chance = w;
@@ -67,6 +67,9 @@ public class DailyServerConfig {
         public int placedBlocksCacheLimit = 10000;
         public int leaderboardUpdateIntervalTicks = 1200;
         public int questRefreshHour = 0;
+        public int actionSyncInterval = 1;
+        public int distanceSyncInterval = 5;
+        public int elytraSyncInterval = 50;
     }
 
     public static class MechanicsConfig {
@@ -79,7 +82,13 @@ public class DailyServerConfig {
         public String item;
         public int amount;
         public String color;
-        public MilestoneReward(String i, int a, String c) { this.item = i; this.amount = a; this.color = c; }
+
+        public MilestoneReward(String i, int a, String c) {
+            this.item = i != null ? i.toLowerCase(java.util.Locale.ROOT) : "minecraft:paper";
+            this.amount = a;
+            this.color = c;
+        }
+
         public String getFormattedColor() {
             return this.color != null ? this.color.replace('&', '§') : "§b";
         }
@@ -238,14 +247,14 @@ public class DailyServerConfig {
                 try {
                     com.google.gson.JsonObject obj = bucketArray.get(j).getAsJsonObject();
                     bucket.add(new RewardEntry(
-                            obj.get("item").getAsString(),
-                            obj.get("min_amount").getAsInt(),
-                            obj.get("max_amount").getAsInt(),
-                            obj.get("chance").getAsInt(),
+                            getString(obj, "item"),
+                            getInt(obj, "min_amount"),
+                            getInt(obj, "max_amount"),
+                            getInt(obj, "chance"),
                             obj.has("color") ? obj.get("color").getAsString() : "&b"
                     ));
                 } catch (Exception e) {
-                    Constants.LOG.error("Error loading reward entry in list (group: " + i + ", item: " + j + "). Skipping entry.", e);
+                    Constants.LOG.error("Error loading reward entry in list (group: " + i + ", item: " + j + "). Skipping entry. Reason: " + e.getMessage());
                 }
             }
             tierList.add(bucket);
@@ -256,16 +265,16 @@ public class DailyServerConfig {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
             try {
-            com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
-            list.add(new RewardEntry(
-                    obj.get("item").getAsString(),
-                    obj.get("min_amount").getAsInt(),
-                    obj.get("max_amount").getAsInt(),
-                    obj.get("chance").getAsInt(),
-                    obj.has("color") ? obj.get("color").getAsString() : "&b"
-            ));
+                com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
+                list.add(new RewardEntry(
+                        getString(obj, "item"),
+                        getInt(obj, "min_amount"),
+                        getInt(obj, "max_amount"),
+                        getInt(obj, "chance"),
+                        obj.has("color") ? obj.get("color").getAsString() : "&b"
+                ));
             } catch (Exception e) {
-                Constants.LOG.error("Error loading simple reward entry (index: " + i + "). Skipping entry.", e);
+                Constants.LOG.error("Error loading simple reward entry (index: " + i + "). Skipping entry. Reason: " + e.getMessage());
             }
         }
     }

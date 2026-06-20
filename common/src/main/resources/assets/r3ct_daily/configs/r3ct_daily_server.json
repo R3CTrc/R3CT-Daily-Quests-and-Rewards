@@ -1,6 +1,6 @@
 {
   "_comment_version": "Do not change the version number! It is used for automatic config updates.",
-  "version": 2,
+  "version": 3,
 
   "quests": {
     "_comment_reroll": "Settings for quest rerolling mechanics. Costs are in Total Points.",
@@ -33,6 +33,11 @@
     "leaderboardUpdateIntervalTicks": 1200,
 
     "_comment_refresh": "Hour of the day (0-23) when daily quests and rewards refresh (0 = midnight).",
-    "questRefreshHour": 0
+    "questRefreshHour": 0,
+
+    "_comment_sync": "Network optimization: How often quest progress is synced to the client. Increase to reduce server lag on large servers.",
+    "actionSyncInterval": 1,
+    "distanceSyncInterval": 5,
+    "elytraSyncInterval": 50
   }
 }

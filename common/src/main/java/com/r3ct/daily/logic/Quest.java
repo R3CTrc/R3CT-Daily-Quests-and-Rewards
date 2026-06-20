@@ -39,18 +39,28 @@ public class Quest {
 
     public ItemStack getItemReward() {
         Item item;
+        boolean isFallback = false;
+
         if (this.rawRewardId.startsWith("r3ct_daily:")) {
             item = Items.NETHER_STAR;
         } else {
             Identifier itemId = Identifier.parse(
                     (this.rawRewardId.contains(":") ? this.rawRewardId : "minecraft:" + this.rawRewardId).toLowerCase(java.util.Locale.ROOT)
             );
-            item = BuiltInRegistries.ITEM.getOptional(itemId).orElse(Items.DIRT);
+
+            var itemOpt = BuiltInRegistries.ITEM.getOptional(itemId);
+            item = itemOpt.orElse(Items.PAPER);
+
+            if (itemOpt.isEmpty()) {
+                isFallback = true;
+            }
         }
 
         ItemStack rewardStack = new ItemStack(item, this.rewardAmount);
 
-        if (this.rawRewardId.startsWith("r3ct_daily:")) {
+        if (isFallback) {
+            rewardStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("Report this to admin!"));
+        } else if (this.rawRewardId.startsWith("r3ct_daily:")) {
             rewardStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.translatable("r3ct_daily.item.special_reward"));
         }
 

@@ -1,6 +1,6 @@
 package com.r3ct.daily.client.screen;
 
-import com.r3ct.daily.client.QuestSubmitHelper;
+import com.r3ct.daily.logic.QuestSubmitHelper;
 import com.r3ct.daily.config.DailyClientConfig;
 import com.r3ct.daily.network.OpenQuestsPayload;
 import com.r3ct.daily.platform.Services;

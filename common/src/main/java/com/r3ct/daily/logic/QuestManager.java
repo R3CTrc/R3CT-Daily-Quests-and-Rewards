@@ -173,15 +173,20 @@ public class QuestManager {
                         if (newProg != oldProg) {
                             data.questProgress.set(i, newProg);
 
-                            boolean isDistance = actionType.contains("DISTANCE") ||
-                                    actionType.equals("ELYTRA_FLIGHT_NO_LAND") ||
-                                    actionType.equals("LEVITATION_HEIGHT") ||
-                                    actionType.equals("PEARL_DISTANCE");
+                            int syncInterval;
+                            if (actionType.equals("ELYTRA_FLIGHT_NO_LAND")) {
+                                syncInterval = DailyServerConfig.mechanics.technical.elytraSyncInterval;
+                            } else if (actionType.contains("DISTANCE") || actionType.equals("LEVITATION_HEIGHT") || actionType.equals("PEARL_DISTANCE")) {
+                                syncInterval = DailyServerConfig.mechanics.technical.distanceSyncInterval;
+                            } else {
+                                syncInterval = DailyServerConfig.mechanics.technical.actionSyncInterval;
+                            }
 
-                            int syncInterval = actionType.equals("ELYTRA_FLIGHT_NO_LAND") ? 50 : 5;
+                            if (syncInterval < 1) syncInterval = 1;
+
                             boolean passedInterval = (newProg / syncInterval) > (oldProg / syncInterval);
 
-                            if (!isDistance || newProg >= q.requiredAmount || passedInterval) {
+                            if (newProg >= q.requiredAmount || passedInterval) {
                                 needsSync = true;
                             }
 
@@ -495,11 +500,17 @@ public class QuestManager {
             }
         }
 
-        Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(Identifier.parse(selectedEntry.item)).orElse(Items.COAL);
-        int baseAmount = selectedEntry.minAmount + rand.nextInt(Math.max(1, selectedEntry.maxAmount - selectedEntry.minAmount + 1));
+        String parsedItem = selectedEntry.item != null ? selectedEntry.item.toLowerCase(java.util.Locale.ROOT) : "minecraft:paper";
+        var itemOpt = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(Identifier.parse(parsedItem));
+        Item item = itemOpt.orElse(Items.PAPER);
 
+        int baseAmount = selectedEntry.minAmount + rand.nextInt(Math.max(1, selectedEntry.maxAmount - selectedEntry.minAmount + 1));
         int finalAmount = baseAmount * multi;
         ItemStack reward = new ItemStack(item, finalAmount);
+
+        if (itemOpt.isEmpty()) {
+            reward.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("Report this to admin!"));
+        }
 
         if (item == Items.DIAMOND) {
             QuestManager.grantAdvancement(player, "r3ct_daily:quests/lucky_drop");
@@ -538,10 +549,17 @@ public class QuestManager {
     }
 
     public static ItemStack getMilestoneRewardStack(DailyServerConfig.MilestoneReward mr) {
-        var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(
-                net.minecraft.resources.Identifier.parse(mr.item)
-        ).orElse(net.minecraft.world.item.Items.PAPER);
-        return new ItemStack(item, mr.amount);
+        String parsedItem = mr.item != null ? mr.item.toLowerCase(java.util.Locale.ROOT) : "minecraft:paper";
+        var itemOpt = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(net.minecraft.resources.Identifier.parse(parsedItem));
+        Item item = itemOpt.orElse(net.minecraft.world.item.Items.PAPER);
+
+        ItemStack stack = new ItemStack(item, mr.amount);
+
+        if (itemOpt.isEmpty()) {
+            stack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("Report this to admin!"));
+        }
+
+        return stack;
     }
 
     public static void grantAdvancement(ServerPlayer player, String advancementId) {

@@ -1,8 +1,7 @@
-package com.r3ct.daily.client;
+package com.r3ct.daily.logic;
 
 import com.r3ct.daily.client.screen.ConfirmSubmitScreen;
 import com.r3ct.daily.client.screen.ItemSelectionScreen;
-import com.r3ct.daily.logic.Quest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
