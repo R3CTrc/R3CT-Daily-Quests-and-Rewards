@@ -33,7 +33,7 @@ public class LeaderboardScreen extends Screen {
 
     @Override
     public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.extractTransparentBackground(guiGraphics);
+        this.extractBlurredBackground(guiGraphics);
 
         float scale = DailyClientConfig.getInstance().leaderboardScreenScale;
 
