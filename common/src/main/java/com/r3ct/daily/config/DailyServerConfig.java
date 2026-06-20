@@ -288,6 +288,7 @@ public class DailyServerConfig {
                     obj.get("points").getAsInt(),
                     rewardAmount,
                     dimension,
+                    obj.get("required_location").getAsString(),
                     obj.get("action_type").getAsString(),
                     obj.has("target") ? obj.get("target").getAsString() : "any",
                     itemStr

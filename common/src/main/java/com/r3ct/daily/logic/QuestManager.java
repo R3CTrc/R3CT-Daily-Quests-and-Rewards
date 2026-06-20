@@ -146,6 +146,11 @@ public class QuestManager {
                 }
 
                 if (targetMatches) {
+
+                    if (!isLocationValid(player, q.requiredLocation)) {
+                        continue;
+                    }
+
                     int oldProg = data.questProgress.get(i);
 
                     if (oldProg < q.requiredAmount) {
@@ -193,6 +198,50 @@ public class QuestManager {
                     data.questRewardsClaimed, data.claimedPointRewards
             ));
         }
+    }
+
+    public static boolean isLocationValid(ServerPlayer player, String location) {
+        if (location == null || location.isEmpty() || location.equalsIgnoreCase("any")) {
+            return true;
+        }
+
+        net.minecraft.server.level.ServerLevel level = player.level();
+        net.minecraft.core.BlockPos pos = player.blockPosition();
+
+        if (location.startsWith("biome:")) {
+            String biomeId = location.substring(6);
+            net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome> currentBiome = level.getBiome(pos);
+
+            if (biomeId.startsWith("#")) {
+                net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> tagKey = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BIOME, net.minecraft.resources.Identifier.parse(biomeId.substring(1)));
+                return currentBiome.is(tagKey);
+            }
+            else {
+                net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> resKey = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.BIOME, net.minecraft.resources.Identifier.parse(biomeId));
+                return currentBiome.is(resKey);
+            }
+        }
+
+        if (location.startsWith("structure:")) {
+            String structureId = location.substring(10);
+
+            if (structureId.startsWith("#")) {
+                net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tagKey = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE, net.minecraft.resources.Identifier.parse(structureId.substring(1)));
+                return level.structureManager().getStructureWithPieceAt(pos, tagKey).isValid();
+            }
+            else {
+                var lookup = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
+                var structureKey = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.STRUCTURE, net.minecraft.resources.Identifier.parse(structureId));
+                var structureHolder = lookup.get(structureKey);
+
+                if (structureHolder.isPresent()) {
+                    return level.structureManager().getStructureWithPieceAt(pos, structureHolder.get().value()).isValid();
+                }
+            }
+            return false;
+        }
+
+        return false;
     }
 
     private static void completeQuest(ServerPlayer player, PlayerData data, Quest q) {

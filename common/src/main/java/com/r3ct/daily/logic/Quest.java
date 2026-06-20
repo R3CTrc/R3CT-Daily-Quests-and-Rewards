@@ -15,13 +15,14 @@ public class Quest {
     public int difficulty;
     public int points;
     public String requiredDimension;
+    public String requiredLocation;
 
     public String actionType;
     public String target;
     public String rawRewardId;
     public int rewardAmount;
 
-    public Quest(String id, String name, String description, int requiredAmount, int difficulty, int points, int rewardAmount, String requiredDimension, String actionType, String target, String rawRewardId) {
+    public Quest(String id, String name, String description, int requiredAmount, int difficulty, int points, int rewardAmount, String requiredDimension, String requiredLocation, String actionType, String target, String rawRewardId) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -30,6 +31,7 @@ public class Quest {
         this.points = points;
         this.rewardAmount = rewardAmount;
         this.requiredDimension = requiredDimension;
+        this.requiredLocation = requiredLocation;
         this.actionType = actionType;
         this.target = target;
         this.rawRewardId = rawRewardId;
