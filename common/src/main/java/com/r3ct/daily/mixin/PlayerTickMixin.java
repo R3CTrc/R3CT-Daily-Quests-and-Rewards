@@ -3,8 +3,12 @@ package com.r3ct.daily.mixin;
 import com.r3ct.daily.data.ModState;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.logic.Quest;
+import com.r3ct.daily.logic.QuestEventHandlers;
 import com.r3ct.daily.logic.QuestManager;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Player.class)
 public abstract class PlayerTickMixin {
 
-    @Unique private net.minecraft.core.BlockPos lastFlightPos = null;
+    @Unique private BlockPos lastFlightPos = null;
     @Unique private double levitationStartY = -1;
     @Unique private double maxFallDistance = 0;
 
@@ -40,7 +44,7 @@ public abstract class PlayerTickMixin {
                 }
             }
 
-            if (player.hasEffect(net.minecraft.world.effect.MobEffects.LEVITATION)) {
+            if (player.hasEffect(MobEffects.LEVITATION)) {
                 if (levitationStartY == -1 || player.onGround()) {
                     levitationStartY = player.getY();
                 } else if (player.tickCount % 10 == 0) {
@@ -57,7 +61,7 @@ public abstract class PlayerTickMixin {
 
             if (player.onGround() || player.isInWater() || player.onClimbable() || player.isFallFlying()) {
                 if (maxFallDistance > 0) {
-                    net.minecraft.server.MinecraftServer server = player.level().getServer();
+                    MinecraftServer server = player.level().getServer();
                     if (server != null) {
                         PlayerData data = ModState.getPlayerData(server, player.getUUID());
 
@@ -81,7 +85,7 @@ public abstract class PlayerTickMixin {
                 QuestManager.resetQuestProgress(player, "LEVITATION_HEIGHT");
             }
 
-            com.r3ct.daily.logic.QuestEventHandlers.onPlayerTick(player);
+            QuestEventHandlers.onPlayerTick(player);
         }
     }
 }

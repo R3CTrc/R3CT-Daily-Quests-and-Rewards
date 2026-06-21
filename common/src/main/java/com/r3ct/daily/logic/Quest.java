@@ -1,11 +1,14 @@
 package com.r3ct.daily.logic;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.chat.Component;
+
+import java.util.Locale;
 
 public class Quest {
     public String id;
@@ -45,7 +48,7 @@ public class Quest {
             item = Items.NETHER_STAR;
         } else {
             Identifier itemId = Identifier.parse(
-                    (this.rawRewardId.contains(":") ? this.rawRewardId : "minecraft:" + this.rawRewardId).toLowerCase(java.util.Locale.ROOT)
+                    (this.rawRewardId.contains(":") ? this.rawRewardId : "minecraft:" + this.rawRewardId).toLowerCase(Locale.ROOT)
             );
 
             var itemOpt = BuiltInRegistries.ITEM.getOptional(itemId);
@@ -59,9 +62,9 @@ public class Quest {
         ItemStack rewardStack = new ItemStack(item, this.rewardAmount);
 
         if (isFallback) {
-            rewardStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("Report this to admin!"));
+            rewardStack.set(DataComponents.CUSTOM_NAME, Component.literal("Report this to admin!"));
         } else if (this.rawRewardId.startsWith("r3ct_daily:")) {
-            rewardStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.translatable("r3ct_daily.item.special_reward"));
+            rewardStack.set(DataComponents.CUSTOM_NAME, Component.translatable("r3ct_daily.item.special_reward"));
         }
 
         return rewardStack;

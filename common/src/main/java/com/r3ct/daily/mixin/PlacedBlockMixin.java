@@ -9,7 +9,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,10 +38,10 @@ public abstract class PlacedBlockMixin {
                 QuestManager.handleAction(player, "PLACE_SAPLING", blockId, 1);
             }
 
-            if (block instanceof net.minecraft.world.level.block.CropBlock ||
-                    block instanceof net.minecraft.world.level.block.StemBlock ||
-                    block instanceof net.minecraft.world.level.block.NetherWartBlock ||
-                    block instanceof net.minecraft.world.level.block.PitcherCropBlock) {
+            if (block instanceof CropBlock ||
+                    block instanceof StemBlock ||
+                    block instanceof NetherWartBlock ||
+                    block instanceof PitcherCropBlock) {
                 QuestManager.handleAction(player, "PLACE_SEED", blockId, 1);
             }
 

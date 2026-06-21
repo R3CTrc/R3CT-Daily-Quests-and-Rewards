@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class LeaderboardManager {
     public static LeaderboardResponsePayload cachedQuestsBoard = null;
@@ -17,7 +18,7 @@ public class LeaderboardManager {
 
     public static void updateLeaderboardCache(MinecraftServer server) {
         ModState state = ModState.get(server);
-        List<Map.Entry<java.util.UUID, PlayerData>> allPlayers = new ArrayList<>(state.players.entrySet());
+        List<Map.Entry<UUID, PlayerData>> allPlayers = new ArrayList<>(state.players.entrySet());
 
         List<TopEntry> leftQ = new ArrayList<>();
         List<TopEntry> rightQ = new ArrayList<>();

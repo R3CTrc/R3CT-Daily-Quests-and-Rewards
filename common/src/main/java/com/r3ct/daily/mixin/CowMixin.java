@@ -6,6 +6,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.animal.cow.AbstractCow;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +21,7 @@ public abstract class CowMixin {
 
     @Inject(method = "mobInteract", at = @At("HEAD"))
     private void beforeInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-        this.wasHoldingBucket = player.getItemInHand(hand).is(net.minecraft.world.item.Items.BUCKET);
+        this.wasHoldingBucket = player.getItemInHand(hand).is(Items.BUCKET);
     }
 
     @Inject(method = "mobInteract", at = @At("RETURN"))

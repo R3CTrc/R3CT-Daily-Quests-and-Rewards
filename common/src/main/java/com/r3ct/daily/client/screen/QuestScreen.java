@@ -12,9 +12,18 @@ import com.r3ct.daily.network.RequestLeaderboardPayload;
 import com.r3ct.daily.network.RerollQuestPayload;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.NonNull;
@@ -79,8 +88,8 @@ public class QuestScreen extends Screen {
             boolean claimed = data.questRewardsClaimed.size() > i && data.questRewardsClaimed.get(i);
             boolean canSubmit = !done && q.actionType.equals("SUBMIT_ITEMS") && QuestSubmitHelper.countItems(q.target) > 0;
 
-            String locName = net.minecraft.client.resources.language.I18n.get(q.name);
-            String locDesc = net.minecraft.client.resources.language.I18n.get(q.description);
+            String locName = I18n.get(q.name);
+            String locDesc = I18n.get(q.description);
 
             String name = (locName != null && !locName.isEmpty()) ? locName.toUpperCase() : locDesc.split(" ")[0].toUpperCase();
             int qY = topPos + 45 + (i * 55);
@@ -127,7 +136,7 @@ public class QuestScreen extends Screen {
             String desc = locDesc + " (" + progress + "/" + q.requiredAmount + ")";
 
             int maxTextWidth = (midX - 45) - (leftTextX + 11);
-            List<net.minecraft.util.FormattedCharSequence> lines = this.font.split(Component.literal(desc), maxTextWidth);
+            List<FormattedCharSequence> lines = this.font.split(Component.literal(desc), maxTextWidth);
 
             for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
                 guiGraphics.text(this.font, lines.get(lineIdx), leftTextX + 11, qY + 11 + (lineIdx * 10), color, false);
@@ -220,17 +229,17 @@ public class QuestScreen extends Screen {
                         (rq.difficulty == 1) ? payload.rerollCostMedium() :
                                 payload.rerollCostHard();
 
-                List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> rTooltip = new ArrayList<>();
-                rTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§e§l" + Component.translatable("r3ct_daily.quests.tooltip.reroll.title").getString()).getVisualOrderText()));
-                rTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-                rTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reroll.desc1").getString()).getVisualOrderText()));
-                rTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reroll.desc2").getString()).getVisualOrderText()));
-                rTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
+                List<ClientTooltipComponent> rTooltip = new ArrayList<>();
+                rTooltip.add(ClientTooltipComponent.create(Component.literal("§e§l" + Component.translatable("r3ct_daily.quests.tooltip.reroll.title").getString()).getVisualOrderText()));
+                rTooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+                rTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reroll.desc1").getString()).getVisualOrderText()));
+                rTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reroll.desc2").getString()).getVisualOrderText()));
+                rTooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
                 String costColor = (data.totalQuestPoints >= cost) ? "§a" : "§c";
-                rTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reroll.cost").getString() + " " + costColor + cost + " " + Component.translatable("r3ct_daily.unit.points").getString()).getVisualOrderText()));
+                rTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reroll.cost").getString() + " " + costColor + cost + " " + Component.translatable("r3ct_daily.unit.points").getString()).getVisualOrderText()));
 
-                guiGraphics.tooltip(this.font, rTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+                guiGraphics.tooltip(this.font, rTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
             }
         }
 
@@ -282,11 +291,11 @@ public class QuestScreen extends Screen {
         }
 
         if (trophyHover) {
-            List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tTooltip = new ArrayList<>();
-            tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
-            tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-            tTooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
-            guiGraphics.tooltip(this.font, tTooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+            List<ClientTooltipComponent> tTooltip = new ArrayList<>();
+            tTooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
+            tTooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+            tTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
+            guiGraphics.tooltip(this.font, tTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
         }
 
         guiGraphics.pose().popMatrix();
@@ -363,7 +372,7 @@ public class QuestScreen extends Screen {
 
             if (mX >= trophyX && mX <= trophyX + 16 && mY >= trophyY && mY <= trophyY + 16) {
                 if (this.minecraft != null && this.minecraft.player != null) {
-                    this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(0));
                     return true;
                 }
@@ -393,14 +402,14 @@ public class QuestScreen extends Screen {
                 if (mX >= leftTextX && mX <= midX - 10 && mY >= qY - 2 && mY <= qY + 45) {
                     if (done && !claimed) {
                         if (this.minecraft != null && this.minecraft.player != null) {
-                            this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                            this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                             this.minecraft.player.connection.sendCommand("daily claimquest " + i);
                             return true;
                         }
                     } else if (!done && q.actionType.equals("SUBMIT_ITEMS")) {
                         if (this.minecraft != null && this.minecraft.player != null) {
                             if (QuestSubmitHelper.countItems(q.target) > 0) {
-                                this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                                this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                                 QuestSubmitHelper.handleQuestSubmitClick(this, q, i, currentProgress);
                                 return true;
                             }
@@ -434,7 +443,7 @@ public class QuestScreen extends Screen {
                     boolean canClaim = data.totalQuestPoints >= t && !data.claimedPointRewards.contains(t);
                     if (canClaim) {
                         if (this.minecraft != null && this.minecraft.player != null) {
-                            this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                            this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                             this.minecraft.player.connection.sendCommand("daily claimpoints " + t);
                             return true;
                         }
@@ -449,7 +458,7 @@ public class QuestScreen extends Screen {
 
             if (mX >= arrowX && mX <= arrowX + textWidth && mY >= arrowY - 2 && mY <= arrowY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
-                    this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN, 1.0F));
+                    this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.0F));
                     this.minecraft.player.connection.sendCommand("daily rewards");
                     return true;
                 }
@@ -462,7 +471,7 @@ public class QuestScreen extends Screen {
 
             if (mX >= backX - 2 && mX <= backX + backWidth + 2 && mY >= backY - 2 && mY <= backY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
-                    this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     this.onClose();
                     return true;
                 }
@@ -472,40 +481,40 @@ public class QuestScreen extends Screen {
     }
 
     private void renderQuestStreakTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-        List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.streak.title").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+        List<ClientTooltipComponent> tooltip = new ArrayList<>();
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.streak.title").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
         if (data.questStreak >= 7) {
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.streak.multi_active").getString()).getVisualOrderText()));
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§7" + Component.translatable("r3ct_daily.quests.tooltip.streak.multi_desc").getString()).getVisualOrderText()));
+            tooltip.add(ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.streak.multi_active").getString()).getVisualOrderText()));
+            tooltip.add(ClientTooltipComponent.create(Component.literal("§7" + Component.translatable("r3ct_daily.quests.tooltip.streak.multi_desc").getString()).getVisualOrderText()));
         } else {
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req1").getString()).getVisualOrderText()));
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req2").getString()).getVisualOrderText()));
+            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req1").getString()).getVisualOrderText()));
+            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req2").getString()).getVisualOrderText()));
         }
 
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_title").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_title").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
         int reqDays = payload.perfectDaysForShield();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_desc1", reqDays).getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_desc1", reqDays).getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
         int maxQuestShields = payload.maxStoredQuestShields();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freezes").getString() + " §b" + data.availableFreezes + "§f/" + maxQuestShields).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freezes").getString() + " §b" + data.availableFreezes + "§f/" + maxQuestShields).getVisualOrderText()));
 
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.progress").getString() + " §b" + data.perfectDaysCount + "§f/" + reqDays).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.progress").getString() + " §b" + data.perfectDaysCount + "§f/" + reqDays).getVisualOrderText()));
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
     }
 
     private void renderSimpleTooltip(GuiGraphicsExtractor guiGraphics, String title, String info, int mouseX, int mouseY) {
-        List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(title).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(info).getVisualOrderText()));
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        List<ClientTooltipComponent> tooltip = new ArrayList<>();
+        tooltip.add(ClientTooltipComponent.create(Component.literal(title).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal(info).getVisualOrderText()));
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
     }
 
     private void renderQuestTooltip(GuiGraphicsExtractor guiGraphics, int index, int mouseX, int mouseY) {
@@ -521,43 +530,43 @@ public class QuestScreen extends Screen {
 
         int itemAmount = q.rewardAmount * multi;
 
-        List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
+        List<ClientTooltipComponent> tooltip = new ArrayList<>();
 
         String questTitle = Component.translatable("r3ct_daily.quests.tooltip.quest.title", (index + 1)).getString();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§l" + questTitle).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§l" + questTitle).getVisualOrderText()));
 
         String diffName = (q.difficulty == 0) ? "§2" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.0").getString() : ((q.difficulty == 1) ? "§6" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.1").getString() : "§4" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.2").getString());
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.quest.diff_label").getString() + " " + diffName).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.quest.diff_label").getString() + " " + diffName).getVisualOrderText()));
 
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-        String locDesc = net.minecraft.client.resources.language.I18n.get(q.description);
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.desc").getString() + " §7" + locDesc).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.points").getString() + " §d+" + q.points).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.xp").getString() + " §e+" + xpReward + " §e" + Component.translatable("r3ct_daily.unit.xp").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reward").getString() + " §b" + itemAmount + "§bx §b" + q.getItemReward().getHoverName().getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+        String locDesc = I18n.get(q.description);
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.desc").getString() + " §7" + locDesc).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.points").getString() + " §d+" + q.points).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.xp").getString() + " §e+" + xpReward + " §e" + Component.translatable("r3ct_daily.unit.xp").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reward").getString() + " §b" + itemAmount + "§bx §b" + q.getItemReward().getHoverName().getString()).getVisualOrderText()));
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
     }
 
     private void renderDailyTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-        List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f§l" + Component.translatable("r3ct_daily.quests.tooltip.daily.title").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.daily.desc1").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.daily.desc2").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
+        List<ClientTooltipComponent> tooltip = new ArrayList<>();
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f§l" + Component.translatable("r3ct_daily.quests.tooltip.daily.title").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.daily.desc1").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.daily.desc2").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
         int dailyXp = payload.xpDailyReward();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.xp").getString() + " §e+" + dailyXp + " §e" + Component.translatable("r3ct_daily.unit.xp").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.xp").getString() + " §e+" + dailyXp + " §e" + Component.translatable("r3ct_daily.unit.xp").getString()).getVisualOrderText()));
 
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.daily.list_title").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.daily.list_title").getString()).getVisualOrderText()));
 
         if (DailyServerConfig.dailyQuestRewards != null && !DailyServerConfig.dailyQuestRewards.isEmpty()) {
             for (DailyServerConfig.RewardEntry entry : DailyServerConfig.dailyQuestRewards) {
 
-                net.minecraft.world.item.Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(
-                        net.minecraft.resources.Identifier.parse(entry.item)
-                ).orElse(net.minecraft.world.item.Items.AIR);
+                Item item = BuiltInRegistries.ITEM.getOptional(
+                        Identifier.parse(entry.item)
+                ).orElse(Items.AIR);
 
                 String itemName = new ItemStack(item).getHoverName().getString();
 
@@ -567,19 +576,19 @@ public class QuestScreen extends Screen {
 
                 String entryColor = entry.getFormattedColor();
 
-                tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(
+                tooltip.add(ClientTooltipComponent.create(
                         Component.literal(entryColor + "- " + itemName + amountStr).getVisualOrderText()
                 ));
             }
         }
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
     }
 
     private void renderLifetimeTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-        List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct_daily.quests.tooltip.lifetime.title").getString()).getVisualOrderText()));
-        tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+        List<ClientTooltipComponent> tooltip = new ArrayList<>();
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct_daily.quests.tooltip.lifetime.title").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
         DailyServerConfig.MilestoneReward[] mr = {
                 DailyServerConfig.milestones.point_50,
@@ -593,12 +602,12 @@ public class QuestScreen extends Screen {
             ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
             String label = mr[i].amount + "x " + stack.getHoverName().getString();
 
-            tooltip.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(
+            tooltip.add(ClientTooltipComponent.create(
                     getLifetimeTooltipLine(data.totalQuestPoints, thresholds[i], label, mr[i].getFormattedColor()).getVisualOrderText()
             ));
         }
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
     }
 
     private Component getLifetimeTooltipLine(int current, int target, String reward, String color) {

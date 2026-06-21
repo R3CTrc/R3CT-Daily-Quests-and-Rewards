@@ -1,13 +1,17 @@
 package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,18 +36,18 @@ public abstract class BlockInteractMixin {
             ItemStack currentStack = player.getItemInHand(hand);
 
             if (cir.getReturnValue().consumesAction()) {
-                net.minecraft.world.level.block.state.BlockState state = level.getBlockState(hitResult.getBlockPos());
-                if (state.is(net.minecraft.world.level.block.Blocks.BEEHIVE) || state.is(net.minecraft.world.level.block.Blocks.BEE_NEST)) {
-                    if (this.daily$cachedBlockStack.is(net.minecraft.world.item.Items.GLASS_BOTTLE)) QuestManager.handleAction(player, "COLLECT_HONEY", "any", 1);
+                BlockState state = level.getBlockState(hitResult.getBlockPos());
+                if (state.is(Blocks.BEEHIVE) || state.is(Blocks.BEE_NEST)) {
+                    if (this.daily$cachedBlockStack.is(Items.GLASS_BOTTLE)) QuestManager.handleAction(player, "COLLECT_HONEY", "any", 1);
                 }
-                if (state.is(net.minecraft.world.level.block.Blocks.RESPAWN_ANCHOR)) {
-                    if (this.daily$cachedBlockStack.is(net.minecraft.world.item.Items.GLOWSTONE)) QuestManager.handleAction(player, "CHARGE_RESPAWN_ANCHOR", "any", 1);
+                if (state.is(Blocks.RESPAWN_ANCHOR)) {
+                    if (this.daily$cachedBlockStack.is(Items.GLOWSTONE)) QuestManager.handleAction(player, "CHARGE_RESPAWN_ANCHOR", "any", 1);
                 }
-                if (state.is(net.minecraft.world.level.block.Blocks.JUKEBOX)) {
-                    if (this.daily$cachedBlockStack.has(net.minecraft.core.component.DataComponents.JUKEBOX_PLAYABLE)) QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
+                if (state.is(Blocks.JUKEBOX)) {
+                    if (this.daily$cachedBlockStack.has(DataComponents.JUKEBOX_PLAYABLE)) QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
                 }
-                if (state.is(net.minecraft.world.level.block.Blocks.VAULT)) {
-                    if (this.daily$cachedBlockStack.is(net.minecraft.world.item.Items.TRIAL_KEY) || this.daily$cachedBlockStack.is(net.minecraft.world.item.Items.OMINOUS_TRIAL_KEY)) QuestManager.handleAction(player, "OPEN_VAULT", "any", 1);
+                if (state.is(Blocks.VAULT)) {
+                    if (this.daily$cachedBlockStack.is(Items.TRIAL_KEY) || this.daily$cachedBlockStack.is(Items.OMINOUS_TRIAL_KEY)) QuestManager.handleAction(player, "OPEN_VAULT", "any", 1);
                 }
             }
 

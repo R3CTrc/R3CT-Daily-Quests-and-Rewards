@@ -2,6 +2,7 @@ package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -57,7 +58,7 @@ public abstract class PlayerStatMixin {
             QuestManager.handleAction(serverPlayer, "BREAK_ITEM", itemId, amount);
         }
 
-        if (stat.getType() == Stats.CUSTOM && stat.getValue() instanceof net.minecraft.resources.Identifier statId) {
+        if (stat.getType() == Stats.CUSTOM && stat.getValue() instanceof Identifier statId) {
             String id = statId.toString();
             int blocks = 0;
 

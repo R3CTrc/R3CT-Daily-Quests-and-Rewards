@@ -1,5 +1,6 @@
 package com.r3ct.daily;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.r3ct.daily.config.DailyClientConfig;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.logic.Quest;
@@ -43,21 +44,21 @@ public class DailyFabricClient implements ClientModInitializer {
 
 		openRewardsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.open_rewards",
-				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_H,
 				R3CT_CATEGORY
 		));
 
 		openQuestsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.open_quests",
-				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_G,
 				R3CT_CATEGORY
 		));
 
 		toggleHudKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.toggle_hud",
-				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_PERIOD,
 				R3CT_CATEGORY
 		));
@@ -244,7 +245,7 @@ public class DailyFabricClient implements ClientModInitializer {
 			guiGraphics.pose().popMatrix();
 		});
 
-		net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(LeaderboardResponsePayload.ID, (payload, context) -> {
+		ClientPlayNetworking.registerGlobalReceiver(LeaderboardResponsePayload.ID, (payload, context) -> {
 			context.client().execute(() -> {
 				context.client().setScreen(new LeaderboardScreen(payload.boardType(), payload.leftList(), payload.rightList()));
 			});

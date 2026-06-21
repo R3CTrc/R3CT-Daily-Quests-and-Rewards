@@ -7,6 +7,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.animal.fish.AbstractFish;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +22,7 @@ public abstract class FishInteractMixin {
 
     @Inject(method = "mobInteract", at = @At("HEAD"))
     private void beforeInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-        this.wasHoldingWaterBucket = player.getItemInHand(hand).is(net.minecraft.world.item.Items.WATER_BUCKET);
+        this.wasHoldingWaterBucket = player.getItemInHand(hand).is(Items.WATER_BUCKET);
     }
 
     @Inject(method = "mobInteract", at = @At("RETURN"))

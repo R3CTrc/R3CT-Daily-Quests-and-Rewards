@@ -1,8 +1,6 @@
 package com.r3ct.daily.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.Constants;
 import com.r3ct.daily.logic.Quest;
@@ -11,8 +9,10 @@ import com.r3ct.daily.logic.QuestManager;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DailyServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -34,7 +34,7 @@ public class DailyServerConfig {
         public String color;
 
         public RewardEntry(String i, int min, int max, int w, String c) {
-            this.item = i != null ? i.toLowerCase(java.util.Locale.ROOT) : "minecraft:paper";
+            this.item = i != null ? i.toLowerCase(Locale.ROOT) : "minecraft:paper";
             this.minAmount = min;
             this.maxAmount = max;
             this.chance = w;
@@ -84,7 +84,7 @@ public class DailyServerConfig {
         public String color;
 
         public MilestoneReward(String i, int a, String c) {
-            this.item = i != null ? i.toLowerCase(java.util.Locale.ROOT) : "minecraft:paper";
+            this.item = i != null ? i.toLowerCase(Locale.ROOT) : "minecraft:paper";
             this.amount = a;
             this.color = c;
         }
@@ -124,7 +124,7 @@ public class DailyServerConfig {
 
         boolean needsUpdate = false;
         try (FileReader reader = new FileReader(file)) {
-            com.google.gson.JsonElement element = com.google.gson.JsonParser.parseReader(reader);
+            JsonElement element = JsonParser.parseReader(reader);
             if (element.isJsonObject()) {
                 JsonObject json = element.getAsJsonObject();
                 int version = json.has("version") ? json.get("version").getAsInt() : 0;
@@ -143,7 +143,7 @@ public class DailyServerConfig {
                 Path path = file.toPath();
                 String oldName = path.getFileName().toString().replace(".json", "_OLD.json");
                 Path backupPath = path.resolveSibling(oldName);
-                Files.move(path, backupPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                Files.move(path, backupPath, StandardCopyOption.REPLACE_EXISTING);
                 Constants.LOG.info("Outdated config detected! Backed up to: " + oldName);
                 copyDefaultConfig(resourceName);
             } catch (Exception e) {
@@ -175,7 +175,7 @@ public class DailyServerConfig {
         Path target = CONFIG_DIR.resolve(fileName);
         try (InputStream is = DailyServerConfig.class.getResourceAsStream("/assets/r3ct_daily/configs/" + fileName)) {
             if (is != null) {
-                Files.copy(is, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, target, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
             Constants.LOG.error("Error copying file: " + fileName, e);
@@ -238,14 +238,14 @@ public class DailyServerConfig {
         }
     }
 
-    private static void parseRewards(com.google.gson.JsonArray array, List<List<RewardEntry>> tierList) {
+    private static void parseRewards(JsonArray array, List<List<RewardEntry>> tierList) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
-            com.google.gson.JsonArray bucketArray = array.get(i).getAsJsonArray();
+            JsonArray bucketArray = array.get(i).getAsJsonArray();
             List<RewardEntry> bucket = new ArrayList<>();
             for (int j = 0; j < bucketArray.size(); j++) {
                 try {
-                    com.google.gson.JsonObject obj = bucketArray.get(j).getAsJsonObject();
+                    JsonObject obj = bucketArray.get(j).getAsJsonObject();
                     bucket.add(new RewardEntry(
                             getString(obj, "item"),
                             getInt(obj, "min_amount"),
@@ -261,11 +261,11 @@ public class DailyServerConfig {
         }
     }
 
-    private static void parseSimpleRewards(com.google.gson.JsonArray array, List<RewardEntry> list) {
+    private static void parseSimpleRewards(JsonArray array, List<RewardEntry> list) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
             try {
-                com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
+                JsonObject obj = array.get(i).getAsJsonObject();
                 list.add(new RewardEntry(
                         getString(obj, "item"),
                         getInt(obj, "min_amount"),
@@ -279,11 +279,11 @@ public class DailyServerConfig {
         }
     }
 
-    private static void parseQuestArray(com.google.gson.JsonArray array, String dimension) {
+    private static void parseQuestArray(JsonArray array, String dimension) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
             try {
-                com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
+                JsonObject obj = array.get(i).getAsJsonObject();
 
                 int diffInt = getInt(obj, "difficulty");
 

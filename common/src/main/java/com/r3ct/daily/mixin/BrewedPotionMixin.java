@@ -1,10 +1,14 @@
 package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,15 +22,15 @@ public abstract class BrewedPotionMixin {
         if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
             Slot slot = (Slot)(Object)this;
 
-            if (slot.container instanceof net.minecraft.world.level.block.entity.BrewingStandBlockEntity) {
+            if (slot.container instanceof BrewingStandBlockEntity) {
 
-                if (stack.is(net.minecraft.world.item.Items.SPLASH_POTION)) {
+                if (stack.is(Items.SPLASH_POTION)) {
                     QuestManager.handleAction(serverPlayer, "BREW_SPLASH_POTION", "any", stack.getCount());
-                } else if (stack.is(net.minecraft.world.item.Items.LINGERING_POTION)) {
+                } else if (stack.is(Items.LINGERING_POTION)) {
                     QuestManager.handleAction(serverPlayer, "BREW_LINGERING_POTION", "any", stack.getCount());
                 }
 
-                net.minecraft.world.item.alchemy.PotionContents contents = stack.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
+                PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
                 if (contents != null && contents.potion().isPresent()) {
 
                     String potId = contents.potion().get().unwrapKey().get().identifier().toString();
