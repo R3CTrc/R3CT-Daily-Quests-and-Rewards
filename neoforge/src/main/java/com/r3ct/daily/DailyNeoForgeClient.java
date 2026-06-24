@@ -6,10 +6,11 @@ import com.r3ct.daily.client.screen.LeaderboardScreen;
 import com.r3ct.daily.client.screen.QuestScreen;
 import com.r3ct.daily.client.screen.RewardScreen;
 import com.r3ct.daily.config.DailyClientConfig;
+import com.r3ct.daily.config.DailyServerConfig;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestManager;
-import com.r3ct.daily.network.LeaderboardResponsePayload;
+import com.r3ct.daily.network.*;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -20,6 +21,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
@@ -65,6 +67,11 @@ public class DailyNeoForgeClient {
         public static PlayerData clientQuestData = null;
         public static final long[] flashTimestamps = new long[10];
         public static final boolean[] flashIsGreen = new boolean[10];
+
+        @SubscribeEvent
+        public static void onClientLoggedOut(ClientPlayerNetworkEvent.LoggingOut event) {
+            DailyServerConfig.loadAll();
+        }
 
         @SubscribeEvent
         public static void onClientTick(ClientTickEvent.Post event) {
@@ -171,7 +178,12 @@ public class DailyNeoForgeClient {
     }
 
     public static class ClientPayloadHandlers {
-        public static void handleOpenRewards(com.r3ct.daily.network.OpenRewardsPayload payload) {
+
+        public static void handleConfigSync(ConfigSyncPayload payload) {
+            DailyServerConfig.syncFromServer(payload.questsJson(), payload.rewardsJson(), payload.serverJson());
+        }
+
+        public static void handleOpenRewards(OpenRewardsPayload payload) {
             PlayerData data = new PlayerData();
             data.rewardDay = payload.rewardDay();
             data.lastRewardDate = payload.lastRewardDate();
@@ -183,7 +195,7 @@ public class DailyNeoForgeClient {
             Minecraft.getInstance().setScreen(new RewardScreen(data, payload));
         }
 
-        public static void handleOpenQuests(com.r3ct.daily.network.OpenQuestsPayload payload) {
+        public static void handleOpenQuests(OpenQuestsPayload payload) {
             PlayerData data = new PlayerData();
             data.questStreak = payload.questStreak();
             data.totalQuestPoints = payload.totalQuestPoints();
@@ -200,7 +212,7 @@ public class DailyNeoForgeClient {
             Minecraft.getInstance().setScreen(new QuestScreen(data, payload));
         }
 
-        public static void handleSyncQuests(com.r3ct.daily.network.SyncQuestsPayload payload) {
+        public static void handleSyncQuests(SyncQuestsPayload payload) {
             if (ClientGameEvents.clientQuestData != null && ClientGameEvents.clientQuestData.questProgress != null) {
                 for (int i = 0; i < payload.questProgress().size() && i < ClientGameEvents.clientQuestData.questProgress.size(); i++) {
                     int oldVal = ClientGameEvents.clientQuestData.questProgress.get(i);

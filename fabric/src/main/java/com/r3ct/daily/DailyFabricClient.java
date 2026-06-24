@@ -2,19 +2,18 @@ package com.r3ct.daily;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.r3ct.daily.config.DailyClientConfig;
+import com.r3ct.daily.config.DailyServerConfig;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestManager;
-import com.r3ct.daily.network.LeaderboardResponsePayload;
-import com.r3ct.daily.network.OpenQuestsPayload;
-import com.r3ct.daily.network.OpenRewardsPayload;
-import com.r3ct.daily.network.SyncQuestsPayload;
+import com.r3ct.daily.network.*;
 import com.r3ct.daily.client.screen.LeaderboardScreen;
 import com.r3ct.daily.client.screen.QuestScreen;
 import com.r3ct.daily.client.screen.RewardScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.KeyMapping;
@@ -78,6 +77,16 @@ public class DailyFabricClient implements ClientModInitializer {
 					client.gui.setOverlayMessage(message, false);
 				}
 			}
+		});
+
+		ClientPlayNetworking.registerGlobalReceiver(ConfigSyncPayload.TYPE, (payload, context) -> {
+			context.client().execute(() -> {
+				DailyServerConfig.syncFromServer(payload.questsJson(), payload.rewardsJson(), payload.serverJson());
+			});
+		});
+
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			DailyServerConfig.loadAll();
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(OpenRewardsPayload.ID, (payload, context) -> {

@@ -70,11 +70,13 @@ public class DailyFabric implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(OpenRewardsPayload.ID, OpenRewardsPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(OpenQuestsPayload.ID, OpenQuestsPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(SyncQuestsPayload.ID, SyncQuestsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(LeaderboardResponsePayload.ID, LeaderboardResponsePayload.CODEC);
+
+		PayloadTypeRegistry.clientboundPlay().register(ConfigSyncPayload.TYPE, ConfigSyncPayload.CODEC);
 
 		PayloadTypeRegistry.serverboundPlay().register(SubmitQuestItemPayload.TYPE, SubmitQuestItemPayload.STREAM_CODEC);
-
 		PayloadTypeRegistry.serverboundPlay().register(RequestLeaderboardPayload.ID, RequestLeaderboardPayload.CODEC);
-		PayloadTypeRegistry.clientboundPlay().register(LeaderboardResponsePayload.ID, LeaderboardResponsePayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(RerollQuestPayload.ID, RerollQuestPayload.CODEC);
 
 		ServerPlayNetworking.registerGlobalReceiver(RequestLeaderboardPayload.ID, (payload, context) -> {
 			context.server().execute(() -> {
@@ -94,7 +96,6 @@ public class DailyFabric implements ModInitializer {
 			});
 		});
 
-		PayloadTypeRegistry.serverboundPlay().register(RerollQuestPayload.ID, RerollQuestPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(RerollQuestPayload.ID, (payload, context) -> {
 			context.server().execute(() -> {
 				QuestManager.rerollQuest(context.player(), payload.questIndex());
@@ -102,8 +103,14 @@ public class DailyFabric implements ModInitializer {
 		});
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			LocalDate today = QuestManager.getCurrentQuestDate();
 			ServerPlayer player = handler.getPlayer();
+
+			String questsJson = DailyServerConfig.getQuestsConfigString();
+			String rewardsJson = DailyServerConfig.getRewardsConfigString();
+			String mechanicsJson = DailyServerConfig.getServerConfigString();
+			ServerPlayNetworking.send(player, new ConfigSyncPayload(questsJson, rewardsJson, mechanicsJson));
+
+			LocalDate today = QuestManager.getCurrentQuestDate();
 			PlayerData data = ModState.getPlayerData(server, player.getUUID());
 			data.lastKnownName = player.getGameProfile().name();
 

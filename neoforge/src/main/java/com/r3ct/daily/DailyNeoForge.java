@@ -33,6 +33,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -59,6 +60,10 @@ public class DailyNeoForge {
 
     private void registerPayloads(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(Constants.MOD_ID);
+
+        registrar.playToClient(ConfigSyncPayload.TYPE, ConfigSyncPayload.CODEC, (payload, context) -> {
+            context.enqueueWork(() -> DailyNeoForgeClient.ClientPayloadHandlers.handleConfigSync(payload));
+        });
 
         registrar.playToClient(OpenRewardsPayload.ID, OpenRewardsPayload.CODEC, (payload, context) -> {
             context.enqueueWork(() -> DailyNeoForgeClient.ClientPayloadHandlers.handleOpenRewards(payload));
@@ -126,6 +131,12 @@ public class DailyNeoForge {
     @SubscribeEvent
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        String questsJson = DailyServerConfig.getQuestsConfigString();
+        String rewardsJson = DailyServerConfig.getRewardsConfigString();
+        String mechanicsJson = DailyServerConfig.getServerConfigString();
+        PacketDistributor.sendToPlayer(player, new ConfigSyncPayload(questsJson, rewardsJson, mechanicsJson));
+
         MinecraftServer server = player.level().getServer();
 
         LocalDate today = QuestManager.getCurrentQuestDate();

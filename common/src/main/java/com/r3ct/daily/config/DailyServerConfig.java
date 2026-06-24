@@ -7,6 +7,7 @@ import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestManager;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -325,5 +326,49 @@ public class DailyServerConfig {
             throw new IllegalArgumentException("Missing required integer field: '" + key + "'");
         }
         return obj.get(key).getAsInt();
+    }
+
+    public static String getConfigFileAsString(File file) {
+        if (!file.exists()) return "{}";
+        try {
+            return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            Constants.LOG.error("Failed to read config file: " + file.getName(), e);
+            return "{}";
+        }
+    }
+
+    public static String getQuestsConfigString() { return getConfigFileAsString(QUESTS_FILE); }
+    public static String getRewardsConfigString() { return getConfigFileAsString(REWARDS_FILE); }
+    public static String getServerConfigString() { return getConfigFileAsString(MECHANICS_FILE); }
+
+    public static void syncFromServer(String questsJson, String rewardsJson, String serverJson) {
+        try {
+            JsonObject qRoot = JsonParser.parseString(questsJson).getAsJsonObject();
+            QuestManager.QUEST_MAP.clear();
+            QuestManager.EASY_QUESTS.clear();
+            QuestManager.MEDIUM_QUESTS.clear();
+            QuestManager.HARD_QUESTS.clear();
+            if (qRoot.has("overworld_quests")) parseQuestArray(qRoot.getAsJsonArray("overworld_quests"), "minecraft:overworld");
+            if (qRoot.has("nether_quests")) parseQuestArray(qRoot.getAsJsonArray("nether_quests"), "minecraft:the_nether");
+            if (qRoot.has("end_quests")) parseQuestArray(qRoot.getAsJsonArray("end_quests"), "minecraft:the_end");
+
+            JsonObject rRoot = JsonParser.parseString(rewardsJson).getAsJsonObject();
+            rewardsTier1.clear(); rewardsTier2.clear(); rewardsTier3.clear(); dailyQuestRewards.clear();
+            if (rRoot.has("days_1_to_4")) parseRewards(rRoot.getAsJsonArray("days_1_to_4"), rewardsTier1);
+            if (rRoot.has("days_5_to_6")) parseRewards(rRoot.getAsJsonArray("days_5_to_6"), rewardsTier2);
+            if (rRoot.has("day_7")) parseRewards(rRoot.getAsJsonArray("day_7"), rewardsTier3);
+            if (rRoot.has("quest_completion")) parseSimpleRewards(rRoot.getAsJsonArray("quest_completion"), dailyQuestRewards);
+            if (rRoot.has("milestones")) milestones = GSON.fromJson(rRoot.get("milestones"), MilestonesConfig.class);
+            if (rRoot.has("bonuses")) bonuses = GSON.fromJson(rRoot.get("bonuses"), BonusesConfig.class);
+
+            JsonObject mRoot = JsonParser.parseString(serverJson).getAsJsonObject();
+            mechanics = GSON.fromJson(mRoot, MechanicsConfig.class);
+            if (mechanics == null) mechanics = new MechanicsConfig();
+
+            Constants.LOG.info("Successfully synced Daily Configs from Server RAM!");
+        } catch (Exception e) {
+            Constants.LOG.error("Failed to parse synced config from server!", e);
+        }
     }
 }
