@@ -39,7 +39,6 @@ public class QuestScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderTransparentBackground(guiGraphics);
 
         float scale = DailyServerConfig.mechanics != null ? DailyClientConfig.getInstance().questScreenScale : 1.0f;
 
