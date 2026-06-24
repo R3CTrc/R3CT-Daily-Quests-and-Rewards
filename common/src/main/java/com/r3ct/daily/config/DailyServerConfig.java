@@ -294,7 +294,6 @@ public class DailyServerConfig {
                         getString(obj, "description"),
                         getInt(obj, "amount"),
                         diffInt,
-                        getInt(obj, "points"),
                         getInt(obj, "reward_amount"),
                         dimension,
                         getString(obj, "required_location"),

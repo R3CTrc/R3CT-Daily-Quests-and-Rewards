@@ -25,13 +25,19 @@ public class Quest {
     public String rawRewardId;
     public int rewardAmount;
 
-    public Quest(String id, String name, String description, int requiredAmount, int difficulty, int points, int rewardAmount, String requiredDimension, String requiredLocation, String actionType, String target, String rawRewardId) {
+    public Quest(String id, String name, String description, int requiredAmount, int difficulty, int rewardAmount, String requiredDimension, String requiredLocation, String actionType, String target, String rawRewardId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.requiredAmount = requiredAmount;
         this.difficulty = difficulty;
-        this.points = points;
+        if (this.difficulty == 0) {
+            this.points = 1;
+        } else if (this.difficulty == 1) {
+            this.points = 2;
+        } else {
+            this.points = 4;
+        }
         this.rewardAmount = rewardAmount;
         this.requiredDimension = requiredDimension;
         this.requiredLocation = requiredLocation;
