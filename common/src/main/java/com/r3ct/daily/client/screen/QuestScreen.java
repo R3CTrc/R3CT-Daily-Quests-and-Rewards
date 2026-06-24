@@ -38,6 +38,8 @@ public class QuestScreen extends Screen {
     private final int bookWidth = 440;
     private final int bookHeight = 340;
 
+    private static final int STAR_COLUMN_WIDTH = 11;
+
     private static float animatedDaily = 0.0f;
     private static float animatedStreak = 0.0f;
     private static float animatedPoints = 0.0f;
@@ -127,18 +129,20 @@ public class QuestScreen extends Screen {
                 }
             }
 
-            String diffIndicator = (q.difficulty == 0) ? "§2★ " : (q.difficulty == 1 ? "§6★ " : "§4★ ");
+            String diffIndicator = (q.difficulty == 0) ? "§2★" : (q.difficulty == 1 ? "§6★" : "§4★");
             int titleColor = (done && !claimed) ? 0xFF005500 : (canSubmit ? 0xFF0044AA : 0xFF000000);
-            guiGraphics.text(this.font, diffIndicator + " §0" + name, leftTextX, qY, titleColor, false);
+
+            guiGraphics.text(this.font, diffIndicator, leftTextX, qY, titleColor, false);
+            guiGraphics.text(this.font, "§0" + name, leftTextX + STAR_COLUMN_WIDTH, qY, titleColor, false);
 
             int color = done ? 0xFF555555 : (q.difficulty == 0 ? 0xFF00AA00 : (q.difficulty == 1 ? 0xFFFFAA00 : 0xFFAA0000));
             String desc = locDesc + " (" + progress + "/" + q.requiredAmount + ")";
 
-            int maxTextWidth = (midX - 45) - (leftTextX + 11);
+            int maxTextWidth = (midX - 45) - (leftTextX + STAR_COLUMN_WIDTH);
             List<FormattedCharSequence> lines = this.font.split(Component.literal(desc), maxTextWidth);
 
             for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-                guiGraphics.text(this.font, lines.get(lineIdx), leftTextX + 11, qY + 11 + (lineIdx * 10), color, false);
+                guiGraphics.text(this.font, lines.get(lineIdx), leftTextX + STAR_COLUMN_WIDTH, qY + 11 + (lineIdx * 10), color, false);
             }
 
             String mark;
