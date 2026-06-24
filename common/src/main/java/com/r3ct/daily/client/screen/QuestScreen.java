@@ -50,7 +50,6 @@ public class QuestScreen extends Screen {
 
     @Override
     public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.extractBlurredBackground(guiGraphics);
 
         float scale = DailyServerConfig.mechanics != null ? DailyClientConfig.getInstance().questScreenScale : 1.0f;
 

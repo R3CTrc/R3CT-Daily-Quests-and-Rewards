@@ -50,7 +50,6 @@ public class RewardScreen extends Screen {
     @Override
     public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        this.extractBlurredBackground(guiGraphics);
 
         float scale = DailyClientConfig.getInstance().rewardScreenScale;
 
