@@ -18,7 +18,7 @@
 
   "streaks": {
     "_comment_perfect_days": "How many 'Perfect Days' (all 5 quests completed) are needed to get a Quest Shield.",
-    "perfectDaysForShield": 3,
+    "perfectDaysForShield": 5,
 
     "_comment_shields": "Maximum amount of Quest Shields and Reward Shields a player can hold at once.",
     "maxStoredQuestShields": 3,
