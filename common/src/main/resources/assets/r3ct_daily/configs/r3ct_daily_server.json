@@ -1,6 +1,6 @@
 {
   "_comment_version": "Do not change the version number! It is used for automatic config updates.",
-  "version": 3,
+  "version": 2,
 
   "quests": {
     "_comment_reroll": "Settings for quest rerolling mechanics. Costs are in Total Points.",

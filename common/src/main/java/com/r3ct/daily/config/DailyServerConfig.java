@@ -25,7 +25,7 @@ public class DailyServerConfig {
 
     private static final int QUESTS_VERSION = 2;
     private static final int REWARDS_VERSION = 2;
-    private static final int MECHANICS_VERSION = 3;
+    private static final int MECHANICS_VERSION = 2;
 
     public static class RewardEntry {
         public String item;
