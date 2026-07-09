@@ -4,7 +4,6 @@ import com.r3ct.daily.client.screen.ConfirmSubmitScreen;
 import com.r3ct.daily.client.screen.ItemSelectionScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -22,7 +21,8 @@ public class QuestSubmitHelper {
 
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (!stack.isEmpty() && BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().equals(q.target)) {
+
+            if (QuestManager.isItemMatchingTarget(stack, q.target)) {
                 matchingSlots.add(i);
                 totalAvailable += stack.getCount();
             }
@@ -51,10 +51,12 @@ public class QuestSubmitHelper {
     public static int countItems(String target) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return 0;
+
         int count = 0;
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (!stack.isEmpty() && BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().equals(target)) {
+
+            if (QuestManager.isItemMatchingTarget(stack, target)) {
                 count += stack.getCount();
             }
         }

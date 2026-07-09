@@ -132,19 +132,6 @@ public class QuestScreen extends Screen {
             String diffIndicator = (q.difficulty == 0) ? "§2★" : (q.difficulty == 1 ? "§6★" : "§4★");
             int titleColor = (done && !claimed) ? 0xFF005500 : (canSubmit ? 0xFF0044AA : 0xFF000000);
 
-            guiGraphics.text(this.font, diffIndicator, leftTextX, qY, titleColor, false);
-            guiGraphics.text(this.font, "§0" + name, leftTextX + STAR_COLUMN_WIDTH, qY, titleColor, false);
-
-            int color = done ? 0xFF555555 : (q.difficulty == 0 ? 0xFF00AA00 : (q.difficulty == 1 ? 0xFFFFAA00 : 0xFFAA0000));
-            String desc = locDesc + " (" + progress + "/" + q.requiredAmount + ")";
-
-            int maxTextWidth = (midX - 45) - (leftTextX + STAR_COLUMN_WIDTH);
-            List<FormattedCharSequence> lines = this.font.split(Component.literal(desc), maxTextWidth);
-
-            for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-                guiGraphics.text(this.font, lines.get(lineIdx), leftTextX + STAR_COLUMN_WIDTH, qY + 11 + (lineIdx * 10), color, false);
-            }
-
             String mark;
             if (!done) {
                 if (canSubmit) {
@@ -156,7 +143,44 @@ public class QuestScreen extends Screen {
             else if (claimed) mark = "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString();
             else mark = (time % 1000 < 500) ? "§e" + Component.translatable("r3ct_daily.quests.status.claim").getString() : "§6" + Component.translatable("r3ct_daily.quests.status.claim").getString();
 
-            guiGraphics.text(this.font, mark, midX - (this.font.width(mark) + 15), qY + 5, 0xFF000000, false);
+            int markWidth = this.font.width(mark);
+            int markX = midX - markWidth - 15;
+
+            int titleStartX = leftTextX + STAR_COLUMN_WIDTH;
+            int maxTitleWidth = markX - titleStartX - 5;
+
+            String displayName = name;
+            if (this.font.width(displayName) > maxTitleWidth) {
+                displayName = this.font.plainSubstrByWidth(displayName, maxTitleWidth - this.font.width("...")) + "...";
+            }
+
+            guiGraphics.text(this.font, diffIndicator, leftTextX, qY, titleColor, false);
+            guiGraphics.text(this.font, "§0" + displayName, titleStartX, qY, titleColor, false);
+            guiGraphics.text(this.font, mark, markX, qY, 0xFF000000, false);
+
+            int color = done ? 0xFF555555 : (q.difficulty == 0 ? 0xFF00AA00 : (q.difficulty == 1 ? 0xFFFFAA00 : 0xFFAA0000));
+            String progressText = " (" + progress + "/" + q.requiredAmount + ")";
+            int maxTextWidth = (midX - 45) - (leftTextX + STAR_COLUMN_WIDTH);
+
+            String displayDesc = locDesc;
+            List<FormattedCharSequence> lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
+
+            if (lines.size() > 2) {
+                int charsToKeep = (int)((double)locDesc.length() * ((double)(maxTextWidth * 2 - this.font.width("..." + progressText)) / Math.max(1, this.font.width(locDesc))));
+                charsToKeep = Math.max(0, Math.min(charsToKeep, locDesc.length()));
+
+                displayDesc = locDesc.substring(0, charsToKeep) + "...";
+                lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
+
+                while (lines.size() > 2 && displayDesc.length() > 4) {
+                    displayDesc = displayDesc.substring(0, displayDesc.length() - 5) + "...";
+                    lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
+                }
+            }
+
+            for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
+                guiGraphics.text(this.font, lines.get(lineIdx), leftTextX + STAR_COLUMN_WIDTH, qY + 11 + (lineIdx * 10), color, false);
+            }
         }
 
         int rightTextX = midX + 25;
@@ -542,8 +566,17 @@ public class QuestScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.quest.diff_label").getString() + " " + diffName).getVisualOrderText()));
 
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+
         String locDesc = I18n.get(q.description);
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.desc").getString() + " §7" + locDesc).getVisualOrderText()));
+
+        String descColor = (q.difficulty == 0) ? "§2" : (q.difficulty == 1 ? "§6" : "§4");
+        String descPrefix = "§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.desc").getString() + " " + descColor;
+
+        List<FormattedCharSequence> descLines = this.font.split(Component.literal(descPrefix + locDesc), 200);
+        for (FormattedCharSequence seq : descLines) {
+            tooltip.add(ClientTooltipComponent.create(seq));
+        }
+
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.points").getString() + " §d+" + q.points).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.xp").getString() + " §e+" + xpReward + " §e" + Component.translatable("r3ct_daily.unit.xp").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reward").getString() + " §b" + itemAmount + "§bx §b" + q.getItemReward().getHoverName().getString()).getVisualOrderText()));

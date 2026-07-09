@@ -1,16 +1,17 @@
 package com.r3ct.daily.client.screen;
 
 import com.r3ct.daily.logic.Quest;
+import com.r3ct.daily.logic.QuestManager;
 import com.r3ct.daily.network.SubmitQuestItemPayload;
 import com.r3ct.daily.platform.Services;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jspecify.annotations.NonNull;
 
 public class ConfirmSubmitScreen extends Screen {
@@ -49,8 +50,29 @@ public class ConfirmSubmitScreen extends Screen {
         guiGraphics.fill(0, 0, this.width, this.height, 0xD9000000);
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
-        Item targetItem = BuiltInRegistries.ITEM.getOptional(Identifier.parse(quest.target)).orElse(net.minecraft.world.item.Items.PAPER);
-        ItemStack displayStack = new ItemStack(targetItem, amountToTake);
+        Player player = Minecraft.getInstance().player;
+        ItemStack displayStack = ItemStack.EMPTY;
+
+        if (player != null) {
+            if (this.slotIndex >= 0 && this.slotIndex < player.getInventory().getContainerSize()) {
+                displayStack = player.getInventory().getItem(this.slotIndex).copy();
+            }
+            else {
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    ItemStack stack = player.getInventory().getItem(i);
+                    if (!stack.isEmpty() && QuestManager.isItemMatchingTarget(stack, quest.target)) {
+                        displayStack = stack.copy();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (displayStack.isEmpty()) {
+            displayStack = new ItemStack(Items.PAPER);
+        }
+
+        displayStack.setCount(amountToTake);
 
         guiGraphics.centeredText(this.font, Component.translatable("r3ct_daily.gui.submit_question", amountToTake, displayStack.getHoverName()), this.width / 2, this.height / 2 - 40, 0xFFFFFFFF);
 

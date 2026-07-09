@@ -229,6 +229,12 @@ public class DailyFabricClient implements ClientModInitializer {
 					} else {
 						questName = Component.translatable(q.description).getString().split(" ")[0];
 					}
+
+					int maxNameLength = 25;
+					if (questName.length() > maxNameLength) {
+						questName = questName.substring(0, maxNameLength) + "...";
+					}
+
 					String diffIndicator = (q.difficulty == 0) ? "§2★ " : (q.difficulty == 1 ? "§6★ " : "§4★ ");
 
 					String progressColor = "§f";
