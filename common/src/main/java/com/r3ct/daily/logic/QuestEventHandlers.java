@@ -23,6 +23,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
+import net.minecraft.world.level.block.PitcherCropBlock;
+import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class QuestEventHandlers {
@@ -50,20 +53,37 @@ public class QuestEventHandlers {
 
     public static void onBlockBreak(ServerPlayer serverPlayer, BlockState state, BlockPos pos, Level level) {
         String blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+
         if (QuestManager.removePlacedBlock(pos, level)) {
             QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", blockId, -1);
 
             if (state.is(BlockTags.SAPLINGS)) {
                 QuestManager.handleAction(serverPlayer, "PLACE_SAPLING", blockId, -1);
             }
-            if (state.getBlock() instanceof CropBlock) {
+            if (state.getBlock() instanceof CropBlock || state.getBlock() instanceof StemBlock || state.getBlock() instanceof NetherWartBlock || state.getBlock() instanceof PitcherCropBlock) {
                 QuestManager.handleAction(serverPlayer, "PLACE_SEED", blockId, -1);
             }
+
+            if (state.is(BlockTags.BEDS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:beds", -1);
+            if (state.is(BlockTags.WOOL)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:wool", -1);
+
+            if (state.is(BlockTags.OAK_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:oak_logs", -1);
+            else if (state.is(BlockTags.BIRCH_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:birch_logs", -1);
+            else if (state.is(BlockTags.SPRUCE_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:spruce_logs", -1);
+            else if (state.is(BlockTags.JUNGLE_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:jungle_logs", -1);
+            else if (state.is(BlockTags.ACACIA_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:acacia_logs", -1);
+            else if (state.is(BlockTags.DARK_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:dark_oak_logs", -1);
+            else if (state.is(BlockTags.MANGROVE_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:mangrove_logs", -1);
+            else if (state.is(BlockTags.CHERRY_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:cherry_logs", -1);
+            else if (state.is(BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:pale_oak_logs", -1);
 
             return;
         }
 
         QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", blockId, 1);
+
+        if (state.is(BlockTags.BEDS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:beds", 1);
+        if (state.is(BlockTags.WOOL)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:wool", 1);
 
         if (state.is(BlockTags.OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:oak_logs", 1);
         else if (state.is(BlockTags.BIRCH_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:birch_logs", 1);
@@ -82,7 +102,6 @@ public class QuestEventHandlers {
         if (state.is(BlockTags.DIAMOND_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:diamond_ores", 1);
         if (state.is(BlockTags.LAPIS_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:lapis_ores", 1);
         if (state.is(BlockTags.REDSTONE_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:redstone_ores", 1);
-
         if (blockId.equals("minecraft:nether_quartz_ore")) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:nether_quartz_ores", 1);
     }
 
@@ -93,10 +112,6 @@ public class QuestEventHandlers {
 
         if (serverPlayer.getHealth() <= 4.0f) {
             QuestManager.handleAction(serverPlayer, "KILL_LOW_HP", mobId, 1);
-        }
-
-        if (mobId.equals("minecraft:skeleton") && serverPlayer.level().dimension().identifier().toString().equals("minecraft:the_nether")) {
-            QuestManager.handleAction(serverPlayer, "KILL_MOB_IN_NETHER", "minecraft:skeleton", 1);
         }
 
         if (victim instanceof Pillager pillager) {
@@ -154,28 +169,8 @@ public class QuestEventHandlers {
                         int count = 0;
                         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                             ItemStack invStack = player.getInventory().getItem(i);
-                            if (!invStack.isEmpty()) {
-                                String invId = BuiltInRegistries.ITEM.getKey(invStack.getItem()).toString();
-                                boolean matches = invId.equals(q.target) || q.target.equals("any");
-
-                                if (!matches) {
-                                    if (q.target.equals("r3ct_daily:mushrooms") && (invId.equals("minecraft:red_mushroom") || invId.equals("minecraft:brown_mushroom"))) matches = true;
-                                    else if (q.target.equals("r3ct_daily:sniffer_seeds") && (invId.equals("minecraft:torchflower_seeds") || invId.equals("minecraft:pitcher_pod"))) matches = true;
-                                    else if (q.target.equals("r3ct_daily:flowers") && invStack.is(ItemTags.FLOWERS)) matches = true;
-                                    else if (q.target.equals("r3ct_daily:leaves") && invStack.is(ItemTags.LEAVES)) matches = true;
-                                    else if (q.target.equals("r3ct_daily:raw_fishes") && invStack.is(ItemTags.FISHES)) matches = true;
-                                    else if (q.target.equals("r3ct_daily:eggs") && (invId.equals("minecraft:egg") || invId.equals("minecraft:brown_egg") || invId.equals("minecraft:blue_egg"))) matches = true;
-                                    else if (q.target.equals("r3ct_daily:froglights") && (invId.equals("minecraft:ochre_froglight") || invId.equals("minecraft:verdant_froglight") || invId.equals("minecraft:pearlescent_froglight"))) matches = true;
-                                }
-
-                                if (q.target.equals("r3ct_daily:full_beehive") && (invId.equals("minecraft:beehive") || invId.equals("minecraft:bee_nest"))) {
-                                    var beesData = invStack.get(DataComponents.BEES);
-                                    if (beesData != null && beesData.bees().size() >= 3) {
-                                        matches = true;
-                                    }
-                                }
-
-                                if (matches) count += invStack.getCount();
+                            if (QuestManager.isItemMatchingTarget(invStack, q.target)) {
+                                count += invStack.getCount();
                             }
                         }
                         QuestManager.handleAction(player, "HAS_ITEMS", q.target, count);

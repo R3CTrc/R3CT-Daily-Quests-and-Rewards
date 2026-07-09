@@ -24,6 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -285,12 +286,11 @@ public class QuestManager {
 
         int needed = q.requiredAmount - currentProg;
         int taken = 0;
-
         Inventory inv = player.getInventory();
 
         if (slotIndex >= 0) {
             ItemStack stack = inv.getItem(slotIndex);
-            if (!stack.isEmpty() && BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().equals(q.target)) {
+            if (isItemMatchingTarget(stack, q.target)) {
                 int toTake = Math.min(needed, stack.getCount());
                 stack.shrink(toTake);
                 taken += toTake;
@@ -298,7 +298,7 @@ public class QuestManager {
         } else {
             for (int i = 0; i < inv.getContainerSize(); i++) {
                 ItemStack stack = inv.getItem(i);
-                if (!stack.isEmpty() && BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().equals(q.target)) {
+                if (isItemMatchingTarget(stack, q.target)) {
                     int toTake = Math.min(needed - taken, stack.getCount());
                     stack.shrink(toTake);
                     taken += toTake;
@@ -319,6 +319,54 @@ public class QuestManager {
 
             syncPlayerQuests(player, data);
         }
+    }
+
+    public static boolean isItemMatchingTarget(ItemStack stack, String target) {
+        if (stack.isEmpty()) return false;
+
+        String invId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+
+        if (invId.equals(target) || target.equals("any")) return true;
+
+        if (target.startsWith("r3ct_daily:")) {
+            if (target.equals("r3ct_daily:mushrooms") && (invId.equals("minecraft:red_mushroom") || invId.equals("minecraft:brown_mushroom"))) return true;
+            if (target.equals("r3ct_daily:sniffer_seeds") && (invId.equals("minecraft:torchflower_seeds") || invId.equals("minecraft:pitcher_pod"))) return true;
+            if (target.equals("r3ct_daily:flowers") && stack.is(ItemTags.FLOWERS)) return true;
+            if (target.equals("r3ct_daily:leaves") && stack.is(ItemTags.LEAVES)) return true;
+            if (target.equals("r3ct_daily:raw_fishes") && stack.is(ItemTags.FISHES)) return true;
+            if (target.equals("r3ct_daily:eggs") && (invId.equals("minecraft:egg") || invId.equals("minecraft:brown_egg") || invId.equals("minecraft:blue_egg"))) return true;
+            if (target.equals("r3ct_daily:froglights") && (invId.equals("minecraft:ochre_froglight") || invId.equals("minecraft:verdant_froglight") || invId.equals("minecraft:pearlescent_froglight"))) return true;
+
+            if (target.equals("r3ct_daily:beds") && stack.is(ItemTags.BEDS)) return true;
+            if (target.equals("r3ct_daily:wool") && stack.is(ItemTags.WOOL)) return true;
+
+            if (target.equals("r3ct_daily:oak_logs") && stack.is(ItemTags.OAK_LOGS)) return true;
+            if (target.equals("r3ct_daily:birch_logs") && stack.is(ItemTags.BIRCH_LOGS)) return true;
+            if (target.equals("r3ct_daily:spruce_logs") && stack.is(ItemTags.SPRUCE_LOGS)) return true;
+            if (target.equals("r3ct_daily:jungle_logs") && stack.is(ItemTags.JUNGLE_LOGS)) return true;
+            if (target.equals("r3ct_daily:acacia_logs") && stack.is(ItemTags.ACACIA_LOGS)) return true;
+            if (target.equals("r3ct_daily:dark_oak_logs") && stack.is(ItemTags.DARK_OAK_LOGS)) return true;
+            if (target.equals("r3ct_daily:mangrove_logs") && stack.is(ItemTags.MANGROVE_LOGS)) return true;
+            if (target.equals("r3ct_daily:cherry_logs") && stack.is(ItemTags.CHERRY_LOGS)) return true;
+            if (target.equals("r3ct_daily:pale_oak_logs") && stack.is(ItemTags.PALE_OAK_LOGS)) return true;
+
+            if (target.equals("r3ct_daily:coal_ores") && stack.is(ItemTags.COAL_ORES)) return true;
+            if (target.equals("r3ct_daily:iron_ores") && stack.is(ItemTags.IRON_ORES)) return true;
+            if (target.equals("r3ct_daily:gold_ores") && stack.is(ItemTags.GOLD_ORES)) return true;
+            if (target.equals("r3ct_daily:copper_ores") && stack.is(ItemTags.COPPER_ORES)) return true;
+            if (target.equals("r3ct_daily:diamond_ores") && stack.is(ItemTags.DIAMOND_ORES)) return true;
+            if (target.equals("r3ct_daily:lapis_ores") && stack.is(ItemTags.LAPIS_ORES)) return true;
+            if (target.equals("r3ct_daily:redstone_ores") && stack.is(ItemTags.REDSTONE_ORES)) return true;
+            if (target.equals("r3ct_daily:nether_quartz_ores") && invId.equals("minecraft:nether_quartz_ore")) return true;
+
+            if (target.equals("r3ct_daily:full_beehive") && (invId.equals("minecraft:beehive") || invId.equals("minecraft:bee_nest"))) {
+                var beesData = stack.get(DataComponents.BEES);
+                if (beesData != null && beesData.bees().size() >= 3) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static void claimQuestReward(ServerPlayer player, int index) {
