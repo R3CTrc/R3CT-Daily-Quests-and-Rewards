@@ -207,7 +207,8 @@ public class QuestScreen extends Screen {
         int streakBarColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
         GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barW, 1, new int[]{});
 
-        String qMultiText = data.questStreak >= 7 ? "§6§l" + Component.translatable("r3ct_daily.quests.multiplier.active").getString() : "§0" + Component.translatable("r3ct_daily.quests.multiplier.inactive").getString();
+        String multiVal = String.valueOf(payload.questStreakXpMultiplier()).replace(".0", "");
+        String qMultiText = data.questStreak >= 7 ? "§6§l" + Component.translatable("r3ct_daily.quests.multiplier.active", multiVal).getString() : "§0" + Component.translatable("r3ct_daily.quests.multiplier.inactive").getString();
         guiGraphics.text(this.font, qMultiText, rightTextX, streakY + 14, 0xFF000000, false);
 
         int lifeY = topPos + 245;
@@ -512,12 +513,13 @@ public class QuestScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.streak.title").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
+        String multiVal = String.valueOf(payload.questStreakXpMultiplier()).replace(".0", "");
         if (data.questStreak >= 7) {
-            tooltip.add(ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.streak.multi_active").getString()).getVisualOrderText()));
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§7" + Component.translatable("r3ct_daily.quests.tooltip.streak.multi_desc").getString()).getVisualOrderText()));
+            tooltip.add(ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.streak.multi_active", multiVal).getString()).getVisualOrderText()));
+            tooltip.add(ClientTooltipComponent.create(Component.literal("§7" + Component.translatable("r3ct_daily.quests.tooltip.streak.multi_desc", multiVal).getString()).getVisualOrderText()));
         } else {
             tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req1").getString()).getVisualOrderText()));
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req2").getString()).getVisualOrderText()));
+            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req2", multiVal).getString()).getVisualOrderText()));
         }
 
         tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
@@ -548,14 +550,15 @@ public class QuestScreen extends Screen {
         Quest q = QuestManager.getQuestById(data.activeQuests.get(index));
         if (q == null) return;
 
-        int multi = (data.questStreak >= 7) ? 2 : 1;
+        float xpMulti = (data.questStreak >= 7) ? payload.questStreakXpMultiplier() : 1.0f;
 
         int baseXp = (q.difficulty == 0) ? payload.xpPerQuestEasy() :
                 (q.difficulty == 1) ? payload.xpPerQuestMedium() :
                         payload.xpPerQuestHard();
-        int xpReward = baseXp * multi;
 
-        int itemAmount = q.rewardAmount * multi;
+        int xpReward = (int)(baseXp * xpMulti);
+
+        int itemAmount = q.rewardAmount;
 
         List<ClientTooltipComponent> tooltip = new ArrayList<>();
 
@@ -592,7 +595,9 @@ public class QuestScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.daily.desc2").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
-        int dailyXp = payload.xpDailyReward();
+        float xpMulti = (data.questStreak >= 7) ? payload.questStreakXpMultiplier() : 1.0f;
+        int dailyXp = (int)(payload.xpDailyReward() * xpMulti);
+
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.xp").getString() + " §e+" + dailyXp + " §e" + Component.translatable("r3ct_daily.unit.xp").getString()).getVisualOrderText()));
 
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.daily.list_title").getString()).getVisualOrderText()));

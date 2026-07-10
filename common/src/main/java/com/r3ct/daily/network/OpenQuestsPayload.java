@@ -28,7 +28,8 @@ public record OpenQuestsPayload(
         int xpPerQuestMedium,
         int xpPerQuestHard,
         int perfectDaysForShield,
-        int maxStoredQuestShields
+        int maxStoredQuestShields,
+        float questStreakXpMultiplier
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<OpenQuestsPayload> ID =
@@ -60,7 +61,8 @@ public record OpenQuestsPayload(
                 buf.readInt(),
                 buf.readInt(),
                 buf.readInt(),
-                buf.readInt()
+                buf.readInt(),
+                buf.readFloat()
         );
     }
 
@@ -85,6 +87,7 @@ public record OpenQuestsPayload(
         buf.writeInt(xpPerQuestHard);
         buf.writeInt(perfectDaysForShield);
         buf.writeInt(maxStoredQuestShields);
+        buf.writeFloat(questStreakXpMultiplier);
     }
 
     @Override

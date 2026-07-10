@@ -10,10 +10,11 @@
     "rerollCostHard": 4,
 
     "_comment_xp": "Experience points granted for completing quests of different difficulties.",
-    "xpPerQuestEasy": 30,
-    "xpPerQuestMedium": 60,
-    "xpPerQuestHard": 90,
-    "xpDailyReward": 90
+    "xpPerQuestEasy": 25,
+    "xpPerQuestMedium": 50,
+    "xpPerQuestHard": 75,
+    "xpDailyReward": 75,
+    "questStreakXpMultiplier": 1.5
   },
 
   "streaks": {

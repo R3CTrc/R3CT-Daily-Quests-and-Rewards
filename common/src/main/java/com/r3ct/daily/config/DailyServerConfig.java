@@ -52,10 +52,11 @@ public class DailyServerConfig {
         public int rerollCostEasy = 1;
         public int rerollCostMedium = 2;
         public int rerollCostHard = 4;
-        public int xpPerQuestEasy = 30;
-        public int xpPerQuestMedium = 60;
-        public int xpPerQuestHard = 90;
-        public int xpDailyReward = 90;
+        public int xpPerQuestEasy = 25;
+        public int xpPerQuestMedium = 50;
+        public int xpPerQuestHard = 75;
+        public int xpDailyReward = 75;
+        public float questStreakXpMultiplier = 1.5f;
     }
 
     public static class StreaksSettings {
@@ -115,6 +116,9 @@ public class DailyServerConfig {
     public static List<List<RewardEntry>> rewardsTier1 = new ArrayList<>();
     public static List<List<RewardEntry>> rewardsTier2 = new ArrayList<>();
     public static List<List<RewardEntry>> rewardsTier3 = new ArrayList<>();
+    public static List<RewardEntry> streakRewardsTier1 = new ArrayList<>();
+    public static List<RewardEntry> streakRewardsTier2 = new ArrayList<>();
+    public static List<RewardEntry> streakRewardsTier3 = new ArrayList<>();
     public static List<RewardEntry> dailyQuestRewards = new ArrayList<>();
 
     private static void checkAndMigrate(File file, String resourceName, int expectedVersion) {
@@ -196,6 +200,8 @@ public class DailyServerConfig {
     private static void loadRewards() {
         rewardsTier1.clear(); rewardsTier2.clear(); rewardsTier3.clear();
         dailyQuestRewards.clear();
+        streakRewardsTier1.clear(); streakRewardsTier2.clear(); streakRewardsTier3.clear(); // NOWE
+
         if (!REWARDS_FILE.exists()) return;
 
         try (FileReader reader = new FileReader(REWARDS_FILE)) {
@@ -203,6 +209,16 @@ public class DailyServerConfig {
             parseRewards(root.getAsJsonArray("days_1_to_4"), rewardsTier1);
             parseRewards(root.getAsJsonArray("days_5_to_6"), rewardsTier2);
             parseRewards(root.getAsJsonArray("day_7"), rewardsTier3);
+
+            if (root.has("streak_days_1_to_4")) {
+                parseSimpleRewards(root.getAsJsonArray("streak_days_1_to_4"), streakRewardsTier1);
+            }
+            if (root.has("streak_days_5_to_6")) {
+                parseSimpleRewards(root.getAsJsonArray("streak_days_5_to_6"), streakRewardsTier2);
+            }
+            if (root.has("streak_day_7")) {
+                parseSimpleRewards(root.getAsJsonArray("streak_day_7"), streakRewardsTier3);
+            }
 
             if (root.has("quest_completion")) {
                 parseSimpleRewards(root.getAsJsonArray("quest_completion"), dailyQuestRewards);
@@ -348,15 +364,23 @@ public class DailyServerConfig {
             QuestManager.EASY_QUESTS.clear();
             QuestManager.MEDIUM_QUESTS.clear();
             QuestManager.HARD_QUESTS.clear();
+
             if (qRoot.has("overworld_quests")) parseQuestArray(qRoot.getAsJsonArray("overworld_quests"), "minecraft:overworld");
             if (qRoot.has("nether_quests")) parseQuestArray(qRoot.getAsJsonArray("nether_quests"), "minecraft:the_nether");
             if (qRoot.has("end_quests")) parseQuestArray(qRoot.getAsJsonArray("end_quests"), "minecraft:the_end");
 
             JsonObject rRoot = JsonParser.parseString(rewardsJson).getAsJsonObject();
             rewardsTier1.clear(); rewardsTier2.clear(); rewardsTier3.clear(); dailyQuestRewards.clear();
+            streakRewardsTier1.clear(); streakRewardsTier2.clear(); streakRewardsTier3.clear();
+
             if (rRoot.has("days_1_to_4")) parseRewards(rRoot.getAsJsonArray("days_1_to_4"), rewardsTier1);
             if (rRoot.has("days_5_to_6")) parseRewards(rRoot.getAsJsonArray("days_5_to_6"), rewardsTier2);
             if (rRoot.has("day_7")) parseRewards(rRoot.getAsJsonArray("day_7"), rewardsTier3);
+
+            if (rRoot.has("streak_days_1_to_4")) parseSimpleRewards(rRoot.getAsJsonArray("streak_days_1_to_4"), streakRewardsTier1);
+            if (rRoot.has("streak_days_5_to_6")) parseSimpleRewards(rRoot.getAsJsonArray("streak_days_5_to_6"), streakRewardsTier2);
+            if (rRoot.has("streak_day_7")) parseSimpleRewards(rRoot.getAsJsonArray("streak_day_7"), streakRewardsTier3);
+
             if (rRoot.has("quest_completion")) parseSimpleRewards(rRoot.getAsJsonArray("quest_completion"), dailyQuestRewards);
             if (rRoot.has("milestones")) milestones = GSON.fromJson(rRoot.get("milestones"), MilestonesConfig.class);
             if (rRoot.has("bonuses")) bonuses = GSON.fromJson(rRoot.get("bonuses"), BonusesConfig.class);

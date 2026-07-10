@@ -52,6 +52,23 @@ public class RewardManager {
         return processBuckets(DailyServerConfig.rewardsTier3, server);
     }
 
+    public static ItemStack getStreakBonusReward(int rewardDay, MinecraftServer server) {
+        List<DailyServerConfig.RewardEntry> pool;
+
+        if (rewardDay <= 4) {
+            pool = DailyServerConfig.streakRewardsTier1;
+        } else if (rewardDay <= 6) {
+            pool = DailyServerConfig.streakRewardsTier2;
+        } else {
+            pool = DailyServerConfig.streakRewardsTier3;
+        }
+
+        if (pool == null || pool.isEmpty()) return ItemStack.EMPTY;
+
+        DailyServerConfig.RewardEntry entry = getRandomEntry(pool);
+        return createSpecialOrStandardItem(entry, server);
+    }
+
     private static List<ItemStack> processBuckets(List<List<DailyServerConfig.RewardEntry>> tiers, MinecraftServer server) {
         List<ItemStack> finalRewards = new ArrayList<>();
 
@@ -132,9 +149,10 @@ public class RewardManager {
                 return getRandomCoralBlock(amount);
             case "random_job_block":
                 Item[] blocks = {
-                        Items.LECTERN, Items.COMPOSTER, Items.BARREL, Items.LOOM,
-                        Items.SMOKER, Items.FLETCHING_TABLE, Items.GRINDSTONE,
-                        Items.BLAST_FURNACE, Items.STONECUTTER
+                        Items.BARREL, Items.BLAST_FURNACE, Items.BREWING_STAND,
+                        Items.CARTOGRAPHY_TABLE, Items.CAULDRON, Items.COMPOSTER,
+                        Items.FLETCHING_TABLE, Items.GRINDSTONE, Items.LECTERN,
+                        Items.LOOM, Items.SMITHING_TABLE, Items.SMOKER, Items.STONECUTTER
                 };
                 return new ItemStack(blocks[RANDOM.nextInt(blocks.length)], amount);
 

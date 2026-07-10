@@ -386,19 +386,20 @@ public class QuestManager {
 
         playSound(player, SoundEvents.PLAYER_LEVELUP, 1.0F, 1.0F);
 
-        int multi = (data.questStreak >= 7) ? 2 : 1;
+        float xpMulti = (data.questStreak >= 7) ? DailyServerConfig.mechanics.quests.questStreakXpMultiplier : 1.0f;
+        boolean hasStreakBonus = data.questStreak >= 7;
 
         int baseXp = (q.difficulty == 0) ? DailyServerConfig.mechanics.quests.xpPerQuestEasy :
                 (q.difficulty == 1) ? DailyServerConfig.mechanics.quests.xpPerQuestMedium :
                 DailyServerConfig.mechanics.quests.xpPerQuestHard;
 
-        int xpReward = baseXp * multi;
+        int xpReward = (int)(baseXp * xpMulti);
         player.giveExperiencePoints(xpReward);
         if (q.difficulty == 2) {
             QuestManager.grantAdvancement(player, "r3ct_daily:quests/hard_work");
         }
 
-        int amountGiven = q.rewardAmount * multi;
+        int amountGiven = q.rewardAmount;
         ItemStack rewardToGive;
 
         if (q.rawRewardId != null && (q.rawRewardId.startsWith("r3ct_daily:"))) {
@@ -420,7 +421,8 @@ public class QuestManager {
         }
 
         Component questNameComp = Component.translatable(q.name).withStyle(ChatFormatting.YELLOW);
-        Component multiComp = (multi > 1) ? Component.translatable("r3ct_daily.message.quests.streak_bonus").withStyle(ChatFormatting.GOLD) : Component.empty();
+        String multiVal = String.valueOf(DailyServerConfig.mechanics.quests.questStreakXpMultiplier).replace(".0", "");
+        Component multiComp = hasStreakBonus ? Component.translatable("r3ct_daily.message.quests.streak_bonus", multiVal).withStyle(ChatFormatting.GOLD) : Component.empty();
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.quests.claimed_base", questNameComp, multiComp).withStyle(ChatFormatting.GREEN)
@@ -530,7 +532,9 @@ public class QuestManager {
     }
 
     private static void giveDailyReward(ServerPlayer player, PlayerData data) {
-        int multi = (data.questStreak >= 7) ? 2 : 1;
+        float xpMulti = (data.questStreak >= 7) ? DailyServerConfig.mechanics.quests.questStreakXpMultiplier : 1.0f;
+        boolean hasStreakBonus = data.questStreak >= 7;
+
         data.questStreak++;
         if (data.questStreak > data.maxQuestStreak) {
             data.maxQuestStreak = data.questStreak;
@@ -539,12 +543,13 @@ public class QuestManager {
 
         playSound(player, SoundEvents.FIREWORK_ROCKET_TWINKLE, 1.0F, 1.2F);
 
-        Component multiComp = (multi > 1) ? Component.translatable("r3ct_daily.message.quests.streak_bonus").withStyle(ChatFormatting.GOLD) : Component.empty();
+        String multiVal = String.valueOf(DailyServerConfig.mechanics.quests.questStreakXpMultiplier).replace(".0", "");
+        Component multiComp = hasStreakBonus ? Component.translatable("r3ct_daily.message.quests.streak_bonus", multiVal).withStyle(ChatFormatting.GOLD) : Component.empty();
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.quests.daily_reward", multiComp).withStyle(ChatFormatting.GREEN)
         ));
 
-        int xp = DailyServerConfig.mechanics.quests.xpDailyReward * multi;
+        int xp = (int)(DailyServerConfig.mechanics.quests.xpDailyReward * xpMulti);
         player.giveExperiencePoints(xp);
 
         Component bulletComp2 = Component.literal("- ").withStyle(ChatFormatting.GREEN);
@@ -572,7 +577,7 @@ public class QuestManager {
         Item item = itemOpt.orElse(Items.PAPER);
 
         int baseAmount = selectedEntry.minAmount + rand.nextInt(Math.max(1, selectedEntry.maxAmount - selectedEntry.minAmount + 1));
-        int finalAmount = baseAmount * multi;
+        int finalAmount = baseAmount;
         ItemStack reward = new ItemStack(item, finalAmount);
 
         if (itemOpt.isEmpty()) {

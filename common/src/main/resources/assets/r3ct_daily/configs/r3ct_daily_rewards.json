@@ -71,6 +71,25 @@
     ]
   ],
 
+  "_comment_streak_days_1_to_4": "Bonus 4th reward for players with a 7+ day streak logging in on days 1-4.",
+  "streak_days_1_to_4": [
+    { "item": "minecraft:golden_carrot", "min_amount": 2, "max_amount": 4, "chance": 50 },
+    { "item": "minecraft:name_tag", "min_amount": 1, "max_amount": 1, "chance": 30 },
+    { "item": "r3ct_daily:random_job_block", "min_amount": 1, "max_amount": 1, "chance": 20 }
+  ],
+
+  "_comment_streak_days_5_to_6": "Bonus 4th reward for players with a 7+ day streak logging in on days 5-6.",
+  "streak_days_5_to_6": [
+    { "item": "r3ct_daily:random_pottery_sherd", "min_amount": 1, "max_amount": 2, "chance": 70 },
+    { "item": "minecraft:trial_key", "min_amount": 1, "max_amount": 1, "chance": 30 }
+  ],
+
+  "_comment_streak_day_7": "Bonus 4th reward for players with a 7+ day streak logging in on day 7.",
+  "streak_day_7": [
+    { "item": "minecraft:ominous_bottle", "min_amount": 1, "max_amount": 1, "chance": 70 },
+    { "item": "minecraft:ominous_trial_key", "min_amount": 1, "max_amount": 1, "chance": 30 }
+  ],
+
   "_comment_quest_completion": "Loot pool from which ONE item is drawn for completing 3 daily quests.",
   "quest_completion": [
     { "item": "minecraft:coal", "min_amount": 16, "max_amount": 24, "chance": 18, "color": "&8" },

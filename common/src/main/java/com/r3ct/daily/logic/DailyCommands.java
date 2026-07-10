@@ -24,6 +24,7 @@ import net.minecraft.world.level.Level;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -79,7 +80,8 @@ public class DailyCommands {
                             DailyServerConfig.mechanics.quests.xpPerQuestMedium,
                             DailyServerConfig.mechanics.quests.xpPerQuestHard,
                             DailyServerConfig.mechanics.streaks.perfectDaysForShield,
-                            DailyServerConfig.mechanics.streaks.maxStoredQuestShields
+                            DailyServerConfig.mechanics.streaks.maxStoredQuestShields,
+                            DailyServerConfig.mechanics.quests.questStreakXpMultiplier
                     ));
                     return 1;
                 }))
@@ -129,7 +131,6 @@ public class DailyCommands {
                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), player.getUUID());
                     if (today.toString().equals(data.lastRewardDate)) return 1;
 
-                    int multi = (data.streak >= 7 ? 2 : 1);
                     if (data.lastStreakDate != null && data.lastStreakDate.equals(today.minusDays(1).toString())) {
                         data.streak = Math.min(data.streak + 1, 7);
                         data.absoluteRewardStreak++;
@@ -141,7 +142,19 @@ public class DailyCommands {
                     if (data.streak == 7) QuestManager.grantAdvancement(player, "r3ct_daily:rewards/always_on_time");
                     data.lastStreakDate = today.toString();
 
-                    List<ItemStack> rewards = (data.rewardDay <= 4) ? RewardManager.getTier1Rewards(context.getSource().getServer()) : (data.rewardDay <= 6 ? RewardManager.getTier2Rewards(context.getSource().getServer()) : RewardManager.getTier3Rewards(context.getSource().getServer()));
+                    List<ItemStack> rewards = new ArrayList<>();
+                    if (data.rewardDay <= 4) rewards.addAll(RewardManager.getTier1Rewards(context.getSource().getServer()));
+                    else if (data.rewardDay <= 6) rewards.addAll(RewardManager.getTier2Rewards(context.getSource().getServer()));
+                    else rewards.addAll(RewardManager.getTier3Rewards(context.getSource().getServer()));
+
+                    boolean hasStreakBonus = data.streak >= 7;
+                    if (hasStreakBonus) {
+                        ItemStack bonusItem = RewardManager.getStreakBonusReward(data.rewardDay, context.getSource().getServer());
+                        if (!bonusItem.isEmpty()) {
+                            rewards.add(bonusItem);
+                        }
+                    }
+
                     StringBuilder historyBuilder = new StringBuilder();
 
                     Component dayComp = Component.literal(String.valueOf(data.rewardDay)).withStyle(ChatFormatting.YELLOW);
@@ -149,16 +162,21 @@ public class DailyCommands {
                             Component.translatable("r3ct_daily.message.rewards.claimed_base", dayComp).withStyle(ChatFormatting.GREEN)
                     ));
 
+                    if (hasStreakBonus) {
+                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                                Component.translatable("r3ct_daily.message.rewards.streak_bonus").withStyle(ChatFormatting.GOLD)
+                        ));
+                    }
+
                     for (ItemStack rewardStack : rewards) {
-                        int amount = rewardStack.getCount() * multi;
-                        rewardStack.setCount(amount);
+                        int amount = rewardStack.getCount();
                         String translationKey = rewardStack.getItem().getDescriptionId();
                         Component amountComp = Component.literal(String.valueOf(amount)).withStyle(ChatFormatting.AQUA);
                         Component translatedItem = rewardStack.getHoverName().copy().withStyle(ChatFormatting.AQUA);
 
                         QuestManager.giveOrDrop(player, rewardStack);
 
-                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
+                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append("- ").withStyle(ChatFormatting.GRAY).append(
                                 Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, translatedItem).withStyle(ChatFormatting.GREEN)
                         ));
 
