@@ -200,7 +200,7 @@ public class DailyServerConfig {
     private static void loadRewards() {
         rewardsTier1.clear(); rewardsTier2.clear(); rewardsTier3.clear();
         dailyQuestRewards.clear();
-        streakRewardsTier1.clear(); streakRewardsTier2.clear(); streakRewardsTier3.clear(); // NOWE
+        streakRewardsTier1.clear(); streakRewardsTier2.clear(); streakRewardsTier3.clear();
 
         if (!REWARDS_FILE.exists()) return;
 
