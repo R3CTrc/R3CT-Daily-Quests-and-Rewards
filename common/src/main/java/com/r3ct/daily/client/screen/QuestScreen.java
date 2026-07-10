@@ -203,7 +203,7 @@ public class QuestScreen extends Screen {
         if (Math.abs(targetStreak - animatedStreak) < 0.05f) animatedStreak = targetStreak;
 
         String streakColor = (targetStreak < 3) ? "§2" : (targetStreak < 7 ? "§6" : "§c");
-        String streakText = streakColor + targetStreak + "§0/7";
+        String streakText = streakColor + data.questStreak + "§0/7";
         int streakBarColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
         GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barW, 1, new int[]{});
 

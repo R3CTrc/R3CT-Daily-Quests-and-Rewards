@@ -138,7 +138,7 @@ public class RewardScreen extends Screen {
         int sColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
 
         String lblStreak = Component.translatable("r3ct_daily.rewards.bar.streak").getString();
-        String valStreak = streakColorCode + targetStreak + "§0/7";
+        String valStreak = streakColorCode + data.streak + "§0/7";
         GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar1X, barY, animatedStreak, 7, lblStreak, valStreak, sColor, bWidth, 1, new int[]{});
 
         String multiText = data.streak >= 7 ? "§6§l" + Component.translatable("r3ct_daily.rewards.bonus.active").getString() : "§8" + Component.translatable("r3ct_daily.rewards.bonus.inactive").getString();
@@ -273,8 +273,8 @@ public class RewardScreen extends Screen {
             int mX = (t == 21) ? (x + bWidth - 1) : (x + (int)(t * (bWidth / 21.0)));
 
             g.fill(mX, y - 2, mX + 1, y + 10, 0xFFFFFFFF);
-            String txtDay = "§8" + t + " " + Component.translatable("r3ct_daily.leaderboard.tooltip.days").getString();
-            g.text(this.font, txtDay, mX - (this.font.width(txtDay) / 2), y + 12, 0xFFFFFFFF, false);
+            String txtDay = "§8" + t;
+            g.text(this.font, txtDay, mX - (this.font.width(String.valueOf(t)) / 2), y + 12, 0xFFFFFFFF, false);
 
             int totalW = 18 + this.font.width(amounts[i]);
             int startX = mX - totalW / 2;
