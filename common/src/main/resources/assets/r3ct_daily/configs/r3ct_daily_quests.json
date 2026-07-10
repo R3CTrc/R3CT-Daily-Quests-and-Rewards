@@ -6,6 +6,66 @@
 
   "overworld_quests": [
     {
+      "id": "niedzielny_wedkarz",
+      "name": "r3ct_daily.quest.niedzielny_wedkarz.name",
+      "description": "r3ct_daily.quest.niedzielny_wedkarz.desc",
+      "difficulty": 0,
+      "action_type": "FISHING",
+      "target": "any",
+      "amount": 10,
+      "required_location": "any",
+      "reward_item": "minecraft:campfire",
+      "reward_amount": 1
+    },
+    {
+      "id": "swiezy_polow",
+      "name": "r3ct_daily.quest.swiezy_polow.name",
+      "description": "r3ct_daily.quest.swiezy_polow.desc",
+      "difficulty": 0,
+      "action_type": "FISHING",
+      "target": "r3ct_daily:raw_fishes",
+      "amount": 8,
+      "required_location": "any",
+      "reward_item": "minecraft:coal",
+      "reward_amount": 8
+    },
+    {
+      "id": "kolczasty_polow",
+      "name": "r3ct_daily.quest.kolczasty_polow.name",
+      "description": "r3ct_daily.quest.kolczasty_polow.desc",
+      "difficulty": 1,
+      "action_type": "FISHING",
+      "target": "minecraft:pufferfish",
+      "amount": 3,
+      "required_location": "any",
+      "reward_item": "minecraft:glass_bottle",
+      "reward_amount": 3
+    },
+    {
+      "id": "zaginiona_wiedza",
+      "name": "r3ct_daily.quest.zaginiona_wiedza.name",
+      "description": "r3ct_daily.quest.zaginiona_wiedza.desc",
+      "difficulty": 2,
+      "action_type": "FISHING",
+      "target": "minecraft:enchanted_book",
+      "amount": 1,
+      "required_location": "any",
+      "reward_item": "minecraft:experience_bottle",
+      "reward_amount": 4
+    },
+    {
+      "id": "slony_polow",
+      "name": "r3ct_daily.quest.slony_polow.name",
+      "description": "r3ct_daily.quest.slony_polow.desc",
+      "difficulty": 1,
+      "action_type": "FISHING",
+      "target": "r3ct_daily:raw_fishes",
+      "amount": 8,
+      "required_location": "biome:#minecraft:is_ocean",
+      "reward_item": "minecraft:amethyst_shard",
+      "reward_amount": 4
+    },
+    {
       "id": "gorska_wspinaczka",
       "name": "r3ct_daily.quest.gorska_wspinaczka.name",
       "description": "r3ct_daily.quest.gorska_wspinaczka.desc",
