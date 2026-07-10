@@ -18,9 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ComposterBlockMixin {
 
     @Inject(method = "useWithoutItem", at = @At("HEAD"))
-    private void onEmptyComposter(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
+    private void r3ct_daily$onEmptyComposter(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
         if (player instanceof ServerPlayer serverPlayer) {
-
             if (state.getValue(ComposterBlock.LEVEL) == 8) {
                 QuestManager.handleAction(serverPlayer, "EMPTY_COMPOSTER", "any", 1);
             }

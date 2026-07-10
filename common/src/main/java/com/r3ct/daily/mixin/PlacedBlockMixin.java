@@ -20,8 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlacedBlockMixin {
 
     @Inject(method = "place", at = @At("RETURN"))
-    private void onPlaceBlock(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
+    private void r3ct_daily$onPlaceBlock(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
         if (cir.getReturnValue().consumesAction() && context.getPlayer() instanceof ServerPlayer player) {
+
+            if (player.connection == null) return;
 
             BlockPos pos = context.getClickedPos();
             ServerLevel level = (ServerLevel) context.getLevel();

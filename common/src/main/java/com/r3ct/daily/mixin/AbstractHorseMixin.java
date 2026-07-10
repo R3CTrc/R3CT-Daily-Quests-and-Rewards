@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractHorse.class)
 public abstract class AbstractHorseMixin {
 
-    @Inject(method = "tameWithName", at = @At("HEAD"))
-    private void onTameHorse(Player player, CallbackInfoReturnable<Boolean> cir) {
-        if (player instanceof ServerPlayer serverPlayer) {
+    @Inject(method = "tameWithName", at = @At("RETURN"))
+    private void r3ct_daily$onTameHorse(Player player, CallbackInfoReturnable<Boolean> cir) {
+        if (player instanceof ServerPlayer serverPlayer && cir.getReturnValueZ()) {
             AbstractHorse horse = (AbstractHorse) (Object) this;
             String mobId = BuiltInRegistries.ENTITY_TYPE.getKey(horse.getType()).toString();
             QuestManager.handleAction(serverPlayer, "TAME_MOB", mobId, 1);

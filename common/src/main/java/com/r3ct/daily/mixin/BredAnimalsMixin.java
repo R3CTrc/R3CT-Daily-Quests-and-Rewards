@@ -14,10 +14,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BredAnimalsMixin {
 
     @Inject(method = "spawnChildFromBreeding", at = @At("RETURN"))
-    private void onBreed(ServerLevel level, Animal mate, CallbackInfo ci) {
+    private void r3ct_daily$onBreed(ServerLevel level, Animal mate, CallbackInfo ci) {
         Animal animal = (Animal) (Object) this;
 
         ServerPlayer player = animal.getLoveCause();
+
+        if (player == null) {
+            player = mate.getLoveCause();
+        }
 
         if (player != null) {
             String animalId1 = BuiltInRegistries.ENTITY_TYPE.getKey(animal.getType()).toString();

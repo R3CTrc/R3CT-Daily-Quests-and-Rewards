@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class SlotMixin {
 
     @Inject(method = "onTake", at = @At("HEAD"))
-    private void onTakeItemFromSlot(Player player, ItemStack stack, CallbackInfo ci) {
+    private void r3ct_daily$onTakeItemFromSlot(Player player, ItemStack stack, CallbackInfo ci) {
 
         if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
 
@@ -32,23 +33,24 @@ public abstract class SlotMixin {
             }
             else if (menu instanceof FurnaceMenu furnaceMenu) {
                 if (furnaceMenu.getSlot(2) == currentSlot) {
-                    handleSmelting(serverPlayer, itemId, amount, false);
+                    r3ct_daily$handleSmelting(serverPlayer, itemId, amount, false);
                 }
             }
             else if (menu instanceof BlastFurnaceMenu blastMenu) {
                 if (blastMenu.getSlot(2) == currentSlot) {
-                    handleSmelting(serverPlayer, itemId, amount, true);
+                    r3ct_daily$handleSmelting(serverPlayer, itemId, amount, true);
                 }
             }
             else if (menu instanceof SmokerMenu smokerMenu) {
                 if (smokerMenu.getSlot(2) == currentSlot) {
-                    handleSmelting(serverPlayer, itemId, amount, false);
+                    r3ct_daily$handleSmelting(serverPlayer, itemId, amount, false);
                 }
             }
         }
     }
 
-    private void handleSmelting(ServerPlayer player, String itemId, int amount, boolean isBlastFurnace) {
+    @Unique
+    private void r3ct_daily$handleSmelting(ServerPlayer player, String itemId, int amount, boolean isBlastFurnace) {
         QuestManager.handleAction(player, "SMELT_ITEM", itemId, amount);
 
         if (itemId.endsWith("_glazed_terracotta")) {

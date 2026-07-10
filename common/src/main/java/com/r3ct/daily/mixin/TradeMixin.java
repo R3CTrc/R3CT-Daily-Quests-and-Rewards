@@ -12,9 +12,11 @@ import net.minecraft.world.inventory.MerchantResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.Merchant;
+import net.minecraft.world.item.trading.MerchantOffer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,7 +28,7 @@ public abstract class TradeMixin {
     @Shadow @Final private Merchant merchant;
 
     @Inject(method = "checkTakeAchievements", at = @At("HEAD"))
-    private void onTradeResult(ItemStack stack, CallbackInfo ci) {
+    private void r3ct_daily$onTradeResult(ItemStack stack, CallbackInfo ci) {
         if (this.player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
             String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
 
@@ -45,24 +47,29 @@ public abstract class TradeMixin {
     }
 
     @Inject(method = "onTake", at = @At("HEAD"))
-    private void onTake(Player player, ItemStack stack, CallbackInfo ci) {
+    private void r3ct_daily$onTake(Player player, ItemStack stack, CallbackInfo ci) {
         if (player instanceof ServerPlayer serverPlayer) {
             Container container = ((Slot)(Object)this).container;
 
             if (container instanceof MerchantContainer merchantContainer) {
-                ItemStack itemPaid1 = merchantContainer.getItem(0);
-                ItemStack itemPaid2 = merchantContainer.getItem(1);
+                MerchantOffer offer = merchantContainer.getActiveOffer();
 
-                checkSoldItem(serverPlayer, itemPaid1);
-                checkSoldItem(serverPlayer, itemPaid2);
+                if (offer != null) {
+                    ItemStack costA = offer.getCostA();
+                    ItemStack costB = offer.getCostB();
+
+                    r3ct_daily$checkSoldItem(serverPlayer, costA);
+                    r3ct_daily$checkSoldItem(serverPlayer, costB);
+                }
             }
         }
     }
 
-    private void checkSoldItem(ServerPlayer player, ItemStack paid) {
-        if (!paid.isEmpty()) {
-            String paidId = BuiltInRegistries.ITEM.getKey(paid.getItem()).toString();
-            QuestManager.handleAction(player, "TRADE_SELL", paidId, paid.getCount());
+    @Unique
+    private void r3ct_daily$checkSoldItem(ServerPlayer player, ItemStack costStack) {
+        if (!costStack.isEmpty()) {
+            String paidId = BuiltInRegistries.ITEM.getKey(costStack.getItem()).toString();
+            QuestManager.handleAction(player, "TRADE_SELL", paidId, costStack.getCount());
         }
     }
 }

@@ -18,20 +18,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class FishInteractMixin {
 
     @Unique
-    private boolean wasHoldingWaterBucket;
+    private boolean r3ct_daily$wasHoldingWaterBucket;
 
     @Inject(method = "mobInteract", at = @At("HEAD"))
-    private void beforeInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-        this.wasHoldingWaterBucket = player.getItemInHand(hand).is(Items.WATER_BUCKET);
+    private void r3ct_daily$beforeInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+        this.r3ct_daily$wasHoldingWaterBucket = player.getItemInHand(hand).is(Items.WATER_BUCKET);
     }
 
     @Inject(method = "mobInteract", at = @At("RETURN"))
-    private void onCatchFish(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    private void r3ct_daily$onCatchFish(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         if (cir.getReturnValue().consumesAction() && player instanceof ServerPlayer serverPlayer) {
-            if (this.wasHoldingWaterBucket) {
+            if (this.r3ct_daily$wasHoldingWaterBucket) {
                 AbstractFish fish = (AbstractFish) (Object) this;
-                String mobId = BuiltInRegistries.ENTITY_TYPE.getKey(fish.getType()).toString();
-                QuestManager.handleAction(serverPlayer, "CATCH_FISH_BUCKET", mobId, 1);
+                if (!fish.fromBucket()) {
+                    String mobId = BuiltInRegistries.ENTITY_TYPE.getKey(fish.getType()).toString();
+                    QuestManager.handleAction(serverPlayer, "CATCH_FISH_BUCKET", mobId, 1);
+                }
             }
         }
     }

@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MenuQuickMoveMixin {
 
     @Inject(method = "quickMoveStack", at = @At("RETURN"))
-    private void onShiftClickResultSlot(Player player, int slotIndex, CallbackInfoReturnable<ItemStack> cir) {
+    private void r3ct_daily$onShiftClickResultSlot(Player player, int slotIndex, CallbackInfoReturnable<ItemStack> cir) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
 
         ItemStack originalStackCopy = cir.getReturnValue();

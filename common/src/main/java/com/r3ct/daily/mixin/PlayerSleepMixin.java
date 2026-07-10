@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerSleepMixin {
 
     @Inject(method = "stopSleepInBed", at = @At("HEAD"))
-    private void onStopSleepInBed(boolean forcefulWakeUp, boolean updateLevelList, CallbackInfo ci) {
+    private void r3ct_daily$onStopSleepInBed(boolean forcefulWakeUp, boolean updateLevelList, CallbackInfo ci) {
         if (!forcefulWakeUp) {
             ServerPlayer player = (ServerPlayer) (Object) this;
             QuestManager.handleAction(player, "SLEEP_IN_BED", "any", 1);

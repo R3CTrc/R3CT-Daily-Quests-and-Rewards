@@ -146,6 +146,8 @@ public class QuestManager {
     }
 
     public static void handleAction(ServerPlayer player, String actionType, String target, int amount) {
+        if (player.connection == null) return;
+
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
 
@@ -271,6 +273,8 @@ public class QuestManager {
     }
 
     public static void submitQuestItem(ServerPlayer player, int questIndex, int slotIndex) {
+        if (player.connection == null) return;
+
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -370,6 +374,8 @@ public class QuestManager {
     }
 
     public static void claimQuestReward(ServerPlayer player, int index) {
+        if (player.connection == null) return;
+
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -477,6 +483,8 @@ public class QuestManager {
     }
 
     public static void claimPointReward(ServerPlayer player, int threshold) {
+        if (player.connection == null) return;
+
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -650,6 +658,8 @@ public class QuestManager {
     }
 
     public static void rerollQuest(ServerPlayer player, int index) {
+        if (player.connection == null) return;
+
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -725,6 +735,8 @@ public class QuestManager {
     }
 
     public static boolean forceCompleteQuest(ServerPlayer player, int index, boolean skipSync) {
+        if (player.connection == null) return false;
+
         MinecraftServer server = player.level().getServer();
         if (server == null) return false;
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -754,6 +766,8 @@ public class QuestManager {
     }
 
     public static void refreshPlayerDailyData(ServerPlayer player, MinecraftServer server, LocalDate today, PlayerData data) {
+        if (player.connection == null) return;
+
         String todayStr = today.toString();
         LocalDate yesterday = today.minusDays(1);
         List<Component> freezeMessages = new ArrayList<>();
@@ -848,6 +862,8 @@ public class QuestManager {
     }
 
     public static void resetQuestProgress(ServerPlayer player, String actionType) {
+        if (player.connection == null) return;
+
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -871,6 +887,8 @@ public class QuestManager {
     }
 
     public static void playSound(ServerPlayer player, SoundEvent sound, float volume, float pitch) {
+        if (player.connection == null) return;
+
         player.connection.send(new ClientboundSoundPacket(
                 BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound),
                 SoundSource.PLAYERS,
@@ -880,6 +898,8 @@ public class QuestManager {
     }
 
     public static void syncPlayerQuests(ServerPlayer player, PlayerData data) {
+        if (player.connection == null) return;
+
         MinecraftServer server = player.level().getServer();
         if (server != null) {
             server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();

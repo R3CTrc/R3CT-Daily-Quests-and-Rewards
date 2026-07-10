@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BrewedPotionMixin {
 
     @Inject(method = "onTake", at = @At("HEAD"))
-    private void onBrewTake(Player player, ItemStack stack, CallbackInfo ci) {
+    private void r3ct_daily$onBrewTake(Player player, ItemStack stack, CallbackInfo ci) {
         if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
             Slot slot = (Slot)(Object)this;
 
@@ -30,10 +30,11 @@ public abstract class BrewedPotionMixin {
                     QuestManager.handleAction(serverPlayer, "BREW_LINGERING_POTION", "any", stack.getCount());
                 }
 
-                PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
-                if (contents != null && contents.potion().isPresent()) {
+                PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
 
-                    String potId = contents.potion().get().unwrapKey().get().identifier().toString();
+                contents.potion().flatMap(holder -> holder.unwrapKey()).ifPresent(key -> {
+
+                    String potId = key.identifier().toString();
 
                     if (!potId.contains("water") && !potId.contains("mundane") && !potId.contains("thick") && !potId.contains("awkward")) {
                         QuestManager.handleAction(serverPlayer, "BREW_POTION", potId, stack.getCount());
@@ -44,7 +45,7 @@ public abstract class BrewedPotionMixin {
                     } else if (potId.contains("long_")) {
                         QuestManager.handleAction(serverPlayer, "BREW_POTION_EXTENDED", potId, stack.getCount());
                     }
-                }
+                });
             }
         }
     }

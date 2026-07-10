@@ -14,12 +14,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class EnderPearlMixin {
 
     @Inject(method = "onHit", at = @At("HEAD"))
-    private void onHit(HitResult result, CallbackInfo ci) {
+    private void r3ct_daily$onHit(HitResult result, CallbackInfo ci) {
         ThrownEnderpearl pearl = (ThrownEnderpearl) (Object) this;
         Entity owner = pearl.getOwner();
+
         if (owner instanceof ServerPlayer player) {
-            double distance = player.position().distanceTo(pearl.position());
-            QuestManager.handleAction(player, "PEARL_DISTANCE", "any", (int) distance);
+            if (player.level() == pearl.level()) {
+                double distance = player.position().distanceTo(pearl.position());
+                QuestManager.handleAction(player, "PEARL_DISTANCE", "any", (int) distance);
+            }
         }
     }
 }

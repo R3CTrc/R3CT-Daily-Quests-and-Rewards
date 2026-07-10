@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class SmithingTakeMixin {
 
     @Inject(method = "onTake", at = @At("HEAD"))
-    private void onSmithingTake(Player player, ItemStack carried, CallbackInfo ci) {
+    private void r3ct_daily$onSmithingTake(Player player, ItemStack carried, CallbackInfo ci) {
         if (player instanceof ServerPlayer serverPlayer && !carried.isEmpty()) {
             String itemId = BuiltInRegistries.ITEM.getKey(carried.getItem()).toString();
             QuestManager.handleAction(serverPlayer, "TRIM_ARMOR", itemId, carried.getCount());

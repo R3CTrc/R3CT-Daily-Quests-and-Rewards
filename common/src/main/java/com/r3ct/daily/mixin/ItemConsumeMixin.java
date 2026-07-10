@@ -17,7 +17,7 @@ public abstract class ItemConsumeMixin {
     @Shadow public abstract ItemStack getActiveItem();
 
     @Inject(method = "completeUsingItem", at = @At("HEAD"))
-    private void onCompleteUsingItem(CallbackInfo ci) {
+    private void r3ct_daily$onCompleteUsingItem(CallbackInfo ci) {
         if ((Object) this instanceof ServerPlayer player) {
             ItemStack stack = this.getActiveItem();
             if (!stack.isEmpty()) {

@@ -14,7 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class CuredZombieVillagerMixin {
 
     @Inject(method = "trigger", at = @At("HEAD"))
-    private void onZombieCured(ServerPlayer player, Zombie zombie, Villager villager, CallbackInfo ci) {
-        QuestManager.handleAction(player, "CURE_ZOMBIE_VILLAGER", "any", 1);
+    private void r3ct_daily$onZombieCured(ServerPlayer player, Zombie zombie, Villager villager, CallbackInfo ci) {
+        if (player != null) {
+            QuestManager.handleAction(player, "CURE_ZOMBIE_VILLAGER", "any", 1);
+        }
     }
 }

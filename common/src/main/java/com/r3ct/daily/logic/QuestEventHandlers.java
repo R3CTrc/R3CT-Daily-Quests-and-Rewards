@@ -31,8 +31,9 @@ import net.minecraft.world.level.block.state.BlockState;
 public class QuestEventHandlers {
 
     public static void onDimensionChange(ServerPlayer player, String dimId) {
-        MinecraftServer server = player.level().getServer();
+        if (player.connection == null) return;
 
+        MinecraftServer server = player.level().getServer();
         if (server == null) return;
 
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -52,32 +53,50 @@ public class QuestEventHandlers {
     }
 
     public static void onBlockBreak(ServerPlayer serverPlayer, BlockState state, BlockPos pos, Level level) {
+        if (serverPlayer.connection == null) return;
+
         String blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
 
         if (QuestManager.removePlacedBlock(pos, level)) {
-            QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", blockId, -1);
+            boolean isFullyGrownCrop = (state.getBlock() instanceof CropBlock crop && crop.isMaxAge(state)) ||
+                    (state.getBlock() instanceof NetherWartBlock && state.getValue(NetherWartBlock.AGE) >= 3);
 
-            if (state.is(BlockTags.SAPLINGS)) {
-                QuestManager.handleAction(serverPlayer, "PLACE_SAPLING", blockId, -1);
+            if (!isFullyGrownCrop) {
+                QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", blockId, -1);
+
+                if (state.is(BlockTags.SAPLINGS)) {
+                    QuestManager.handleAction(serverPlayer, "PLACE_SAPLING", blockId, -1);
+                }
+                if (state.getBlock() instanceof CropBlock || state.getBlock() instanceof StemBlock || state.getBlock() instanceof NetherWartBlock || state.getBlock() instanceof PitcherCropBlock) {
+                    QuestManager.handleAction(serverPlayer, "PLACE_SEED", blockId, -1);
+                }
+
+                if (state.is(BlockTags.BEDS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:beds", -1);
+                if (state.is(BlockTags.WOOL))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:wool", -1);
+
+                if (state.is(BlockTags.OAK_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:oak_logs", -1);
+                else if (state.is(BlockTags.BIRCH_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:birch_logs", -1);
+                else if (state.is(BlockTags.SPRUCE_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:spruce_logs", -1);
+                else if (state.is(BlockTags.JUNGLE_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:jungle_logs", -1);
+                else if (state.is(BlockTags.ACACIA_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:acacia_logs", -1);
+                else if (state.is(BlockTags.DARK_OAK_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:dark_oak_logs", -1);
+                else if (state.is(BlockTags.MANGROVE_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:mangrove_logs", -1);
+                else if (state.is(BlockTags.CHERRY_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:cherry_logs", -1);
+                else if (state.is(BlockTags.PALE_OAK_LOGS))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:pale_oak_logs", -1);
+
+                return;
             }
-            if (state.getBlock() instanceof CropBlock || state.getBlock() instanceof StemBlock || state.getBlock() instanceof NetherWartBlock || state.getBlock() instanceof PitcherCropBlock) {
-                QuestManager.handleAction(serverPlayer, "PLACE_SEED", blockId, -1);
-            }
-
-            if (state.is(BlockTags.BEDS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:beds", -1);
-            if (state.is(BlockTags.WOOL)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:wool", -1);
-
-            if (state.is(BlockTags.OAK_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:oak_logs", -1);
-            else if (state.is(BlockTags.BIRCH_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:birch_logs", -1);
-            else if (state.is(BlockTags.SPRUCE_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:spruce_logs", -1);
-            else if (state.is(BlockTags.JUNGLE_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:jungle_logs", -1);
-            else if (state.is(BlockTags.ACACIA_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:acacia_logs", -1);
-            else if (state.is(BlockTags.DARK_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:dark_oak_logs", -1);
-            else if (state.is(BlockTags.MANGROVE_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:mangrove_logs", -1);
-            else if (state.is(BlockTags.CHERRY_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:cherry_logs", -1);
-            else if (state.is(BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:pale_oak_logs", -1);
-
-            return;
         }
 
         QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", blockId, 1);
@@ -150,6 +169,8 @@ public class QuestEventHandlers {
     }
 
     public static void onPlayerTick(ServerPlayer player) {
+        if (player.connection == null) return;
+
         if (player.tickCount % 20 == 0) {
             MinecraftServer server = player.level().getServer();
             if (server == null) return;
@@ -196,9 +217,6 @@ public class QuestEventHandlers {
                 if (biomeId.contains("frozen") || biomeId.contains("snowy") || biomeId.contains("ice") || biomeId.contains("grove") || biomeId.contains("slopes") || biomeId.contains("peaks")) {
                     QuestManager.handleAction(player, "VISIT_BIOME", "r3ct_daily:frozen_biomes", 1);
                     QuestManager.handleAction(player, "TIME_IN_BIOME", "r3ct_daily:frozen_biomes", 1);
-                }
-                if (biomeId.contains("ocean")) {
-                    QuestManager.handleAction(player, "TIME_IN_BIOME", "ocean", 1);
                 }
             }
 

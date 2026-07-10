@@ -15,6 +15,7 @@
     "CuredZombieVillagerMixin",
     "EnchantItemMixin",
     "EnderPearlMixin",
+    "FishingTriggerMixin",
     "FishInteractMixin",
     "GrindstoneTakeMixin",
     "ItemConsumeMixin",

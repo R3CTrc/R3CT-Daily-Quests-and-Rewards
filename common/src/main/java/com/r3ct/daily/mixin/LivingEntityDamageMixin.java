@@ -25,12 +25,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityDamageMixin {
 
-    @Unique private float dailyDamageTakenBuffer = 0.0f;
-    @Unique private float dailyDamageDealtBuffer = 0.0f;
+    @Unique private float r3ct_daily$dailyDamageTakenBuffer = 0.0f;
+    @Unique private float r3ct_daily$dailyDamageDealtBuffer = 0.0f;
 
     @Inject(method = "hurtServer", at = @At("HEAD"))
-    private void onHurtHead(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof ServerPlayer player && amount > 0.0F) {
+    private void r3ct_daily$onHurtHead(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if ((Object) this instanceof ServerPlayer player && player.connection != null && amount > 0.0F) {
             if (player.isBlocking() && !source.is(DamageTypeTags.BYPASSES_SHIELD)) {
                 if (source.is(DamageTypeTags.IS_EXPLOSION) && source.getEntity() instanceof Creeper creeper) {
                     if (player.distanceTo(creeper) <= 5.0f) {
@@ -50,49 +50,34 @@ public abstract class LivingEntityDamageMixin {
     }
 
     @Inject(method = "hurtServer", at = @At("RETURN"))
-    private void onHurt(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void r3ct_daily$onHurt(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue() || amount <= 0.0F) return;
 
         LivingEntity victim = (LivingEntity) (Object) this;
         Entity attackerEntity = source.getEntity();
         Entity directEntity = source.getDirectEntity();
 
+        boolean isVictimRealPlayer = victim instanceof ServerPlayer sv && sv.connection != null;
+        boolean isAttackerRealPlayer = attackerEntity instanceof ServerPlayer ap && ap.connection != null;
+
+        if (!isVictimRealPlayer && !isAttackerRealPlayer) return;
+
         String victimId = BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType()).toString();
         String attackerId = attackerEntity != null ? BuiltInRegistries.ENTITY_TYPE.getKey(attackerEntity.getType()).toString() : "environment";
 
-        if (victim.isDeadOrDying() || victim.getHealth() <= 0.0F) {
-            if (attackerEntity instanceof ServerPlayer attackerPlayer) {
-                if (victim instanceof Ghast) {
-                    if (directEntity instanceof LargeFireball) {
-                        QuestManager.handleAction(attackerPlayer, "KILL_GHAST_FIREBALL", victimId, 1);
-                    }
-                }
-            }
-        }
-
-        if (victim instanceof ServerPlayer serverVictim) {
-            LivingEntityDamageMixin victimMixin = (LivingEntityDamageMixin) (Object) serverVictim;
-
-            victimMixin.dailyDamageTakenBuffer += amount;
-            if (victimMixin.dailyDamageTakenBuffer >= 1.0f) {
-                int pointsToGive = (int) victimMixin.dailyDamageTakenBuffer;
-
-                QuestManager.handleAction(serverVictim, "TAKE_DAMAGE", attackerId, pointsToGive);
-                long timeOfDay = level.getOverworldClockTime() % 24000L;
-                if (timeOfDay >= 0 && timeOfDay < 12000) {
-                    QuestManager.handleAction(serverVictim, "TAKE_DAMAGE_DAY", attackerId, pointsToGive);
-                }
-
-                victimMixin.dailyDamageTakenBuffer -= pointsToGive;
-            }
-        }
-
-        if (attackerEntity instanceof ServerPlayer attackerPlayer) {
+        if (isAttackerRealPlayer) {
+            ServerPlayer attackerPlayer = (ServerPlayer) attackerEntity;
             LivingEntityDamageMixin attackerMixin = (LivingEntityDamageMixin) (Object) attackerPlayer;
 
-            attackerMixin.dailyDamageDealtBuffer += amount;
-            if (attackerMixin.dailyDamageDealtBuffer >= 1.0f) {
-                int pointsToGive = (int) attackerMixin.dailyDamageDealtBuffer;
+            if (victim.isDeadOrDying() || victim.getHealth() <= 0.0F) {
+                if (victim instanceof Ghast && directEntity instanceof LargeFireball) {
+                    QuestManager.handleAction(attackerPlayer, "KILL_GHAST_FIREBALL", victimId, 1);
+                }
+            }
+
+            attackerMixin.r3ct_daily$dailyDamageDealtBuffer += amount;
+            if (attackerMixin.r3ct_daily$dailyDamageDealtBuffer >= 1.0f) {
+                int pointsToGive = (int) attackerMixin.r3ct_daily$dailyDamageDealtBuffer;
 
                 QuestManager.handleAction(attackerPlayer, "DEAL_DAMAGE", victimId, pointsToGive);
 
@@ -111,7 +96,7 @@ public abstract class LivingEntityDamageMixin {
                     }
                 }
 
-                attackerMixin.dailyDamageDealtBuffer -= pointsToGive;
+                attackerMixin.r3ct_daily$dailyDamageDealtBuffer -= pointsToGive;
             }
 
             if (directEntity != null) {
@@ -129,12 +114,31 @@ public abstract class LivingEntityDamageMixin {
                             !attackerPlayer.onClimbable() &&
                             !attackerPlayer.isInWater() &&
                             !attackerPlayer.hasEffect(MobEffects.BLINDNESS) &&
-                            !attackerPlayer.isPassenger();
+                            !attackerPlayer.isPassenger() &&
+                            !attackerPlayer.isFallFlying();
 
                     if (isCrit) {
                         QuestManager.handleAction(attackerPlayer, "CRITICAL_STRIKE", victimId, 1);
                     }
                 }
+            }
+        }
+
+        if (isVictimRealPlayer) {
+            ServerPlayer serverVictim = (ServerPlayer) victim;
+            LivingEntityDamageMixin victimMixin = (LivingEntityDamageMixin) (Object) serverVictim;
+
+            victimMixin.r3ct_daily$dailyDamageTakenBuffer += amount;
+            if (victimMixin.r3ct_daily$dailyDamageTakenBuffer >= 1.0f) {
+                int pointsToGive = (int) victimMixin.r3ct_daily$dailyDamageTakenBuffer;
+
+                QuestManager.handleAction(serverVictim, "TAKE_DAMAGE", attackerId, pointsToGive);
+                long timeOfDay = level.getOverworldClockTime() % 24000L;
+                if (timeOfDay >= 0 && timeOfDay < 12000) {
+                    QuestManager.handleAction(serverVictim, "TAKE_DAMAGE_DAY", attackerId, pointsToGive);
+                }
+
+                victimMixin.r3ct_daily$dailyDamageTakenBuffer -= pointsToGive;
             }
         }
     }

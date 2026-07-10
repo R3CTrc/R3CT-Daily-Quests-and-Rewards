@@ -5,11 +5,11 @@ import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestEventHandlers;
 import com.r3ct.daily.logic.QuestManager;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,48 +19,57 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Player.class)
 public abstract class PlayerTickMixin {
 
-    @Unique private BlockPos lastFlightPos = null;
-    @Unique private double levitationStartY = -1;
-    @Unique private double maxFallDistance = 0;
+    @Unique private Vec3 r3ct_daily$lastFlightPos = null;
+    @Unique private double r3ct_daily$flightDistanceBuffer = 0.0;
+    @Unique private double r3ct_daily$levitationStartY = -1;
+    @Unique private double r3ct_daily$maxFallDistance = 0;
 
     @Inject(method = "tick", at = @At("HEAD"))
-    private void onTick(CallbackInfo ci) {
+    private void r3ct_daily$onTick(CallbackInfo ci) {
         if ((Object) this instanceof ServerPlayer player) {
 
+            if (player.connection == null) return;
+
             if (player.isFallFlying()) {
-                if (lastFlightPos == null) {
-                    lastFlightPos = player.blockPosition();
-                } else if (player.tickCount % 20 == 0) {
-                    double dist = Math.sqrt(player.blockPosition().distSqr(lastFlightPos));
-                    if (dist >= 1.0) {
-                        QuestManager.handleAction(player, "ELYTRA_FLIGHT_NO_LAND", "any", (int) dist);
+                if (this.r3ct_daily$lastFlightPos == null) {
+                    this.r3ct_daily$lastFlightPos = player.position();
+                } else {
+                    double distThisTick = player.position().distanceTo(this.r3ct_daily$lastFlightPos);
+                    this.r3ct_daily$flightDistanceBuffer += distThisTick;
+
+                    if (this.r3ct_daily$flightDistanceBuffer >= 1.0) {
+                        int blocksToAward = (int) this.r3ct_daily$flightDistanceBuffer;
+                        QuestManager.handleAction(player, "ELYTRA_FLIGHT_NO_LAND", "any", blocksToAward);
+                        this.r3ct_daily$flightDistanceBuffer -= blocksToAward;
                     }
-                    lastFlightPos = player.blockPosition();
+
+                    this.r3ct_daily$lastFlightPos = player.position();
                 }
             } else {
-                if (lastFlightPos != null) {
+                if (this.r3ct_daily$lastFlightPos != null) {
                     QuestManager.resetQuestProgress(player, "ELYTRA_FLIGHT_NO_LAND");
-                    lastFlightPos = null;
+                    this.r3ct_daily$lastFlightPos = null;
+                    this.r3ct_daily$flightDistanceBuffer = 0.0;
                 }
             }
 
             if (player.hasEffect(MobEffects.LEVITATION)) {
-                if (levitationStartY == -1 || player.onGround()) {
-                    levitationStartY = player.getY();
+                if (this.r3ct_daily$levitationStartY == -1 || player.onGround()) {
+                    this.r3ct_daily$levitationStartY = player.getY();
                 } else if (player.tickCount % 10 == 0) {
-                    int heightGained = (int) (player.getY() - levitationStartY);
+                    int heightGained = (int) (player.getY() - this.r3ct_daily$levitationStartY);
                     if (heightGained > 0) QuestManager.handleAction(player, "LEVITATION_HEIGHT", "any", heightGained);
                 }
             } else {
-                levitationStartY = -1;
+                this.r3ct_daily$levitationStartY = -1;
             }
 
-            if (player.fallDistance > maxFallDistance) {
-                maxFallDistance = player.fallDistance;
+            if (player.fallDistance > this.r3ct_daily$maxFallDistance) {
+                this.r3ct_daily$maxFallDistance = player.fallDistance;
             }
 
             if (player.onGround() || player.isInWater() || player.onClimbable() || player.isFallFlying()) {
-                if (maxFallDistance > 0) {
+                if (this.r3ct_daily$maxFallDistance > 0) {
                     MinecraftServer server = player.level().getServer();
                     if (server != null) {
                         PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -71,7 +80,7 @@ public abstract class PlayerTickMixin {
                                 try {
                                     int targetHeight = Integer.parseInt(q.target);
 
-                                    if (maxFallDistance >= targetHeight) {
+                                    if (this.r3ct_daily$maxFallDistance >= targetHeight) {
                                         QuestManager.handleAction(player, "FALL_FROM_HEIGHT", q.target, 1);
                                     }
                                 } catch (NumberFormatException ignored) {
@@ -79,7 +88,7 @@ public abstract class PlayerTickMixin {
                             }
                         }
                     }
-                    maxFallDistance = 0;
+                    this.r3ct_daily$maxFallDistance = 0;
                 }
 
                 QuestManager.resetQuestProgress(player, "LEVITATION_HEIGHT");

@@ -22,55 +22,54 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ServerPlayerGameMode.class)
 public abstract class BlockInteractMixin {
 
-    @Unique private ItemStack daily$cachedBlockStack = ItemStack.EMPTY;
-    @Unique private ItemStack daily$cachedAirStack = ItemStack.EMPTY;
+    @Unique private ItemStack r3ct_daily$cachedBlockStack = ItemStack.EMPTY;
+    @Unique private ItemStack r3ct_daily$cachedAirStack = ItemStack.EMPTY;
 
     @Inject(method = "useItemOn", at = @At("HEAD"))
-    private void onUseItemOnHead(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
-        this.daily$cachedBlockStack = stack.copy();
+    private void r3ct_daily$onUseItemOnHead(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
+        this.r3ct_daily$cachedBlockStack = stack.copy();
     }
 
     @Inject(method = "useItemOn", at = @At("RETURN"))
-    private void onUseItemOnReturn(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
-        if (!this.daily$cachedBlockStack.isEmpty()) {
+    private void r3ct_daily$onUseItemOnReturn(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
+        if (!this.r3ct_daily$cachedBlockStack.isEmpty()) {
             ItemStack currentStack = player.getItemInHand(hand);
 
             if (cir.getReturnValue().consumesAction()) {
                 BlockState state = level.getBlockState(hitResult.getBlockPos());
                 if (state.is(Blocks.BEEHIVE) || state.is(Blocks.BEE_NEST)) {
-                    if (this.daily$cachedBlockStack.is(Items.GLASS_BOTTLE)) QuestManager.handleAction(player, "COLLECT_HONEY", "any", 1);
+                    if (this.r3ct_daily$cachedBlockStack.is(Items.GLASS_BOTTLE)) QuestManager.handleAction(player, "COLLECT_HONEY", "any", 1);
                 }
                 if (state.is(Blocks.RESPAWN_ANCHOR)) {
-                    if (this.daily$cachedBlockStack.is(Items.GLOWSTONE)) QuestManager.handleAction(player, "CHARGE_RESPAWN_ANCHOR", "any", 1);
+                    if (this.r3ct_daily$cachedBlockStack.is(Items.GLOWSTONE)) QuestManager.handleAction(player, "CHARGE_RESPAWN_ANCHOR", "any", 1);
                 }
                 if (state.is(Blocks.JUKEBOX)) {
-                    if (this.daily$cachedBlockStack.has(DataComponents.JUKEBOX_PLAYABLE)) QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
+                    if (this.r3ct_daily$cachedBlockStack.has(DataComponents.JUKEBOX_PLAYABLE)) QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
                 }
                 if (state.is(Blocks.VAULT)) {
-                    if (this.daily$cachedBlockStack.is(Items.TRIAL_KEY) || this.daily$cachedBlockStack.is(Items.OMINOUS_TRIAL_KEY)) QuestManager.handleAction(player, "OPEN_VAULT", "any", 1);
+                    if (this.r3ct_daily$cachedBlockStack.is(Items.TRIAL_KEY) || this.r3ct_daily$cachedBlockStack.is(Items.OMINOUS_TRIAL_KEY)) QuestManager.handleAction(player, "OPEN_VAULT", "any", 1);
                 }
             }
 
-            daily$checkAndAwardUseItem(player, this.daily$cachedBlockStack, currentStack);
+            r3ct_daily$checkAndAwardUseItem(player, this.r3ct_daily$cachedBlockStack, currentStack);
         }
     }
 
     @Inject(method = "useItem", at = @At("HEAD"))
-    private void onUseItemHead(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-        this.daily$cachedAirStack = stack.copy();
+    private void r3ct_daily$onUseItemHead(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+        this.r3ct_daily$cachedAirStack = stack.copy();
     }
 
     @Inject(method = "useItem", at = @At("RETURN"))
-    private void onUseItemReturn(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-        if (!this.daily$cachedAirStack.isEmpty()) {
+    private void r3ct_daily$onUseItemReturn(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+        if (!this.r3ct_daily$cachedAirStack.isEmpty()) {
             ItemStack currentStack = player.getItemInHand(hand);
-
-            daily$checkAndAwardUseItem(player, this.daily$cachedAirStack, currentStack);
+            r3ct_daily$checkAndAwardUseItem(player, this.r3ct_daily$cachedAirStack, currentStack);
         }
     }
 
     @Unique
-    private void daily$checkAndAwardUseItem(ServerPlayer player, ItemStack cachedStack, ItemStack currentStack) {
+    private void r3ct_daily$checkAndAwardUseItem(ServerPlayer player, ItemStack cachedStack, ItemStack currentStack) {
         int amountUsed = 0;
 
         if (currentStack.getCount() < cachedStack.getCount()) {
