@@ -28,8 +28,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day.
 
 <div align="center">
-  <a href="./images/Quests_Screen.png" target="_blank">
-    <img src="./images/Quests_Screen.png" width="75%" alt="Quests Screen (Click to enlarge)">
+  <a href="./images/quests_screen.png" target="_blank">
+    <img src="./images/quests_screen.png" width="75%" alt="Quests Screen (Click to enlarge)">
   </a>
 </div>
 
@@ -40,8 +40,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   * Includes its own separate Shield System to save your login streak.
 
 <div align="center">
-  <a href="./images/Rewards_Screen.png" target="_blank">
-    <img src="./images/Rewards_Screen.png" width="75%" alt="Rewards Screen (Click to enlarge)">
+  <a href="./images/rewards_screen.png" target="_blank">
+    <img src="./images/rewards_screen.png" width="75%" alt="Rewards Screen (Click to enlarge)">
   </a>
 </div>
 
@@ -55,8 +55,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   * On-screen HUD to track your active quest progress in real-time. Easily toggle it on or off by pressing the `.` (period) key!
 
 <div align="center">
-  <a href="./images/HUD.png" target="_blank">
-    <img src="./images/HUD.png" width="75%" alt="HUD Screen (Click to enlarge)">
+  <a href="./images/hud_screen.png" target="_blank">
+    <img src="./images/hud_screen.png" width="75%" alt="HUD Screen (Click to enlarge)">
   </a>
 </div>
 
