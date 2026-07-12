@@ -120,6 +120,13 @@ public abstract class LivingEntityDamageMixin {
                     if (isCrit) {
                         QuestManager.handleAction(attackerPlayer, "CRITICAL_STRIKE", victimId, 1);
                     }
+
+                    if (attackerPlayer.fallDistance > 1.5F && !attackerPlayer.isFallFlying()) {
+                        String mainHandItemId = BuiltInRegistries.ITEM.getKey(attackerPlayer.getMainHandItem().getItem()).toString();
+                        if (mainHandItemId.equals("minecraft:mace")) {
+                            QuestManager.handleAction(attackerPlayer, "MACE_SMASH", victimId, 1);
+                        }
+                    }
                 }
             }
         }

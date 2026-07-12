@@ -6,6 +6,18 @@
 
   "overworld_quests": [
     {
+      "id": "kruszaca_sila",
+      "name": "r3ct_daily.quest.kruszaca_sila.name",
+      "description": "r3ct_daily.quest.kruszaca_sila.desc",
+      "difficulty": 2,
+      "action_type": "MACE_SMASH",
+      "target": "any",
+      "amount": 3,
+      "required_location": "any",
+      "reward_item": "minecraft:wind_charge",
+      "reward_amount": 4
+    },
+    {
       "id": "niedzielny_wedkarz",
       "name": "r3ct_daily.quest.niedzielny_wedkarz.name",
       "description": "r3ct_daily.quest.niedzielny_wedkarz.desc",
@@ -438,6 +450,18 @@
       "reward_amount": 8
     },
     {
+      "id": "drobiowy_potentat",
+      "name": "r3ct_daily.quest.drobiowy_potentat.name",
+      "description": "r3ct_daily.quest.drobiowy_potentat.desc",
+      "difficulty": 0,
+      "action_type": "BREED_ANIMAL",
+      "target": "minecraft:chicken",
+      "amount": 8,
+      "required_location": "any",
+      "reward_item": "minecraft:cooked_chicken",
+      "reward_amount": 8
+    },
+    {
       "id": "rogaty_alpinista",
       "name": "r3ct_daily.quest.rogaty_alpinista.name",
       "description": "r3ct_daily.quest.rogaty_alpinista.desc",
@@ -564,7 +588,7 @@
       "difficulty": 1,
       "action_type": "CATCH_FISH_BUCKET",
       "target": "minecraft:tropical_fish",
-      "amount": 1,
+      "amount": 3,
       "required_location": "biome:#minecraft:is_ocean",
       "reward_item": "r3ct_daily:random_coral_block",
       "reward_amount": 4
@@ -915,6 +939,66 @@
       "amount": 2,
       "required_location": "any",
       "reward_item": "minecraft:map",
+      "reward_amount": 2
+    },
+    {
+      "id": "slodkie_zycie",
+      "name": "r3ct_daily.quest.slodkie_zycie.name",
+      "description": "r3ct_daily.quest.slodkie_zycie.desc",
+      "difficulty": 1,
+      "action_type": "CRAFT_ITEM",
+      "target": "minecraft:cake",
+      "amount": 1,
+      "required_location": "any",
+      "reward_item": "minecraft:cookie",
+      "reward_amount": 4
+    },
+    {
+      "id": "ekspert_od_wyburzen",
+      "name": "r3ct_daily.quest.ekspert_od_wyburzen.name",
+      "description": "r3ct_daily.quest.ekspert_od_wyburzen.desc",
+      "difficulty": 1,
+      "action_type": "CRAFT_ITEM",
+      "target": "minecraft:tnt",
+      "amount": 4,
+      "required_location": "any",
+      "reward_item": "minecraft:flint_and_steel",
+      "reward_amount": 1
+    },
+    {
+      "id": "kieszonkowy_wymiar",
+      "name": "r3ct_daily.quest.kieszonkowy_wymiar.name",
+      "description": "r3ct_daily.quest.kieszonkowy_wymiar.desc",
+      "difficulty": 1,
+      "action_type": "CRAFT_ITEM",
+      "target": "minecraft:ender_chest",
+      "amount": 1,
+      "required_location": "any",
+      "reward_item": "minecraft:phantom_membrane",
+      "reward_amount": 2
+    },
+    {
+      "id": "prosto_w_cel",
+      "name": "r3ct_daily.quest.prosto_w_cel.name",
+      "description": "r3ct_daily.quest.prosto_w_cel.desc",
+      "difficulty": 1,
+      "action_type": "CRAFT_ITEM",
+      "target": "minecraft:target",
+      "amount": 2,
+      "required_location": "any",
+      "reward_item": "minecraft:spectral_arrow",
+      "reward_amount": 4
+    },
+    {
+      "id": "cierpliwosc_zolwia",
+      "name": "r3ct_daily.quest.cierpliwosc_zolwia.name",
+      "description": "r3ct_daily.quest.cierpliwosc_zolwia.desc",
+      "difficulty": 2,
+      "action_type": "CRAFT_ITEM",
+      "target": "minecraft:turtle_helmet",
+      "amount": 1,
+      "required_location": "any",
+      "reward_item": "minecraft:sponge",
       "reward_amount": 2
     },
     {
@@ -1686,6 +1770,42 @@
       "reward_amount": 4
     },
     {
+      "id": "siewca_skulku",
+      "name": "r3ct_daily.quest.siewca_skulku.name",
+      "description": "r3ct_daily.quest.siewca_skulku.desc",
+      "difficulty": 2,
+      "action_type": "SUBMIT_ITEMS",
+      "target": "minecraft:sculk_sensor",
+      "amount": 3,
+      "required_location": "any",
+      "reward_item": "minecraft:echo_shard",
+      "reward_amount": 2
+    },
+    {
+      "id": "znak_czasu",
+      "name": "r3ct_daily.quest.znak_czasu.name",
+      "description": "r3ct_daily.quest.znak_czasu.desc",
+      "difficulty": 2,
+      "action_type": "SUBMIT_ITEMS",
+      "target": "minecraft:oxidized_copper",
+      "amount": 8,
+      "required_location": "any",
+      "reward_item": "minecraft:honeycomb",
+      "reward_amount": 4
+    },
+    {
+      "id": "skarb_glebin",
+      "name": "r3ct_daily.quest.skarb_glebin.name",
+      "description": "r3ct_daily.quest.skarb_glebin.desc",
+      "difficulty": 4,
+      "action_type": "SUBMIT_ITEMS",
+      "target": "minecraft:nautilus_shell",
+      "amount": 2,
+      "required_location": "any",
+      "reward_item": "minecraft:prismarine_crystals",
+      "reward_amount": 4
+    },
+    {
       "id": "zdrow_jak_ryba",
       "name": "r3ct_daily.quest.zdrow_jak_ryba.name",
       "description": "r3ct_daily.quest.zdrow_jak_ryba.desc",
@@ -2116,6 +2236,18 @@
       "required_location": "any",
       "reward_item": "minecraft:note_block",
       "reward_amount": 1
+    },
+    {
+      "id": "zakazany_koncert",
+      "name": "r3ct_daily.quest.zakazany_koncert.name",
+      "description": "r3ct_daily.quest.zakazany_koncert.desc",
+      "difficulty": 2,
+      "action_type": "PLAY_JUKEBOX",
+      "target": "any",
+      "amount": 1,
+      "required_location": "biome:minecraft:ancient_city",
+      "reward_item": "minecraft:disc_fragment_5",
+      "reward_amount": 4
     },
     {
       "id": "snajper",
