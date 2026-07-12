@@ -20,9 +20,11 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
 
 ## ✨ Features
 
-* **⚔️ Daily Quests System:** * Generate 5 random daily tasks from highly customizable pools.
+* **⚔️ Daily Quests System:**
+  * Generate 5 random daily tasks from highly customizable pools.
   * Earn Points to unlock massive **Milestone Rewards** (50, 100, 150, 200 points).
-  * **Reroll System:** Spend points to skip quests you don't like!
+  * **Quest Streak:** Maintain your daily quest streak to earn powerful XP multipliers for every mission you complete!
+  * **Reroll System:** Spend points to reroll quests you don't like and swap them for new, random tasks.
   * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day.
 
 <div align="center">
@@ -31,8 +33,9 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   </a>
 </div>
 
-* **🎁 Daily Rewards System:** * Claim rewards every day you log in. Missed a day? Don't worry, your progress is saved and you pick up right where you left off!
-  * Build up your **Reward Streak** by logging in consecutively to earn bonus multipliers (2x loot!).
+* **🎁 Daily Rewards System:**
+  * Claim rewards every day you log in. Missed a day? Don't worry, your total days progress is saved and you pick up right where you left off!
+  * Build up your **Reward Streak** by logging in consecutively to unlock an additional daily reward from a special, exclusive loot pool.
   * Unlock powerful **Bonus Cycle Rewards** for claiming daily rewards for 7, 14, and 21 days in total.
   * Includes its own separate Shield System to save your login streak.
 
@@ -46,7 +49,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   * Compete with your friends or server community!
   * Track the Top 10 players globally for: Total Quests Completed, Max Quest Streak, Total Rewards Collected, and Max Reward Streak.
 
-* **🖥️ Beautiful GUI & Integration:** * Fully interactive, clean, and modern menus built directly into Minecraft.
+* **🖥️ Beautiful GUI & Integration:**
+  * Fully interactive, clean, and modern menus built directly into Minecraft.
   * Available in **English** and **Polish** (with native game translations for item names).
   * On-screen HUD to track your active quest progress in real-time. Easily toggle it on or off by pressing the `.` (period) key!
 
@@ -56,7 +60,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   </a>
 </div>
 
-* **🔄 Cross-Platform:** * Fully native support and identical features for both **Fabric** and **NeoForge**.
+* **🔄 Cross-Platform:**
+  * Fully native support and identical features for both **Fabric** and **NeoForge**.
 
 ---
 
@@ -104,9 +109,8 @@ Players can access the client settings via **Mod Menu** (on Fabric) or the **Mod
 You can open all server config files directly from the in-game config menu! The system features an automatic backup mechanic, ensuring your data is safe during updates.
 
 * **`r3ct_daily_quests.json`** - Manage the pool of daily tasks across different dimensions.
-* **`r3ct_daily_rewards.json`** - Customize daily login reward pools.
-* **`r3ct_daily_quests_rewards.json`** - Configure bonus rewards for finishing 3 quests.
-* **`r3ct_daily_server.json`** - The core brain! Tweak mechanics, reroll costs, milestone thresholds, and tech rules.
+* **`r3ct_daily_rewards.json`** - Customize daily login reward pools, milestone rewards, and bonuses for completing daily quests.
+* **`r3ct_daily_server.json`** - The core brain! Tweak mechanics, reroll costs, shield limits, and network optimization rules.
 
 ---
 
