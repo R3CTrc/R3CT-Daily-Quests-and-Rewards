@@ -13,25 +13,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerHealMixin {
 
     @Unique
-    private float dailyHealBuffer = 0.0f;
+    private float r3ct_daily$dailyHealBuffer = 0.0f;
 
     @Inject(method = "heal", at = @At("HEAD"))
-    private void onHeal(float healAmount, CallbackInfo ci) {
+    private void r3ct_daily$onHeal(float healAmount, CallbackInfo ci) {
         if ((Object) this instanceof ServerPlayer player) {
 
             float missingHealth = player.getMaxHealth() - player.getHealth();
             float actualHeal = Math.min(healAmount, missingHealth);
 
             if (actualHeal > 0) {
-                this.dailyHealBuffer += actualHeal;
+                this.r3ct_daily$dailyHealBuffer += actualHeal;
 
-                if (this.dailyHealBuffer >= 1.0f) {
-
-                    int pointsToGive = (int) this.dailyHealBuffer;
-
+                if (this.r3ct_daily$dailyHealBuffer >= 1.0f) {
+                    int pointsToGive = (int) this.r3ct_daily$dailyHealBuffer;
                     QuestManager.handleAction(player, "HEAL", "any", pointsToGive);
-
-                    this.dailyHealBuffer -= pointsToGive;
+                    this.r3ct_daily$dailyHealBuffer -= pointsToGive;
                 }
             }
         }

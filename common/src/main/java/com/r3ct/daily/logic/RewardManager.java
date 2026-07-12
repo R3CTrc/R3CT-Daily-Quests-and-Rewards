@@ -5,18 +5,30 @@ import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.data.ModState;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.network.OpenRewardsPayload;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -25,7 +37,7 @@ public class RewardManager {
     private static final Random RANDOM = new Random();
 
     public static Component getPrefix() {
-        return Component.literal("[Daily] ").withStyle(net.minecraft.ChatFormatting.AQUA);
+        return Component.literal("[Daily] ").withStyle(ChatFormatting.AQUA);
     }
 
     public static List<ItemStack> getTier1Rewards(MinecraftServer server) {
@@ -38,6 +50,23 @@ public class RewardManager {
 
     public static List<ItemStack> getTier3Rewards(MinecraftServer server) {
         return processBuckets(DailyServerConfig.rewardsTier3, server);
+    }
+
+    public static ItemStack getStreakBonusReward(int rewardDay, MinecraftServer server) {
+        List<DailyServerConfig.RewardEntry> pool;
+
+        if (rewardDay <= 4) {
+            pool = DailyServerConfig.streakRewardsTier1;
+        } else if (rewardDay <= 6) {
+            pool = DailyServerConfig.streakRewardsTier2;
+        } else {
+            pool = DailyServerConfig.streakRewardsTier3;
+        }
+
+        if (pool == null || pool.isEmpty()) return ItemStack.EMPTY;
+
+        DailyServerConfig.RewardEntry entry = getRandomEntry(pool);
+        return createSpecialOrStandardItem(entry, server);
     }
 
     private static List<ItemStack> processBuckets(List<List<DailyServerConfig.RewardEntry>> tiers, MinecraftServer server) {
@@ -88,10 +117,10 @@ public class RewardManager {
                 var enchLookup = server.registryAccess().lookup(Registries.ENCHANTMENT).orElse(null);
                 ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK, amount);
                 if (enchLookup != null) {
-                    var enchList = enchLookup.listElements().filter(ref -> !ref.is(net.minecraft.tags.EnchantmentTags.CURSE)).toList();
+                    var enchList = enchLookup.listElements().filter(ref -> !ref.is(EnchantmentTags.CURSE)).toList();
                     if (!enchList.isEmpty()) {
                         var randomEnch = enchList.get(RANDOM.nextInt(enchList.size()));
-                        net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(enchantedBook, builder -> {
+                        EnchantmentHelper.updateEnchantments(enchantedBook, builder -> {
                             builder.set(randomEnch, 1);
                         });
                     }
@@ -120,17 +149,18 @@ public class RewardManager {
                 return getRandomCoralBlock(amount);
             case "random_job_block":
                 Item[] blocks = {
-                        Items.LECTERN, Items.COMPOSTER, Items.BARREL, Items.LOOM,
-                        Items.SMOKER, Items.FLETCHING_TABLE, Items.GRINDSTONE,
-                        Items.BLAST_FURNACE, Items.STONECUTTER
+                        Items.BARREL, Items.BLAST_FURNACE, Items.BREWING_STAND,
+                        Items.CARTOGRAPHY_TABLE, Items.CAULDRON, Items.COMPOSTER,
+                        Items.FLETCHING_TABLE, Items.GRINDSTONE, Items.LECTERN,
+                        Items.LOOM, Items.SMITHING_TABLE, Items.SMOKER, Items.STONECUTTER
                 };
                 return new ItemStack(blocks[RANDOM.nextInt(blocks.length)], amount);
 
             case "unbreaking_2_book":
                 ItemStack unbreakingBook = new ItemStack(Items.ENCHANTED_BOOK);
                 var unbreakingReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(unbreakingBook, builder -> {
-                    builder.set(unbreakingReg.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING), 2);
+                EnchantmentHelper.updateEnchantments(unbreakingBook, builder -> {
+                    builder.set(unbreakingReg.getOrThrow(Enchantments.UNBREAKING), 2);
                 });
                 unbreakingBook.setCount(amount);
                 return unbreakingBook;
@@ -138,8 +168,8 @@ public class RewardManager {
             case "efficiency_3_book":
                 ItemStack effBook = new ItemStack(Items.ENCHANTED_BOOK);
                 var effReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(effBook, builder -> {
-                    builder.set(effReg.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.EFFICIENCY), 3);
+                EnchantmentHelper.updateEnchantments(effBook, builder -> {
+                    builder.set(effReg.getOrThrow(Enchantments.EFFICIENCY), 3);
                 });
                 effBook.setCount(amount);
                 return effBook;
@@ -147,8 +177,8 @@ public class RewardManager {
             case "infinity_book":
                 ItemStack infBook = new ItemStack(Items.ENCHANTED_BOOK);
                 var infReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(infBook, builder -> {
-                    builder.set(infReg.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.INFINITY), 1);
+                EnchantmentHelper.updateEnchantments(infBook, builder -> {
+                    builder.set(infReg.getOrThrow(Enchantments.INFINITY), 1);
                 });
                 infBook.setCount(amount);
                 return infBook;
@@ -156,8 +186,8 @@ public class RewardManager {
             case "feather_falling_3_book":
                 ItemStack featherBook = new ItemStack(Items.ENCHANTED_BOOK);
                 var featherReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(featherBook, builder -> {
-                    builder.set(featherReg.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.FEATHER_FALLING), 3);
+                EnchantmentHelper.updateEnchantments(featherBook, builder -> {
+                    builder.set(featherReg.getOrThrow(Enchantments.FEATHER_FALLING), 3);
                 });
                 featherBook.setCount(amount);
                 return featherBook;
@@ -165,50 +195,50 @@ public class RewardManager {
             case "sharpness_2_book":
                 ItemStack sharpBook = new ItemStack(Items.ENCHANTED_BOOK);
                 var sharpReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(sharpBook, builder -> {
-                    builder.set(sharpReg.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS), 2);
+                EnchantmentHelper.updateEnchantments(sharpBook, builder -> {
+                    builder.set(sharpReg.getOrThrow(Enchantments.SHARPNESS), 2);
                 });
                 sharpBook.setCount(amount);
                 return sharpBook;
 
             case "firework_tier_3":
                 ItemStack rockets = new ItemStack(Items.FIREWORK_ROCKET, amount);
-                rockets.set(net.minecraft.core.component.DataComponents.FIREWORKS, new net.minecraft.world.item.component.Fireworks(3, java.util.List.of()));
+                rockets.set(DataComponents.FIREWORKS, new Fireworks(3, List.of()));
                 return rockets;
 
             case "healing_2_potion":
                 ItemStack healPot = new ItemStack(Items.POTION, amount);
-                healPot.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new PotionContents(net.minecraft.world.item.alchemy.Potions.STRONG_HEALING));
+                healPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.STRONG_HEALING));
                 return healPot;
 
             case "water_breathing_potion":
                 ItemStack waterPot = new ItemStack(Items.POTION, amount);
-                waterPot.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new PotionContents(net.minecraft.world.item.alchemy.Potions.WATER_BREATHING));
+                waterPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.WATER_BREATHING));
                 return waterPot;
 
             case "fire_resistance_potion":
                 ItemStack firePot = new ItemStack(Items.POTION, amount);
-                firePot.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new PotionContents(net.minecraft.world.item.alchemy.Potions.FIRE_RESISTANCE));
+                firePot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.FIRE_RESISTANCE));
                 return firePot;
 
             case "slow_falling_potion":
                 ItemStack slowPot = new ItemStack(Items.POTION, amount);
-                slowPot.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new PotionContents(net.minecraft.world.item.alchemy.Potions.SLOW_FALLING));
+                slowPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.SLOW_FALLING));
                 return slowPot;
 
             case "night_vision_potion":
                 ItemStack nightPot = new ItemStack(Items.POTION, amount);
-                nightPot.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new PotionContents(net.minecraft.world.item.alchemy.Potions.NIGHT_VISION));
+                nightPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.NIGHT_VISION));
                 return nightPot;
 
             case "regeneration_potion":
                 ItemStack regenPot = new ItemStack(Items.POTION, amount);
-                regenPot.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new PotionContents(net.minecraft.world.item.alchemy.Potions.REGENERATION));
+                regenPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.REGENERATION));
                 return regenPot;
 
             case "speed_potion":
                 ItemStack speedPot = new ItemStack(Items.POTION, amount);
-                speedPot.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new PotionContents(net.minecraft.world.item.alchemy.Potions.SWIFTNESS));
+                speedPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.SWIFTNESS));
                 return speedPot;
 
             default:
@@ -233,7 +263,7 @@ public class RewardManager {
 
     private static ItemStack getRandomItemWithKeyword(String keyword, int amount) {
         List<Item> items = BuiltInRegistries.ITEM.stream()
-                .filter(i -> BuiltInRegistries.ITEM.getKey(i).getPath().endsWith(keyword))
+                .filter(i -> BuiltInRegistries.ITEM.getKey(i).getPath().contains(keyword))
                 .toList();
         return new ItemStack(items.isEmpty() ? Items.PAPER : items.get(RANDOM.nextInt(items.size())), amount);
     }
@@ -284,9 +314,9 @@ public class RewardManager {
 
         data.claimedBonusRewards.add(absoluteTarget);
 
-        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
-                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP),
-                net.minecraft.sounds.SoundSource.PLAYERS,
+        player.connection.send(new ClientboundSoundPacket(
+                BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.PLAYER_LEVELUP),
+                SoundSource.PLAYERS,
                 player.getX(), player.getY(), player.getZ(),
                 1.0F, 1.0F, player.getRandom().nextLong()
         ));
@@ -305,28 +335,28 @@ public class RewardManager {
         if (mr != null) {
             ItemStack stack = QuestManager.getMilestoneRewardStack(mr);
             String colorStr = mr.getFormattedColor();
-            net.minecraft.ChatFormatting format = net.minecraft.ChatFormatting.getByCode(colorStr.charAt(colorStr.length() - 1));
-            if (format == null) format = net.minecraft.ChatFormatting.WHITE;
-            Component bonusDayComp = Component.literal(String.valueOf(bonusDay)).withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE);
+            ChatFormatting format = ChatFormatting.getByCode(colorStr.charAt(colorStr.length() - 1));
+            if (format == null) format = ChatFormatting.WHITE;
+            Component bonusDayComp = Component.literal(String.valueOf(bonusDay)).withStyle(ChatFormatting.LIGHT_PURPLE);
 
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
-                    Component.translatable("r3ct_daily.message.bonus.claimed_base", bonusDayComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                    Component.translatable("r3ct_daily.message.bonus.claimed_base", bonusDayComp).withStyle(ChatFormatting.GREEN)
             ));
 
-            Component amountComp = Component.literal(String.valueOf(mr.amount)).withStyle(net.minecraft.ChatFormatting.AQUA);
+            Component amountComp = Component.literal(String.valueOf(mr.amount)).withStyle(ChatFormatting.AQUA);
             Component itemNameComp = stack.getHoverName().copy().withStyle(format);
 
             QuestManager.giveOrDrop(player, stack);
 
-            player.sendSystemMessage(Component.empty().append(getPrefix()).append("- ").withStyle(net.minecraft.ChatFormatting.GRAY).append(
-                    Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, itemNameComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+            player.sendSystemMessage(Component.empty().append(getPrefix()).append("- ").withStyle(ChatFormatting.GRAY).append(
+                    Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, itemNameComp).withStyle(ChatFormatting.GREEN)
             ));
         }
 
-        server.getLevel(net.minecraft.world.level.Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+        server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
 
         int visualStreak = data.streak;
-        LocalDate today = java.time.LocalDateTime.now().minusHours(DailyServerConfig.mechanics.technical.questRefreshHour).toLocalDate();
+        LocalDate today = LocalDateTime.now().minusHours(DailyServerConfig.mechanics.technical.questRefreshHour).toLocalDate();
         if (data.lastStreakDate != null && !data.lastStreakDate.isEmpty()) {
             if (!data.lastStreakDate.equals(today.toString()) && !data.lastStreakDate.equals(today.minusDays(1).toString())) {
                 visualStreak = 0;

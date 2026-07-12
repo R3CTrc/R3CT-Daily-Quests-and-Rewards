@@ -4,17 +4,20 @@ import com.r3ct.daily.config.DailyServerConfig;
 import com.r3ct.daily.data.ModState;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.item.ModItems;
-import com.r3ct.daily.logic.LeaderboardManager;
-import com.r3ct.daily.logic.Quest;
-import com.r3ct.daily.logic.QuestManager;
+import com.r3ct.daily.logic.*;
+import com.r3ct.daily.network.*;
 import com.r3ct.daily.platform.Services;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -26,6 +29,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -63,14 +67,18 @@ public class DailyFabric implements ModInitializer {
 
 		DailyServerConfig.loadAll();
 
-		PayloadTypeRegistry.clientboundPlay().register(com.r3ct.daily.network.OpenRewardsPayload.ID, com.r3ct.daily.network.OpenRewardsPayload.CODEC);
-		PayloadTypeRegistry.clientboundPlay().register(com.r3ct.daily.network.OpenQuestsPayload.ID, com.r3ct.daily.network.OpenQuestsPayload.CODEC);
-		PayloadTypeRegistry.clientboundPlay().register(com.r3ct.daily.network.SyncQuestsPayload.ID, com.r3ct.daily.network.SyncQuestsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(OpenRewardsPayload.ID, OpenRewardsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(OpenQuestsPayload.ID, OpenQuestsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(SyncQuestsPayload.ID, SyncQuestsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(LeaderboardResponsePayload.ID, LeaderboardResponsePayload.CODEC);
 
-		PayloadTypeRegistry.serverboundPlay().register(com.r3ct.daily.network.RequestLeaderboardPayload.ID, com.r3ct.daily.network.RequestLeaderboardPayload.CODEC);
-		PayloadTypeRegistry.clientboundPlay().register(com.r3ct.daily.network.LeaderboardResponsePayload.ID, com.r3ct.daily.network.LeaderboardResponsePayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(ConfigSyncPayload.TYPE, ConfigSyncPayload.CODEC);
 
-		ServerPlayNetworking.registerGlobalReceiver(com.r3ct.daily.network.RequestLeaderboardPayload.ID, (payload, context) -> {
+		PayloadTypeRegistry.serverboundPlay().register(SubmitQuestItemPayload.TYPE, SubmitQuestItemPayload.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(RequestLeaderboardPayload.ID, RequestLeaderboardPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(RerollQuestPayload.ID, RerollQuestPayload.CODEC);
+
+		ServerPlayNetworking.registerGlobalReceiver(RequestLeaderboardPayload.ID, (payload, context) -> {
 			context.server().execute(() -> {
 				int type = payload.boardType();
 				int currentTick = context.server().getTickCount();
@@ -82,16 +90,27 @@ public class DailyFabric implements ModInitializer {
 			});
 		});
 
-		PayloadTypeRegistry.serverboundPlay().register(com.r3ct.daily.network.RerollQuestPayload.ID, com.r3ct.daily.network.RerollQuestPayload.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(com.r3ct.daily.network.RerollQuestPayload.ID, (payload, context) -> {
+		ServerPlayNetworking.registerGlobalReceiver(SubmitQuestItemPayload.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				QuestManager.submitQuestItem(context.player(), payload.questIndex(), payload.slotIndex());
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(RerollQuestPayload.ID, (payload, context) -> {
 			context.server().execute(() -> {
 				QuestManager.rerollQuest(context.player(), payload.questIndex());
 			});
 		});
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			LocalDate today = QuestManager.getCurrentQuestDate();
 			ServerPlayer player = handler.getPlayer();
+
+			String questsJson = DailyServerConfig.getQuestsConfigString();
+			String rewardsJson = DailyServerConfig.getRewardsConfigString();
+			String mechanicsJson = DailyServerConfig.getServerConfigString();
+			ServerPlayNetworking.send(player, new ConfigSyncPayload(questsJson, rewardsJson, mechanicsJson));
+
+			LocalDate today = QuestManager.getCurrentQuestDate();
 			PlayerData data = ModState.getPlayerData(server, player.getUUID());
 			data.lastKnownName = player.getGameProfile().name();
 
@@ -113,9 +132,9 @@ public class DailyFabric implements ModInitializer {
 							data.availableRewardFreezes -= (int)missedRewards;
 							data.lastStreakDate = yesterday.toString();
 
-							Component missedComp = Component.literal(String.valueOf(missedRewards)).withStyle(net.minecraft.ChatFormatting.AQUA);
+							Component missedComp = Component.literal(String.valueOf(missedRewards)).withStyle(ChatFormatting.AQUA);
 							freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
-									Component.translatable("r3ct_daily.message.rewards.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+									Component.translatable("r3ct_daily.message.rewards.freeze_used", missedComp).withStyle(ChatFormatting.GREEN)
 							));
 							QuestManager.grantAdvancement(player, "r3ct_daily:rewards/safe_player");
 						} else {
@@ -123,7 +142,7 @@ public class DailyFabric implements ModInitializer {
 							data.availableRewardFreezes = 0;
 							data.absoluteRewardStreak = 0;
 							freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
-									Component.translatable("r3ct_daily.message.rewards.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
+									Component.translatable("r3ct_daily.message.rewards.streak_reset").withStyle(ChatFormatting.RED)
 							));
 						}
 					}
@@ -138,16 +157,16 @@ public class DailyFabric implements ModInitializer {
 						data.availableFreezes -= (int)missedQuests;
 						data.lastQuestStreakDate = yesterday.toString();
 
-						Component missedComp = Component.literal(String.valueOf(missedQuests)).withStyle(net.minecraft.ChatFormatting.AQUA);
+						Component missedComp = Component.literal(String.valueOf(missedQuests)).withStyle(ChatFormatting.AQUA);
 						freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
-								Component.translatable("r3ct_daily.message.quests.freeze_used", missedComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+								Component.translatable("r3ct_daily.message.quests.freeze_used", missedComp).withStyle(ChatFormatting.GREEN)
 						));
 						QuestManager.grantAdvancement(player, "r3ct_daily:quests/time_lord");
 					} else {
 						data.questStreak = 0;
 						data.availableFreezes = 0;
 						freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
-								Component.translatable("r3ct_daily.message.quests.streak_reset").withStyle(net.minecraft.ChatFormatting.RED)
+								Component.translatable("r3ct_daily.message.quests.streak_reset").withStyle(ChatFormatting.RED)
 						));
 					}
 				}
@@ -172,7 +191,7 @@ public class DailyFabric implements ModInitializer {
 
 			final int remainingQuests = 5 - data.dailyQuestsCompletedToday;
 
-			ServerPlayNetworking.send(player, new com.r3ct.daily.network.SyncQuestsPayload(
+			ServerPlayNetworking.send(player, new SyncQuestsPayload(
 					data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
 					data.activeQuests, data.questProgress, data.streak,
 					data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
@@ -182,10 +201,10 @@ public class DailyFabric implements ModInitializer {
 			server.execute(() -> {
 				if (hasRewards) {
 					MutableComponent rewardMsg = Component.empty().append(QuestManager.getPrefix()).append(
-							Component.translatable("r3ct_daily.message.rewards.new_reward").withStyle(net.minecraft.ChatFormatting.GREEN)
+							Component.translatable("r3ct_daily.message.rewards.new_reward").withStyle(ChatFormatting.GREEN)
 					).append(Component.translatable("r3ct_daily.message.click_here")
 							.withStyle(Style.EMPTY
-									.withColor(net.minecraft.ChatFormatting.YELLOW)
+									.withColor(ChatFormatting.YELLOW)
 									.withBold(true)
 									.withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
 									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.rewards.open_menu")))
@@ -196,10 +215,10 @@ public class DailyFabric implements ModInitializer {
 
 				if (isFirstLoginToday) {
 					MutableComponent questMsg = Component.empty().append(QuestManager.getPrefix()).append(
-							Component.translatable("r3ct_daily.message.quests.new_quests").withStyle(net.minecraft.ChatFormatting.GREEN)
+							Component.translatable("r3ct_daily.message.quests.new_quests").withStyle(ChatFormatting.GREEN)
 					).append(Component.translatable("r3ct_daily.message.click_here")
 							.withStyle(Style.EMPTY
-									.withColor(net.minecraft.ChatFormatting.YELLOW)
+									.withColor(ChatFormatting.YELLOW)
 									.withBold(true)
 									.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
 									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
@@ -211,12 +230,12 @@ public class DailyFabric implements ModInitializer {
 						player.sendSystemMessage(msg);
 					}
 				} else if (remainingQuests > 0) {
-					Component countComp = Component.literal(String.valueOf(remainingQuests)).withStyle(net.minecraft.ChatFormatting.YELLOW);
+					Component countComp = Component.literal(String.valueOf(remainingQuests)).withStyle(ChatFormatting.YELLOW);
 					MutableComponent reminderMsg = Component.empty().append(QuestManager.getPrefix()).append(
-							Component.translatable("r3ct_daily.message.quests.remaining", countComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+							Component.translatable("r3ct_daily.message.quests.remaining", countComp).withStyle(ChatFormatting.GREEN)
 					).append(" ").append(Component.translatable("r3ct_daily.message.click_here")
 							.withStyle(Style.EMPTY
-									.withColor(net.minecraft.ChatFormatting.YELLOW)
+									.withColor(ChatFormatting.YELLOW)
 									.withBold(true)
 									.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
 									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
@@ -227,9 +246,9 @@ public class DailyFabric implements ModInitializer {
 			});
 		});
 
-		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			if (server.getTickCount() % 1200 == 0) {
-				java.time.LocalDate today = QuestManager.getCurrentQuestDate();
+				LocalDate today = QuestManager.getCurrentQuestDate();
 				String todayStr = today.toString();
 
 				for (ServerPlayer player : server.getPlayerList().getPlayers()) {
@@ -242,26 +261,26 @@ public class DailyFabric implements ModInitializer {
 		});
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			com.r3ct.daily.logic.DailyCommands.register(dispatcher);
+			DailyCommands.register(dispatcher);
 		});
 
 		ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> {
 			String rawDimString = destination.dimension().toString();
 			String dimId = rawDimString.substring(rawDimString.lastIndexOf("/") + 1, rawDimString.length() - 1).trim();
-			com.r3ct.daily.logic.QuestEventHandlers.onDimensionChange((ServerPlayer) player, dimId);
+			QuestEventHandlers.onDimensionChange((ServerPlayer) player, dimId);
 		});
 
-		net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((world, playerWorld, pos, state, blockEntity) -> {
+		PlayerBlockBreakEvents.AFTER.register((world, playerWorld, pos, state, blockEntity) -> {
 			if (playerWorld instanceof ServerPlayer serverPlayer) {
-				com.r3ct.daily.logic.QuestEventHandlers.onBlockBreak(serverPlayer, state, pos, world);
+				QuestEventHandlers.onBlockBreak(serverPlayer, state, pos, world);
 			}
 		});
 
-		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-			net.minecraft.world.entity.Entity attacker = damageSource.getEntity();
+		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
+			Entity attacker = damageSource.getEntity();
 			if (!(attacker instanceof ServerPlayer)) attacker = entity.getLastHurtByMob();
 			if (attacker instanceof ServerPlayer serverPlayer) {
-				com.r3ct.daily.logic.QuestEventHandlers.onEntityDeath(serverPlayer, entity);
+				QuestEventHandlers.onEntityDeath(serverPlayer, entity);
 			}
 		});
 	}

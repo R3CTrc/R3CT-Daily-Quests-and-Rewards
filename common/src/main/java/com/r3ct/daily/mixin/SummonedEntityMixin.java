@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class SummonedEntityMixin {
 
     @Inject(method = "trigger", at = @At("HEAD"))
-    private void onEntitySummoned(ServerPlayer player, Entity entity, CallbackInfo ci) {
+    private void r3ct_daily$onEntitySummoned(ServerPlayer player, Entity entity, CallbackInfo ci) {
         String mobId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
 
         if (mobId.equals("minecraft:snow_golem")) {

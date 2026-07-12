@@ -13,8 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BrushableBlockEntity.class)
 public abstract class BrushableBlockEntityMixin {
+
     @Inject(method = "dropContent", at = @At("HEAD"))
-    private void onDropContent(ServerLevel level, LivingEntity user, ItemStack brush, CallbackInfo ci) {
+    private void r3ct_daily$onDropContent(ServerLevel level, LivingEntity user, ItemStack brush, CallbackInfo ci) {
         if (user instanceof ServerPlayer serverPlayer) {
             QuestManager.handleAction(serverPlayer, "BRUSH_BLOCK", "any", 1);
         }

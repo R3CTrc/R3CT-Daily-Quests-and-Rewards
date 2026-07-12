@@ -1,5 +1,10 @@
 package com.r3ct.daily.platform.services;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.nio.file.Path;
+
 public interface IPlatformHelper {
 
     /**
@@ -34,11 +39,11 @@ public interface IPlatformHelper {
         return isDevelopmentEnvironment() ? "development" : "production";
     }
 
-    java.nio.file.Path getConfigDir();
+    Path getConfigDir();
 
-    <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToPlayer(net.minecraft.server.level.ServerPlayer player, T payload);
+    <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T payload);
 
-    <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToServer(T payload);
+    <T extends CustomPacketPayload> void sendToServer(T payload);
 
     boolean isQuestKey(Object event);
 
