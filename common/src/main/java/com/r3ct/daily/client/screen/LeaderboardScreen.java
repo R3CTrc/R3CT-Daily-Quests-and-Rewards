@@ -6,11 +6,18 @@ import com.r3ct.daily.data.TopEntry;
 import com.r3ct.daily.network.RequestLeaderboardPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -31,7 +38,7 @@ public class LeaderboardScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 
         float scale = DailyClientConfig.getInstance().leaderboardScreenScale;
 
@@ -86,7 +93,7 @@ public class LeaderboardScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (hoveredEntry != null) {
-            java.util.List<net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent> tt = new java.util.ArrayList<>();
+            java.util.List<ClientTooltipComponent> tt = new java.util.ArrayList<>();
 
             String questsStr = Component.translatable("r3ct_daily.leaderboard.tooltip.quests_completed").getString();
             String maxQStr = Component.translatable("r3ct_daily.leaderboard.tooltip.max_quest_streak").getString();
@@ -94,17 +101,17 @@ public class LeaderboardScreen extends Screen {
             String maxRStr = Component.translatable("r3ct_daily.leaderboard.tooltip.max_reward_streak").getString();
             String daysStr = Component.translatable("r3ct_daily.leaderboard.tooltip.days").getString();
 
-            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("     §f§l" + hoveredEntry.name()).getVisualOrderText()));
-            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + questsStr + ": §e" + hoveredEntry.totalQuests()).getVisualOrderText()));
-            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + maxQStr + ": §e" + hoveredEntry.maxQuestStreak() + " " + daysStr).getVisualOrderText()));
-            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + rewardsStr + ": §e" + hoveredEntry.totalRewards()).getVisualOrderText()));
-            tt.add(net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent.create(Component.literal("§f" + maxRStr + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysStr).getVisualOrderText()));
+            tt.add(ClientTooltipComponent.create(Component.literal("     §f§l" + hoveredEntry.name()).getVisualOrderText()));
+            tt.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+            tt.add(ClientTooltipComponent.create(Component.literal("§f" + questsStr + ": §e" + hoveredEntry.totalQuests()).getVisualOrderText()));
+            tt.add(ClientTooltipComponent.create(Component.literal("§f" + maxQStr + ": §e" + hoveredEntry.maxQuestStreak() + " " + daysStr).getVisualOrderText()));
+            tt.add(ClientTooltipComponent.create(Component.literal("§f" + rewardsStr + ": §e" + hoveredEntry.totalRewards()).getVisualOrderText()));
+            tt.add(ClientTooltipComponent.create(Component.literal("§f" + maxRStr + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysStr).getVisualOrderText()));
 
-            guiGraphics.renderTooltip(this.font, tt, mouseX, mouseY, net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner.INSTANCE, null);
+            guiGraphics.renderTooltip(this.font, tt, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
 
             ItemStack head = new ItemStack(Items.PLAYER_HEAD);
-            head.set(net.minecraft.core.component.DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createUnresolved(hoveredEntry.name()));
+            head.set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(hoveredEntry.name()));
             guiGraphics.renderItem(head, mouseX + 11, mouseY - 14);
         }
 
@@ -130,7 +137,7 @@ public class LeaderboardScreen extends Screen {
 
             if (mX >= switchX && mX <= switchX + switchWidth && mY >= switchY - 2 && mY <= switchY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
-                    this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN, 1.0F));
+                    this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.0F));
                     Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(boardType == 0 ? 1 : 0));
                     return true;
                 }
@@ -143,7 +150,7 @@ public class LeaderboardScreen extends Screen {
 
             if (mX >= backX - 2 && mX <= backX + backWidth + 2 && mY >= backY - 2 && mY <= backY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
-                    this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     this.minecraft.player.connection.sendCommand(boardType == 0 ? "daily quests" : "daily rewards");
                     return true;
                 }
@@ -189,7 +196,7 @@ public class LeaderboardScreen extends Screen {
             String valColor = (i == 0) ? "§d" : (i == 1) ? "§e" : (i == 2) ? "§b" : "§f";
 
             ItemStack head = new ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
-            head.set(net.minecraft.core.component.DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createUnresolved(entry.name()));
+            head.set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(entry.name()));
             guiGraphics.renderItem(head, startX, y);
 
             guiGraphics.drawString(this.font, "§6" + (i + 1) + ". " + nameColor + entry.name(), startX + 20, y + 4, 0xFFFFFFFF, true);

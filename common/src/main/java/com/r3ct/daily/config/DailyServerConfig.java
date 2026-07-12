@@ -1,18 +1,19 @@
 package com.r3ct.daily.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.Constants;
 import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestManager;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DailyServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -34,7 +35,7 @@ public class DailyServerConfig {
         public String color;
 
         public RewardEntry(String i, int min, int max, int w, String c) {
-            this.item = i;
+            this.item = i != null ? i.toLowerCase(Locale.ROOT) : "minecraft:paper";
             this.minAmount = min;
             this.maxAmount = max;
             this.chance = w;
@@ -51,10 +52,11 @@ public class DailyServerConfig {
         public int rerollCostEasy = 1;
         public int rerollCostMedium = 2;
         public int rerollCostHard = 4;
-        public int xpPerQuestEasy = 30;
-        public int xpPerQuestMedium = 60;
-        public int xpPerQuestHard = 90;
-        public int xpDailyReward = 90;
+        public int xpPerQuestEasy = 25;
+        public int xpPerQuestMedium = 50;
+        public int xpPerQuestHard = 75;
+        public int xpDailyReward = 75;
+        public float questStreakXpMultiplier = 1.5f;
     }
 
     public static class StreaksSettings {
@@ -67,6 +69,9 @@ public class DailyServerConfig {
         public int placedBlocksCacheLimit = 10000;
         public int leaderboardUpdateIntervalTicks = 1200;
         public int questRefreshHour = 0;
+        public int actionSyncInterval = 1;
+        public int distanceSyncInterval = 5;
+        public int elytraSyncInterval = 50;
     }
 
     public static class MechanicsConfig {
@@ -79,7 +84,13 @@ public class DailyServerConfig {
         public String item;
         public int amount;
         public String color;
-        public MilestoneReward(String i, int a, String c) { this.item = i; this.amount = a; this.color = c; }
+
+        public MilestoneReward(String i, int a, String c) {
+            this.item = i != null ? i.toLowerCase(Locale.ROOT) : "minecraft:paper";
+            this.amount = a;
+            this.color = c;
+        }
+
         public String getFormattedColor() {
             return this.color != null ? this.color.replace('&', '§') : "§b";
         }
@@ -105,6 +116,9 @@ public class DailyServerConfig {
     public static List<List<RewardEntry>> rewardsTier1 = new ArrayList<>();
     public static List<List<RewardEntry>> rewardsTier2 = new ArrayList<>();
     public static List<List<RewardEntry>> rewardsTier3 = new ArrayList<>();
+    public static List<RewardEntry> streakRewardsTier1 = new ArrayList<>();
+    public static List<RewardEntry> streakRewardsTier2 = new ArrayList<>();
+    public static List<RewardEntry> streakRewardsTier3 = new ArrayList<>();
     public static List<RewardEntry> dailyQuestRewards = new ArrayList<>();
 
     private static void checkAndMigrate(File file, String resourceName, int expectedVersion) {
@@ -115,7 +129,7 @@ public class DailyServerConfig {
 
         boolean needsUpdate = false;
         try (FileReader reader = new FileReader(file)) {
-            com.google.gson.JsonElement element = com.google.gson.JsonParser.parseReader(reader);
+            JsonElement element = JsonParser.parseReader(reader);
             if (element.isJsonObject()) {
                 JsonObject json = element.getAsJsonObject();
                 int version = json.has("version") ? json.get("version").getAsInt() : 0;
@@ -134,7 +148,7 @@ public class DailyServerConfig {
                 Path path = file.toPath();
                 String oldName = path.getFileName().toString().replace(".json", "_OLD.json");
                 Path backupPath = path.resolveSibling(oldName);
-                Files.move(path, backupPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                Files.move(path, backupPath, StandardCopyOption.REPLACE_EXISTING);
                 Constants.LOG.info("Outdated config detected! Backed up to: " + oldName);
                 copyDefaultConfig(resourceName);
             } catch (Exception e) {
@@ -166,7 +180,7 @@ public class DailyServerConfig {
         Path target = CONFIG_DIR.resolve(fileName);
         try (InputStream is = DailyServerConfig.class.getResourceAsStream("/assets/r3ct_daily/configs/" + fileName)) {
             if (is != null) {
-                Files.copy(is, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, target, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
             Constants.LOG.error("Error copying file: " + fileName, e);
@@ -186,6 +200,8 @@ public class DailyServerConfig {
     private static void loadRewards() {
         rewardsTier1.clear(); rewardsTier2.clear(); rewardsTier3.clear();
         dailyQuestRewards.clear();
+        streakRewardsTier1.clear(); streakRewardsTier2.clear(); streakRewardsTier3.clear();
+
         if (!REWARDS_FILE.exists()) return;
 
         try (FileReader reader = new FileReader(REWARDS_FILE)) {
@@ -193,6 +209,16 @@ public class DailyServerConfig {
             parseRewards(root.getAsJsonArray("days_1_to_4"), rewardsTier1);
             parseRewards(root.getAsJsonArray("days_5_to_6"), rewardsTier2);
             parseRewards(root.getAsJsonArray("day_7"), rewardsTier3);
+
+            if (root.has("streak_days_1_to_4")) {
+                parseSimpleRewards(root.getAsJsonArray("streak_days_1_to_4"), streakRewardsTier1);
+            }
+            if (root.has("streak_days_5_to_6")) {
+                parseSimpleRewards(root.getAsJsonArray("streak_days_5_to_6"), streakRewardsTier2);
+            }
+            if (root.has("streak_day_7")) {
+                parseSimpleRewards(root.getAsJsonArray("streak_day_7"), streakRewardsTier3);
+            }
 
             if (root.has("quest_completion")) {
                 parseSimpleRewards(root.getAsJsonArray("quest_completion"), dailyQuestRewards);
@@ -212,6 +238,7 @@ public class DailyServerConfig {
     }
 
     private static void loadQuests() {
+        QuestManager.QUEST_MAP.clear();
         QuestManager.EASY_QUESTS.clear();
         QuestManager.MEDIUM_QUESTS.clear();
         QuestManager.HARD_QUESTS.clear();
@@ -228,77 +255,143 @@ public class DailyServerConfig {
         }
     }
 
-    private static void parseRewards(com.google.gson.JsonArray array, List<List<RewardEntry>> tierList) {
+    private static void parseRewards(JsonArray array, List<List<RewardEntry>> tierList) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
-            com.google.gson.JsonArray bucketArray = array.get(i).getAsJsonArray();
+            JsonArray bucketArray = array.get(i).getAsJsonArray();
             List<RewardEntry> bucket = new ArrayList<>();
             for (int j = 0; j < bucketArray.size(); j++) {
                 try {
-                    com.google.gson.JsonObject obj = bucketArray.get(j).getAsJsonObject();
+                    JsonObject obj = bucketArray.get(j).getAsJsonObject();
                     bucket.add(new RewardEntry(
-                            obj.get("item").getAsString(),
-                            obj.get("min_amount").getAsInt(),
-                            obj.get("max_amount").getAsInt(),
-                            obj.get("chance").getAsInt(),
+                            getString(obj, "item"),
+                            getInt(obj, "min_amount"),
+                            getInt(obj, "max_amount"),
+                            getInt(obj, "chance"),
                             obj.has("color") ? obj.get("color").getAsString() : "&b"
                     ));
                 } catch (Exception e) {
-                    Constants.LOG.error("Error loading reward entry in list (group: " + i + ", item: " + j + "). Skipping entry.", e);
+                    Constants.LOG.error("Error loading reward entry in list (group: " + i + ", item: " + j + "). Skipping entry. Reason: " + e.getMessage());
                 }
             }
             tierList.add(bucket);
         }
     }
 
-    private static void parseSimpleRewards(com.google.gson.JsonArray array, List<RewardEntry> list) {
+    private static void parseSimpleRewards(JsonArray array, List<RewardEntry> list) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
             try {
-                com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
+                JsonObject obj = array.get(i).getAsJsonObject();
                 list.add(new RewardEntry(
-                        obj.get("item").getAsString(),
-                        obj.get("min_amount").getAsInt(),
-                        obj.get("max_amount").getAsInt(),
-                        obj.get("chance").getAsInt(),
+                        getString(obj, "item"),
+                        getInt(obj, "min_amount"),
+                        getInt(obj, "max_amount"),
+                        getInt(obj, "chance"),
                         obj.has("color") ? obj.get("color").getAsString() : "&b"
                 ));
             } catch (Exception e) {
-                Constants.LOG.error("Error loading simple reward entry (index: " + i + "). Skipping entry.", e);
+                Constants.LOG.error("Error loading simple reward entry (index: " + i + "). Skipping entry. Reason: " + e.getMessage());
             }
         }
     }
 
-    private static void parseQuestArray(com.google.gson.JsonArray array, String dimension) {
+    private static void parseQuestArray(JsonArray array, String dimension) {
         if (array == null) return;
         for (int i = 0; i < array.size(); i++) {
             try {
-                com.google.gson.JsonObject obj = array.get(i).getAsJsonObject();
-                int diffInt = obj.get("difficulty").getAsInt();
+                JsonObject obj = array.get(i).getAsJsonObject();
 
-                String itemStr = obj.get("reward_item").getAsString();
-                int rewardAmount = obj.get("reward_amount").getAsInt();
+                int diffInt = getInt(obj, "difficulty");
 
                 Quest q = new Quest(
-                        obj.get("id").getAsString(),
-                        obj.has("name") ? obj.get("name").getAsString() : "Quest",
-                        obj.get("description").getAsString(),
-                        obj.get("amount").getAsInt(),
+                        getString(obj, "id"),
+                        getString(obj, "name"),
+                        getString(obj, "description"),
+                        getInt(obj, "amount"),
                         diffInt,
-                        obj.get("points").getAsInt(),
-                        rewardAmount,
+                        getInt(obj, "reward_amount"),
                         dimension,
-                        obj.get("action_type").getAsString(),
-                        obj.has("target") ? obj.get("target").getAsString() : "any",
-                        itemStr
+                        getString(obj, "required_location"),
+                        getString(obj, "action_type"),
+                        getString(obj, "target"),
+                        getString(obj, "reward_item")
                 );
 
                 if (diffInt == 0) QuestManager.EASY_QUESTS.add(q);
                 else if (diffInt == 1) QuestManager.MEDIUM_QUESTS.add(q);
                 else QuestManager.HARD_QUESTS.add(q);
+                QuestManager.QUEST_MAP.put(q.id, q);
+
             } catch (Exception e) {
-                Constants.LOG.error("Error loading quest (index: " + i + ") in dimension " + dimension + ". Skipping quest.", e);
+                Constants.LOG.error("Error loading quest (index: " + i + ") in dimension " + dimension + ". Skipping quest. Reason: " + e.getMessage());
             }
+        }
+    }
+
+    private static String getString(JsonObject obj, String key) {
+        if (!obj.has(key) || obj.get(key).isJsonNull()) {
+            throw new IllegalArgumentException("Missing required string field: '" + key + "'");
+        }
+        return obj.get(key).getAsString();
+    }
+
+    private static int getInt(JsonObject obj, String key) {
+        if (!obj.has(key) || obj.get(key).isJsonNull()) {
+            throw new IllegalArgumentException("Missing required integer field: '" + key + "'");
+        }
+        return obj.get(key).getAsInt();
+    }
+
+    public static String getConfigFileAsString(File file) {
+        if (!file.exists()) return "{}";
+        try {
+            return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            Constants.LOG.error("Failed to read config file: " + file.getName(), e);
+            return "{}";
+        }
+    }
+
+    public static String getQuestsConfigString() { return getConfigFileAsString(QUESTS_FILE); }
+    public static String getRewardsConfigString() { return getConfigFileAsString(REWARDS_FILE); }
+    public static String getServerConfigString() { return getConfigFileAsString(MECHANICS_FILE); }
+
+    public static void syncFromServer(String questsJson, String rewardsJson, String serverJson) {
+        try {
+            JsonObject qRoot = JsonParser.parseString(questsJson).getAsJsonObject();
+            QuestManager.QUEST_MAP.clear();
+            QuestManager.EASY_QUESTS.clear();
+            QuestManager.MEDIUM_QUESTS.clear();
+            QuestManager.HARD_QUESTS.clear();
+
+            if (qRoot.has("overworld_quests")) parseQuestArray(qRoot.getAsJsonArray("overworld_quests"), "minecraft:overworld");
+            if (qRoot.has("nether_quests")) parseQuestArray(qRoot.getAsJsonArray("nether_quests"), "minecraft:the_nether");
+            if (qRoot.has("end_quests")) parseQuestArray(qRoot.getAsJsonArray("end_quests"), "minecraft:the_end");
+
+            JsonObject rRoot = JsonParser.parseString(rewardsJson).getAsJsonObject();
+            rewardsTier1.clear(); rewardsTier2.clear(); rewardsTier3.clear(); dailyQuestRewards.clear();
+            streakRewardsTier1.clear(); streakRewardsTier2.clear(); streakRewardsTier3.clear();
+
+            if (rRoot.has("days_1_to_4")) parseRewards(rRoot.getAsJsonArray("days_1_to_4"), rewardsTier1);
+            if (rRoot.has("days_5_to_6")) parseRewards(rRoot.getAsJsonArray("days_5_to_6"), rewardsTier2);
+            if (rRoot.has("day_7")) parseRewards(rRoot.getAsJsonArray("day_7"), rewardsTier3);
+
+            if (rRoot.has("streak_days_1_to_4")) parseSimpleRewards(rRoot.getAsJsonArray("streak_days_1_to_4"), streakRewardsTier1);
+            if (rRoot.has("streak_days_5_to_6")) parseSimpleRewards(rRoot.getAsJsonArray("streak_days_5_to_6"), streakRewardsTier2);
+            if (rRoot.has("streak_day_7")) parseSimpleRewards(rRoot.getAsJsonArray("streak_day_7"), streakRewardsTier3);
+
+            if (rRoot.has("quest_completion")) parseSimpleRewards(rRoot.getAsJsonArray("quest_completion"), dailyQuestRewards);
+            if (rRoot.has("milestones")) milestones = GSON.fromJson(rRoot.get("milestones"), MilestonesConfig.class);
+            if (rRoot.has("bonuses")) bonuses = GSON.fromJson(rRoot.get("bonuses"), BonusesConfig.class);
+
+            JsonObject mRoot = JsonParser.parseString(serverJson).getAsJsonObject();
+            mechanics = GSON.fromJson(mRoot, MechanicsConfig.class);
+            if (mechanics == null) mechanics = new MechanicsConfig();
+
+            Constants.LOG.info("Successfully synced Daily Configs from Server RAM!");
+        } catch (Exception e) {
+            Constants.LOG.error("Failed to parse synced config from server!", e);
         }
     }
 }

@@ -2,7 +2,14 @@ package com.r3ct.daily.platform;
 
 import com.r3ct.daily.DailyFabricClient;
 import com.r3ct.daily.platform.services.IPlatformHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.nio.file.Path;
 
 public class FabricPlatformHelper implements IPlatformHelper {
 
@@ -24,23 +31,23 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public java.nio.file.Path getConfigDir() {
-        return net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
+    public Path getConfigDir() {
+        return FabricLoader.getInstance().getConfigDir();
     }
 
     @Override
-    public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToPlayer(net.minecraft.server.level.ServerPlayer player, T payload) {
-        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
+    public <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T payload) {
+        ServerPlayNetworking.send(player, payload);
     }
 
     @Override
-    public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToServer(T payload) {
-        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(payload);
+    public <T extends CustomPacketPayload> void sendToServer(T payload) {
+        ClientPlayNetworking.send(payload);
     }
 
     @Override
     public boolean isQuestKey(Object event) {
-        if (event instanceof net.minecraft.client.input.KeyEvent keyEvent) {
+        if (event instanceof KeyEvent keyEvent) {
             return DailyFabricClient.openQuestsKey != null && DailyFabricClient.openQuestsKey.matches(keyEvent);
         }
         return false;
@@ -48,7 +55,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
     public boolean isRewardKey(Object event) {
-        if (event instanceof net.minecraft.client.input.KeyEvent keyEvent) {
+        if (event instanceof KeyEvent keyEvent) {
             return DailyFabricClient.openRewardsKey != null && DailyFabricClient.openRewardsKey.matches(keyEvent);
         }
         return false;

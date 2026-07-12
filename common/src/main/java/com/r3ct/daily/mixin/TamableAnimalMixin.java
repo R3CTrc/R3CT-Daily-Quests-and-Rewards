@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TamableAnimalMixin {
 
     @Inject(method = "tame", at = @At("HEAD"))
-    private void onTame(Player player, CallbackInfo ci) {
+    private void r3ct_daily$onTame(Player player, CallbackInfo ci) {
         if (player instanceof ServerPlayer serverPlayer) {
             TamableAnimal animal = (TamableAnimal) (Object) this;
             String mobId = BuiltInRegistries.ENTITY_TYPE.getKey(animal.getType()).toString();

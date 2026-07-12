@@ -13,7 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class EnchantItemMixin {
 
     @Inject(method = "trigger", at = @At("HEAD"))
-    private void onEnchant(ServerPlayer player, ItemStack item, int levels, CallbackInfo ci) {
-        QuestEventHandlers.onItemEnchanted(player, item);
+    private void r3ct_daily$onEnchant(ServerPlayer player, ItemStack item, int levels, CallbackInfo ci) {
+        if (player != null) {
+            QuestEventHandlers.onItemEnchanted(player, item);
+        }
     }
 }

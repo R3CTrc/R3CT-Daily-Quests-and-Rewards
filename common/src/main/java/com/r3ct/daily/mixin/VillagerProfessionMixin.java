@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class VillagerProfessionMixin {
 
     @Inject(method = "setVillagerData", at = @At("HEAD"))
-    private void onSetVillagerData(VillagerData newData, CallbackInfo ci) {
+    private void r3ct_daily$onSetVillagerData(VillagerData newData, CallbackInfo ci) {
         Villager villager = (Villager) (Object) this;
 
         if (villager.level().isClientSide()) return;

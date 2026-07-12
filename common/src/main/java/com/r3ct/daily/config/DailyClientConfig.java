@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class DailyClientConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -46,7 +47,7 @@ public class DailyClientConfig {
             }
             try (InputStream is = DailyClientConfig.class.getResourceAsStream("/assets/r3ct_daily/configs/r3ct_daily_client.json")) {
                 if (is != null) {
-                    Files.copy(is, CONFIG_PATH, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(is, CONFIG_PATH, StandardCopyOption.REPLACE_EXISTING);
                 } else {
                     save();
                 }
@@ -77,7 +78,7 @@ public class DailyClientConfig {
             try {
                 String oldName = CONFIG_PATH.getFileName().toString().replace(".json", "_OLD.json");
                 Path backupPath = CONFIG_PATH.resolveSibling(oldName);
-                Files.move(CONFIG_PATH, backupPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                Files.move(CONFIG_PATH, backupPath, StandardCopyOption.REPLACE_EXISTING);
                 Constants.LOG.info("Outdated client config detected! Backed up to: " + oldName);
                 copyDefaultConfig();
             } catch (Exception e) {
