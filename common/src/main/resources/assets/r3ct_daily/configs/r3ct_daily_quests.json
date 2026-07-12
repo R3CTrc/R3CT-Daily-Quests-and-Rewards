@@ -2094,6 +2094,18 @@
       "reward_amount": 8
     },
     {
+      "id": "plaga_kopalni",
+      "name": "r3ct_daily.quest.plaga_kopalni.name",
+      "description": "r3ct_daily.quest.plaga_kopalni.desc",
+      "difficulty": 2,
+      "action_type": "KILL_MOB",
+      "target": "minecraft:cave_spider",
+      "amount": 8,
+      "required_location": "any",
+      "reward_item": "minecraft:cobweb",
+      "reward_amount": 2
+    },
+    {
       "id": "biegnij_i_bij",
       "name": "r3ct_daily.quest.biegnij_i_bij.name",
       "description": "r3ct_daily.quest.biegnij_i_bij.desc",
