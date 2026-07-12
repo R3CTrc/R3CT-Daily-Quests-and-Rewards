@@ -2475,7 +2475,7 @@
       "amount": 600,
       "required_location": "any",
       "reward_item": "minecraft:grass_block",
-      "reward_amount": 8
+      "reward_amount": 4
     },
     {
       "id": "wilk_morski",
@@ -2553,7 +2553,7 @@
       "id": "egzotyczne_oferty",
       "name": "r3ct_daily.quest.egzotyczne_oferty.name",
       "description": "r3ct_daily.quest.egzotyczne_oferty.desc",
-      "difficulty": 1,
+      "difficulty": 2,
       "action_type": "TRADE_WANDERING",
       "target": "any",
       "amount": 1,

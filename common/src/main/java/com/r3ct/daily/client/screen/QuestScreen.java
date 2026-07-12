@@ -165,14 +165,14 @@ public class QuestScreen extends Screen {
             String displayDesc = locDesc;
             List<FormattedCharSequence> lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
 
-            if (lines.size() > 2) {
-                int charsToKeep = (int)((double)locDesc.length() * ((double)(maxTextWidth * 2 - this.font.width("..." + progressText)) / Math.max(1, this.font.width(locDesc))));
+            if (lines.size() > 3) {
+                int charsToKeep = (int)((double)locDesc.length() * ((double)(maxTextWidth * 3 - this.font.width("..." + progressText)) / Math.max(1, this.font.width(locDesc))));
                 charsToKeep = Math.max(0, Math.min(charsToKeep, locDesc.length()));
 
                 displayDesc = locDesc.substring(0, charsToKeep) + "...";
                 lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
 
-                while (lines.size() > 2 && displayDesc.length() > 4) {
+                while (lines.size() > 3 && displayDesc.length() > 4) {
                     displayDesc = displayDesc.substring(0, displayDesc.length() - 5) + "...";
                     lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
                 }
