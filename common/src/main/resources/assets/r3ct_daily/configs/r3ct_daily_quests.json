@@ -1797,10 +1797,10 @@
       "id": "skarb_glebin",
       "name": "r3ct_daily.quest.skarb_glebin.name",
       "description": "r3ct_daily.quest.skarb_glebin.desc",
-      "difficulty": 4,
+      "difficulty": 2,
       "action_type": "SUBMIT_ITEMS",
       "target": "minecraft:nautilus_shell",
-      "amount": 2,
+      "amount": 4,
       "required_location": "any",
       "reward_item": "minecraft:prismarine_crystals",
       "reward_amount": 4
