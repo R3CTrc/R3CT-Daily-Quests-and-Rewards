@@ -23,7 +23,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
 * **⚔️ Daily Quests System:**
   * Generate 5 random daily tasks from highly customizable pools.
   * Earn Points to unlock massive **Milestone Rewards** (50, 100, 150, 200 points).
-  * **Reroll System:** Spend points to skip quests you don't like!
+  * **Quest Streak:** Maintain your daily quest streak to earn powerful XP multipliers for every mission you complete!
+  * **Reroll System:** Spend points to reroll quests you don't like and swap them for new, random tasks.
   * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day.
 
 <div align="center">
@@ -33,8 +34,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
 </div>
 
 * **🎁 Daily Rewards System:**
-  * Claim rewards every day you log in. Missed a day? Don't worry, your progress is saved and you pick up right where you left off!
-  * Build up your **Reward Streak** by logging in consecutively to earn bonus multipliers (2x loot!).
+  * Claim rewards every day you log in. Missed a day? Don't worry, your total days progress is saved and you pick up right where you left off!
+  * Build up your **Reward Streak** by logging in consecutively to unlock an additional daily reward from a special, exclusive loot pool.
   * Unlock powerful **Bonus Cycle Rewards** for claiming daily rewards for 7, 14, and 21 days in total.
   * Includes its own separate Shield System to save your login streak.
 
