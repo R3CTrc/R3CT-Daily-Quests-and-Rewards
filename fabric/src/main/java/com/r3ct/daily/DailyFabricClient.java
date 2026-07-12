@@ -1,19 +1,19 @@
 package com.r3ct.daily;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.r3ct.daily.config.DailyClientConfig;
+import com.r3ct.daily.config.DailyServerConfig;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestManager;
-import com.r3ct.daily.network.LeaderboardResponsePayload;
-import com.r3ct.daily.network.OpenQuestsPayload;
-import com.r3ct.daily.network.OpenRewardsPayload;
-import com.r3ct.daily.network.SyncQuestsPayload;
+import com.r3ct.daily.network.*;
 import com.r3ct.daily.client.screen.LeaderboardScreen;
 import com.r3ct.daily.client.screen.QuestScreen;
 import com.r3ct.daily.client.screen.RewardScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.KeyMapping;
@@ -43,21 +43,21 @@ public class DailyFabricClient implements ClientModInitializer {
 
 		openRewardsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.open_rewards",
-				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_H,
 				R3CT_CATEGORY
 		));
 
 		openQuestsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.open_quests",
-				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_G,
 				R3CT_CATEGORY
 		));
 
 		toggleHudKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.toggle_hud",
-				com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_PERIOD,
 				R3CT_CATEGORY
 		));
@@ -77,6 +77,16 @@ public class DailyFabricClient implements ClientModInitializer {
 					client.gui.setOverlayMessage(message, false);
 				}
 			}
+		});
+
+		ClientPlayNetworking.registerGlobalReceiver(ConfigSyncPayload.TYPE, (payload, context) -> {
+			context.client().execute(() -> {
+				DailyServerConfig.syncFromServer(payload.questsJson(), payload.rewardsJson(), payload.serverJson());
+			});
+		});
+
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			DailyServerConfig.loadAll();
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(OpenRewardsPayload.ID, (payload, context) -> {
@@ -219,6 +229,12 @@ public class DailyFabricClient implements ClientModInitializer {
 					} else {
 						questName = Component.translatable(q.description).getString().split(" ")[0];
 					}
+
+					int maxNameLength = 25;
+					if (questName.length() > maxNameLength) {
+						questName = questName.substring(0, maxNameLength) + "...";
+					}
+
 					String diffIndicator = (q.difficulty == 0) ? "§2★ " : (q.difficulty == 1 ? "§6★ " : "§4★ ");
 
 					String progressColor = "§f";
@@ -244,7 +260,7 @@ public class DailyFabricClient implements ClientModInitializer {
 			guiGraphics.pose().popMatrix();
 		});
 
-		net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(LeaderboardResponsePayload.ID, (payload, context) -> {
+		ClientPlayNetworking.registerGlobalReceiver(LeaderboardResponsePayload.ID, (payload, context) -> {
 			context.client().execute(() -> {
 				context.client().setScreen(new LeaderboardScreen(payload.boardType(), payload.leftList(), payload.rightList()));
 			});

@@ -6,6 +6,7 @@ import com.r3ct.daily.data.ModState;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.logic.QuestManager;
 import com.r3ct.daily.network.SyncQuestsPayload;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -42,11 +43,11 @@ public class StreakShieldItem extends Item {
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.0F);
 
-                    Component curComp = Component.literal(String.valueOf(data.availableFreezes)).withStyle(net.minecraft.ChatFormatting.AQUA);
-                    Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                    Component curComp = Component.literal(String.valueOf(data.availableFreezes)).withStyle(ChatFormatting.AQUA);
+                    Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(ChatFormatting.AQUA);
 
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct_daily.message.shield.quest.used", curComp, maxComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                            Component.translatable("r3ct_daily.message.shield.quest.used", curComp, maxComp).withStyle(ChatFormatting.GREEN)
                     ));
 
                     if (data.availableFreezes == maxQuestShields) {
@@ -56,9 +57,9 @@ public class StreakShieldItem extends Item {
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.NOTE_BLOCK_BASS, SoundSource.PLAYERS, 1.0F, 1.0F);
 
-                    Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                    Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(ChatFormatting.AQUA);
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct_daily.message.shield.quest.full", maxComp).withStyle(net.minecraft.ChatFormatting.RED)
+                            Component.translatable("r3ct_daily.message.shield.quest.full", maxComp).withStyle(ChatFormatting.RED)
                     ));
 
                     return InteractionResult.FAIL;
@@ -72,11 +73,11 @@ public class StreakShieldItem extends Item {
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.0F);
 
-                    Component curComp = Component.literal(String.valueOf(data.availableRewardFreezes)).withStyle(net.minecraft.ChatFormatting.AQUA);
-                    Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                    Component curComp = Component.literal(String.valueOf(data.availableRewardFreezes)).withStyle(ChatFormatting.AQUA);
+                    Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(ChatFormatting.AQUA);
 
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct_daily.message.shield.reward.used", curComp, maxComp).withStyle(net.minecraft.ChatFormatting.GREEN)
+                            Component.translatable("r3ct_daily.message.shield.reward.used", curComp, maxComp).withStyle(ChatFormatting.GREEN)
                     ));
 
                     if (data.availableRewardFreezes == maxRewardShields) {
@@ -86,9 +87,9 @@ public class StreakShieldItem extends Item {
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.NOTE_BLOCK_BASS, SoundSource.PLAYERS, 1.0F, 1.0F);
 
-                    Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(net.minecraft.ChatFormatting.AQUA);
+                    Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(ChatFormatting.AQUA);
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
-                            Component.translatable("r3ct_daily.message.shield.reward.full", maxComp).withStyle(net.minecraft.ChatFormatting.RED)
+                            Component.translatable("r3ct_daily.message.shield.reward.full", maxComp).withStyle(ChatFormatting.RED)
                     ));
 
                     return InteractionResult.FAIL;

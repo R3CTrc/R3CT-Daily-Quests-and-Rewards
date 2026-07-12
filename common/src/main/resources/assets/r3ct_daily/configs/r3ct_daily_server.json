@@ -10,15 +10,16 @@
     "rerollCostHard": 4,
 
     "_comment_xp": "Experience points granted for completing quests of different difficulties.",
-    "xpPerQuestEasy": 30,
-    "xpPerQuestMedium": 60,
-    "xpPerQuestHard": 90,
-    "xpDailyReward": 90
+    "xpPerQuestEasy": 25,
+    "xpPerQuestMedium": 50,
+    "xpPerQuestHard": 75,
+    "xpDailyReward": 75,
+    "questStreakXpMultiplier": 1.5
   },
 
   "streaks": {
     "_comment_perfect_days": "How many 'Perfect Days' (all 5 quests completed) are needed to get a Quest Shield.",
-    "perfectDaysForShield": 3,
+    "perfectDaysForShield": 5,
 
     "_comment_shields": "Maximum amount of Quest Shields and Reward Shields a player can hold at once.",
     "maxStoredQuestShields": 3,
@@ -33,6 +34,11 @@
     "leaderboardUpdateIntervalTicks": 1200,
 
     "_comment_refresh": "Hour of the day (0-23) when daily quests and rewards refresh (0 = midnight).",
-    "questRefreshHour": 0
+    "questRefreshHour": 0,
+
+    "_comment_sync": "Network optimization: How often quest progress is synced to the client. Increase to reduce server lag on large servers.",
+    "actionSyncInterval": 1,
+    "distanceSyncInterval": 5,
+    "elytraSyncInterval": 50
   }
 }
