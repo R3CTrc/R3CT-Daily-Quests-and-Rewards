@@ -176,7 +176,7 @@ public class DailyCommands {
 
                         QuestManager.giveOrDrop(player, rewardStack);
 
-                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append("- ").withStyle(ChatFormatting.GRAY).append(
+                        player.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
                                 Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, translatedItem).withStyle(ChatFormatting.GREEN)
                         ));
 
