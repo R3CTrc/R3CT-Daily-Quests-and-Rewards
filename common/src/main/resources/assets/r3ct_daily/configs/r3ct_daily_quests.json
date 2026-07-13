@@ -2257,7 +2257,7 @@
       "action_type": "PLAY_JUKEBOX",
       "target": "any",
       "amount": 1,
-      "required_location": "biome:minecraft:ancient_city",
+      "required_location": "structure:minecraft:ancient_city",
       "reward_item": "minecraft:disc_fragment_5",
       "reward_amount": 4
     },
