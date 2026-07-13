@@ -1,7 +1,7 @@
 package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
-import net.minecraft.advancements.criterion.CuredZombieVillagerTrigger;
+import net.minecraft.advancements.triggers.CuredZombieVillagerTrigger;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.npc.villager.Villager;

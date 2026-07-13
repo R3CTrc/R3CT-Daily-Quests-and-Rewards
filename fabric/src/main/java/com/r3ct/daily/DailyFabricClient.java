@@ -74,7 +74,7 @@ public class DailyFabricClient implements ClientModInitializer {
 
 				if (client.player != null) {
 					Component message = Component.translatable("r3ct_daily.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON");
-					client.gui.setOverlayMessage(message, false);
+					client.gui.hud.setOverlayMessage(message, false);
 				}
 			}
 		});
@@ -99,7 +99,7 @@ public class DailyFabricClient implements ClientModInitializer {
 				data.claimedRewardHistory = payload.claimedRewardHistory();
 				data.availableRewardFreezes = payload.availableRewardFreezes();
 				data.claimedBonusRewards = payload.claimedBonusRewards();
-				context.client().setScreen(new RewardScreen(data, payload));
+				context.client().gui.setScreen(new RewardScreen(data, payload));
 			});
 		});
 
@@ -120,7 +120,7 @@ public class DailyFabricClient implements ClientModInitializer {
 				data.claimedPointRewards = payload.claimedPointRewards();
 
 				clientQuestData = data;
-				context.client().setScreen(new QuestScreen(data, payload));
+				context.client().gui.setScreen(new QuestScreen(data, payload));
 			});
 		});
 
@@ -161,9 +161,9 @@ public class DailyFabricClient implements ClientModInitializer {
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(DailyFabric.MOD_ID, "quest_hud"), (guiGraphics, deltaTracker) -> {
 			Minecraft client = Minecraft.getInstance();
 
-			if (client.options.hideGui || client.getDebugOverlay().showDebugScreen() || client.player == null) return;
+			if (client.gui.hud.isHidden() || client.getDebugOverlay().showDebugScreen() || client.player == null) return;
 
-			if (client.screen != null && !(client.screen instanceof ChatScreen)) return;
+			if (client.gui.screen() != null && !(client.gui.screen() instanceof ChatScreen)) return;
 
 			if (!DailyClientConfig.getInstance().enableHud) return;
 
@@ -262,7 +262,7 @@ public class DailyFabricClient implements ClientModInitializer {
 
 		ClientPlayNetworking.registerGlobalReceiver(LeaderboardResponsePayload.ID, (payload, context) -> {
 			context.client().execute(() -> {
-				context.client().setScreen(new LeaderboardScreen(payload.boardType(), payload.leftList(), payload.rightList()));
+				context.client().gui.setScreen(new LeaderboardScreen(payload.boardType(), payload.leftList(), payload.rightList()));
 			});
 		});
 	}

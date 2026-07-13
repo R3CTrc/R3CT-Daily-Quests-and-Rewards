@@ -37,11 +37,11 @@ public class ConfirmSubmitScreen extends Screen {
 
         this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.gui.yes"), b -> {
             Services.PLATFORM.sendToServer(new SubmitQuestItemPayload(questIndex, slotIndex));
-            this.minecraft.setScreen(parent);
+            this.minecraft.gui.setScreen(parent);
         }).bounds(centerX - 105, centerY + 30, 100, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.gui.no"), b -> {
-            this.minecraft.setScreen(parent);
+            this.minecraft.gui.setScreen(parent);
         }).bounds(centerX + 5, centerY + 30, 100, 20).build());
     }
 

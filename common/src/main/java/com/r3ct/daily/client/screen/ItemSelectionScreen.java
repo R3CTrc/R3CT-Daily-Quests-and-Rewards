@@ -31,7 +31,7 @@ public class ItemSelectionScreen extends Screen {
     @Override
     protected void init() {
         this.addRenderableWidget(Button.builder(net.minecraft.network.chat.CommonComponents.GUI_CANCEL, button -> {
-            if (this.minecraft != null) this.minecraft.setScreen(this.parent);
+            if (this.minecraft != null) this.minecraft.gui.setScreen(this.parent);
         }).bounds(this.width / 2 - 50, this.height / 2 + 50, 100, 20).build());
     }
 
@@ -98,7 +98,7 @@ public class ItemSelectionScreen extends Screen {
                     int slot = slots.get(i);
                     ItemStack stack = player.getInventory().getItem(slot);
                     int actualTake = Math.min(amountToTake, stack.getCount());
-                    this.minecraft.setScreen(new ConfirmSubmitScreen(this.parent, quest, questIndex, slot, actualTake));
+                    this.minecraft.gui.setScreen(new ConfirmSubmitScreen(this.parent, quest, questIndex, slot, actualTake));
                 }
                 return true;
             }

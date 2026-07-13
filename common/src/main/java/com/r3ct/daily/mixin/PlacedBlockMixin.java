@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BlockItem;
@@ -36,7 +37,7 @@ public abstract class PlacedBlockMixin {
 
             QuestManager.handleAction(player, "PLACE_BLOCK", blockId, 1);
 
-            if (state.is(BlockTags.SAPLINGS)) {
+            if (state.is(BlockItemTags.SAPLINGS.block())) {
                 QuestManager.handleAction(player, "PLACE_SAPLING", blockId, 1);
             }
 
@@ -50,14 +51,14 @@ public abstract class PlacedBlockMixin {
             if (state.is(BlockTags.BEDS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:beds", 1);
             if (state.is(BlockTags.WOOL)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:wool", 1);
 
-            if (state.is(BlockTags.OAK_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:oak_logs", 1);
-            else if (state.is(BlockTags.BIRCH_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:birch_logs", 1);
-            else if (state.is(BlockTags.SPRUCE_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:spruce_logs", 1);
+            if (state.is(BlockItemTags.OAK_LOGS.block())) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:oak_logs", 1);
+            else if (state.is(BlockItemTags.BIRCH_LOGS.block())) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:birch_logs", 1);
+            else if (state.is(BlockItemTags.SPRUCE_LOGS.block())) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:spruce_logs", 1);
             else if (state.is(BlockTags.JUNGLE_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:jungle_logs", 1);
-            else if (state.is(BlockTags.ACACIA_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:acacia_logs", 1);
-            else if (state.is(BlockTags.DARK_OAK_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:dark_oak_logs", 1);
-            else if (state.is(BlockTags.MANGROVE_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:mangrove_logs", 1);
-            else if (state.is(BlockTags.CHERRY_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:cherry_logs", 1);
+            else if (state.is(BlockItemTags.ACACIA_LOGS.block())) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:acacia_logs", 1);
+            else if (state.is(BlockItemTags.DARK_OAK_LOGS.block())) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:dark_oak_logs", 1);
+            else if (state.is(BlockItemTags.MANGROVE_LOGS.block())) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:mangrove_logs", 1);
+            else if (state.is(BlockItemTags.CHERRY_LOGS.block())) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:cherry_logs", 1);
             else if (state.is(BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:pale_oak_logs", 1);
 
         }

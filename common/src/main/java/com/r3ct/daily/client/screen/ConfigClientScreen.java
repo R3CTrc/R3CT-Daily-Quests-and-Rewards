@@ -142,7 +142,7 @@ public class ConfigClientScreen extends Screen {
         DailyClientConfig.save();
 
         if (this.minecraft != null) {
-            this.minecraft.setScreen(this.parent);
+            this.minecraft.gui.setScreen(this.parent);
         }
     }
 }

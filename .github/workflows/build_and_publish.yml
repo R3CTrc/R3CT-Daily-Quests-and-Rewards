@@ -2,7 +2,7 @@ name: Build and Publish
 
 on:
   push:
-    branches: [ "26.1.2" ]
+    branches: [ "26.2" ]
   release:
     types: [ published ]
 
@@ -66,7 +66,7 @@ jobs:
 
           loaders: fabric
           game-versions: |
-            26.1.2
+            26.2
 
           dependencies: |
             fabric-api(required)
@@ -89,7 +89,7 @@ jobs:
 
           loaders: neoforge
           game-versions: |
-            26.1.2
+            26.2
 
           version: ${{ github.event.release.tag_name }}-neoforge
           changelog: ${{ github.event.release.body }}

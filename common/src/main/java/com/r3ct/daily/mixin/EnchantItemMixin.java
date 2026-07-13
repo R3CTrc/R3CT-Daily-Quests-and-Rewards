@@ -1,7 +1,7 @@
 package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestEventHandlers;
-import net.minecraft.advancements.criterion.EnchantedItemTrigger;
+import net.minecraft.advancements.triggers.EnchantedItemTrigger;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

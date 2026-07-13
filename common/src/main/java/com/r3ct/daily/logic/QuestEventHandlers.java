@@ -11,8 +11,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Monster;
@@ -64,7 +64,7 @@ public class QuestEventHandlers {
             if (!isFullyGrownCrop) {
                 QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", blockId, -1);
 
-                if (state.is(BlockTags.SAPLINGS)) {
+                if (state.is(BlockItemTags.SAPLINGS.block())) {
                     QuestManager.handleAction(serverPlayer, "PLACE_SAPLING", blockId, -1);
                 }
                 if (state.getBlock() instanceof CropBlock || state.getBlock() instanceof StemBlock || state.getBlock() instanceof NetherWartBlock || state.getBlock() instanceof PitcherCropBlock) {
@@ -76,21 +76,21 @@ public class QuestEventHandlers {
                 if (state.is(BlockTags.WOOL))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:wool", -1);
 
-                if (state.is(BlockTags.OAK_LOGS))
+                if (state.is(BlockItemTags.OAK_LOGS.block()))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:oak_logs", -1);
-                else if (state.is(BlockTags.BIRCH_LOGS))
+                else if (state.is(BlockItemTags.BIRCH_LOGS.block()))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:birch_logs", -1);
-                else if (state.is(BlockTags.SPRUCE_LOGS))
+                else if (state.is(BlockItemTags.SPRUCE_LOGS.block()))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:spruce_logs", -1);
-                else if (state.is(BlockTags.JUNGLE_LOGS))
+                else if (state.is(BlockItemTags.JUNGLE_LOGS.block()))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:jungle_logs", -1);
-                else if (state.is(BlockTags.ACACIA_LOGS))
+                else if (state.is(BlockItemTags.ACACIA_LOGS.block()))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:acacia_logs", -1);
-                else if (state.is(BlockTags.DARK_OAK_LOGS))
+                else if (state.is(BlockItemTags.DARK_OAK_LOGS.block()))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:dark_oak_logs", -1);
-                else if (state.is(BlockTags.MANGROVE_LOGS))
+                else if (state.is(BlockItemTags.MANGROVE_LOGS.block()))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:mangrove_logs", -1);
-                else if (state.is(BlockTags.CHERRY_LOGS))
+                else if (state.is(BlockItemTags.CHERRY_LOGS.block()))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:cherry_logs", -1);
                 else if (state.is(BlockTags.PALE_OAK_LOGS))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:pale_oak_logs", -1);
@@ -104,23 +104,23 @@ public class QuestEventHandlers {
         if (state.is(BlockTags.BEDS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:beds", 1);
         if (state.is(BlockTags.WOOL)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:wool", 1);
 
-        if (state.is(BlockTags.OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:oak_logs", 1);
-        else if (state.is(BlockTags.BIRCH_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:birch_logs", 1);
-        else if (state.is(BlockTags.SPRUCE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:spruce_logs", 1);
+        if (state.is(BlockItemTags.OAK_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:oak_logs", 1);
+        else if (state.is(BlockItemTags.BIRCH_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:birch_logs", 1);
+        else if (state.is(BlockItemTags.SPRUCE_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:spruce_logs", 1);
         else if (state.is(BlockTags.JUNGLE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:jungle_logs", 1);
-        else if (state.is(BlockTags.ACACIA_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:acacia_logs", 1);
-        else if (state.is(BlockTags.DARK_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:dark_oak_logs", 1);
-        else if (state.is(BlockTags.MANGROVE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:mangrove_logs", 1);
-        else if (state.is(BlockTags.CHERRY_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:cherry_logs", 1);
+        else if (state.is(BlockItemTags.ACACIA_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:acacia_logs", 1);
+        else if (state.is(BlockItemTags.DARK_OAK_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:dark_oak_logs", 1);
+        else if (state.is(BlockItemTags.MANGROVE_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:mangrove_logs", 1);
+        else if (state.is(BlockItemTags.CHERRY_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:cherry_logs", 1);
         else if (state.is(BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:pale_oak_logs", 1);
 
-        if (state.is(BlockTags.COAL_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:coal_ores", 1);
+        if (state.is(BlockItemTags.COAL_ORES.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:coal_ores", 1);
         if (state.is(BlockTags.IRON_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:iron_ores", 1);
         if (state.is(BlockTags.GOLD_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:gold_ores", 1);
         if (state.is(BlockTags.COPPER_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:copper_ores", 1);
-        if (state.is(BlockTags.DIAMOND_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:diamond_ores", 1);
-        if (state.is(BlockTags.LAPIS_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:lapis_ores", 1);
-        if (state.is(BlockTags.REDSTONE_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:redstone_ores", 1);
+        if (state.is(BlockItemTags.DIAMOND_ORES.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:diamond_ores", 1);
+        if (state.is(BlockItemTags.LAPIS_ORES.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:lapis_ores", 1);
+        if (state.is(BlockItemTags.REDSTONE_ORES.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:redstone_ores", 1);
         if (blockId.equals("minecraft:nether_quartz_ore")) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:nether_quartz_ores", 1);
     }
 

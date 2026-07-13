@@ -84,15 +84,15 @@ public class DailyNeoForgeClient {
             if (ClientModEvents.toggleHudKey.consumeClick()) {
                 minimizedHud = !minimizedHud;
                 Component message = Component.translatable("r3ct_daily.message.hud_toggle", minimizedHud ? "§4OFF" : "§aON");
-                client.gui.setOverlayMessage(message, false);
+                client.gui.hud.setOverlayMessage(message, false);
             }
         }
 
         @SubscribeEvent
         public static void onRenderGui(RenderGuiEvent.Post event) {
             Minecraft client = Minecraft.getInstance();
-            if (client.options.hideGui || client.getDebugOverlay().showDebugScreen() || client.player == null) return;
-            if (client.screen != null && !(client.screen instanceof ChatScreen)) return;
+            if (client.gui.hud.isHidden() || client.getDebugOverlay().showDebugScreen() || client.player == null) return;
+            if (client.gui.screen() != null && !(client.gui.screen() instanceof ChatScreen)) return;
             if (!DailyClientConfig.getInstance().enableHud) return;
 
             int screenWidth = event.getGuiGraphics().guiWidth();
@@ -198,7 +198,7 @@ public class DailyNeoForgeClient {
             data.claimedRewardHistory = payload.claimedRewardHistory();
             data.availableRewardFreezes = payload.availableRewardFreezes();
             data.claimedBonusRewards = payload.claimedBonusRewards();
-            Minecraft.getInstance().setScreen(new RewardScreen(data, payload));
+            Minecraft.getInstance().gui.setScreen(new RewardScreen(data, payload));
         }
 
         public static void handleOpenQuests(OpenQuestsPayload payload) {
@@ -215,7 +215,7 @@ public class DailyNeoForgeClient {
             data.claimedPointRewards = payload.claimedPointRewards();
 
             ClientGameEvents.clientQuestData = data;
-            Minecraft.getInstance().setScreen(new QuestScreen(data, payload));
+            Minecraft.getInstance().gui.setScreen(new QuestScreen(data, payload));
         }
 
         public static void handleSyncQuests(SyncQuestsPayload payload) {
@@ -248,7 +248,7 @@ public class DailyNeoForgeClient {
         }
 
         public static void handleLeaderboardResponse(LeaderboardResponsePayload payload) {
-            Minecraft.getInstance().setScreen(new LeaderboardScreen(payload.boardType(), payload.leftList(), payload.rightList()));
+            Minecraft.getInstance().gui.setScreen(new LeaderboardScreen(payload.boardType(), payload.leftList(), payload.rightList()));
         }
     }
 }

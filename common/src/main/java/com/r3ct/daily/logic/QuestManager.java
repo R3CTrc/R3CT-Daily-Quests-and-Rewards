@@ -24,6 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Inventory;
@@ -335,7 +336,7 @@ public class QuestManager {
         if (target.startsWith("r3ct_daily:")) {
             if (target.equals("r3ct_daily:mushrooms") && (invId.equals("minecraft:red_mushroom") || invId.equals("minecraft:brown_mushroom"))) return true;
             if (target.equals("r3ct_daily:sniffer_seeds") && (invId.equals("minecraft:torchflower_seeds") || invId.equals("minecraft:pitcher_pod"))) return true;
-            if (target.equals("r3ct_daily:flowers") && stack.is(ItemTags.FLOWERS)) return true;
+            if (target.equals("r3ct_daily:flowers") && stack.is(BlockItemTags.FLOWERS.item())) return true;
             if (target.equals("r3ct_daily:leaves") && stack.is(ItemTags.LEAVES)) return true;
             if (target.equals("r3ct_daily:raw_fishes") && stack.is(ItemTags.FISHES)) return true;
             if (target.equals("r3ct_daily:eggs") && (invId.equals("minecraft:egg") || invId.equals("minecraft:brown_egg") || invId.equals("minecraft:blue_egg"))) return true;
@@ -604,7 +605,7 @@ public class QuestManager {
 
         QuestManager.giveOrDrop(player, reward);
 
-        player.sendSystemMessage(Component.empty().append(getPrefix()).append("- ").withStyle(ChatFormatting.GRAY).append(
+        player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, itemNameComp).withStyle(ChatFormatting.GREEN)
         ));
     }
