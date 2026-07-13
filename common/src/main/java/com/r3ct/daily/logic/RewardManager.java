@@ -348,7 +348,7 @@ public class RewardManager {
 
             QuestManager.giveOrDrop(player, stack);
 
-            player.sendSystemMessage(Component.empty().append(getPrefix()).append("- ").withStyle(ChatFormatting.GRAY).append(
+            player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                     Component.translatable("r3ct_daily.message.quests.item_gained", amountComp, itemNameComp).withStyle(ChatFormatting.GREEN)
             ));
         }
