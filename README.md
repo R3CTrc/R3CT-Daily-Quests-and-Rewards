@@ -144,8 +144,6 @@ I'm a computer science student, and I develop game mods and software in my free 
 
 ### 🌟 Memberships & Perks
 Want to get more involved? Check out my Ko-fi memberships for exclusive perks:
-* 🥉 **Iron Supporter:** Behind-the-scenes previews and a special Discord role.
-* 🥈 **Gold Supporter:** Voting power for new features and priority issue reviews.
 * 🥇 **Diamond Supporter:** Name in the Hall of Fame and custom feature requests!
 
 [Join a Tier and support the mod!](https://ko-fi.com/r3ct_/tiers)
