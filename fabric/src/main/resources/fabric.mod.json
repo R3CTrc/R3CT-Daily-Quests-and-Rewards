@@ -8,8 +8,9 @@
         "${mod_author}"
     ],
     "contact": {
-        "homepage": "https://github.com/R3CTrc",
-        "sources": "https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards"
+        "homepage": "https://modrinth.com/mod/r3ct-daily-quests-rewards",
+        "sources": "https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards",
+        "issues": "https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/issues"
     },
     "license": "${license}",
     "icon": "assets/r3ct_daily/icon.png",
@@ -34,5 +35,8 @@
         "fabric-api": "*",
         "minecraft": ">=${minecraft_version}",
         "java": ">=${java_version}"
+    },
+    "suggests": {
+        "modmenu": ">=${modmenu_version}"
     }
 }
