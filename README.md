@@ -127,7 +127,7 @@ You can open all server config files directly from the in-game config menu! The 
 
 <div align="center">
   <a href="https://modrinth.com/mod/r3ct-collection" target="_blank">
-    <img src="./images/collection_banner.png" width="100%" alt="Check out R3CT Collector!">
+    <img src="./images/collection_banner.png" width="100%" alt="Check out R3CT Collection!">
   </a>
 </div>
 
