@@ -13,7 +13,7 @@ A powerful, highly configurable Daily Quests and Login Rewards mod for Minecraft
 Keep your players engaged with dynamic tasks, login streaks, competitive leaderboards, and a beautifully integrated GUI. Built natively for both Fabric and NeoForge!
 
 <div align="center">
-  <img src="./images/icon_nb.png" width="50%" alt="R3CT Mod Icon">
+  <img src="./images/daily_banner.png" width="100%" alt="R3CT Mod Icon">
 </div>
 
 ---
@@ -28,8 +28,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   * **Freeze/Shield System:** Earn shields to protect your streak even if you miss a day.
 
 <div align="center">
-  <a href="./images/quests_screen.png" target="_blank">
-    <img src="./images/quests_screen.png" width="75%" alt="Quests Screen (Click to enlarge)">
+  <a href="./images/daily_quests.png" target="_blank">
+    <img src="./images/daily_quests.png" width="100%" alt="Quests Screen (Click to enlarge)">
   </a>
 </div>
 
@@ -40,8 +40,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   * Includes its own separate Shield System to save your login streak.
 
 <div align="center">
-  <a href="./images/rewards_screen.png" target="_blank">
-    <img src="./images/rewards_screen.png" width="75%" alt="Rewards Screen (Click to enlarge)">
+  <a href="./images/daily_rewards.png" target="_blank">
+    <img src="./images/daily_rewards.png" width="100%" alt="Rewards Screen (Click to enlarge)">
   </a>
 </div>
 
@@ -55,8 +55,8 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
   * On-screen HUD to track your active quest progress in real-time. Easily toggle it on or off by pressing the `.` (period) key!
 
 <div align="center">
-  <a href="./images/hud_screen.png" target="_blank">
-    <img src="./images/hud_screen.png" width="75%" alt="HUD Screen (Click to enlarge)">
+  <a href="./images/daily_hud.png" target="_blank">
+    <img src="./images/daily_hud.png" width="100%" alt="HUD Screen (Click to enlarge)">
   </a>
 </div>
 
@@ -125,14 +125,11 @@ You can open all server config files directly from the in-game config menu! The 
 
 ## 📦 Check out my other mods!
 
-If you enjoy this mod, you might also like my other projects:
-
-### [📖 R3CT Collector](https://modrinth.com/mod/r3ct-collector)
-*An interactive Collector's Book mod. Gather items, claim rewards, and climb the global leaderboard!*
-
-<a href="https://modrinth.com/mod/r3ct-collector">
-  <img src="./images/collector_icon_nb.png" width="150" alt="R3CT Collector">
-</a>
+<div align="center">
+  <a href="https://modrinth.com/mod/r3ct-collection" target="_blank">
+    <img src="./images/collection_banner.png" width="100%" alt="Check out R3CT Collector!">
+  </a>
+</div>
 
 ---
 
