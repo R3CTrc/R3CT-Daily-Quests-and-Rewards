@@ -13,7 +13,7 @@ A powerful, highly configurable Daily Quests and Login Rewards mod for Minecraft
 Keep your players engaged with dynamic tasks, login streaks, competitive leaderboards, and a beautifully integrated GUI. Built natively for both Fabric and NeoForge!
 
 <div align="center">
-  <img src="./images/daily_banner.png" width="100%" alt="R3CT Mod Icon">
+  <img src="./images/daily_banner.png" width="100%" alt="R3CT Daily Quests & Rewards">
 </div>
 
 ---
@@ -29,7 +29,7 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
 
 <div align="center">
   <a href="./images/daily_quests.png" target="_blank">
-    <img src="./images/daily_quests.png" width="100%" alt="Quests Screen (Click to enlarge)">
+    <img src="./images/daily_quests.png" width="100%" alt="Quests (Click to enlarge)">
   </a>
 </div>
 
@@ -41,7 +41,7 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
 
 <div align="center">
   <a href="./images/daily_rewards.png" target="_blank">
-    <img src="./images/daily_rewards.png" width="100%" alt="Rewards Screen (Click to enlarge)">
+    <img src="./images/daily_rewards.png" width="100%" alt="Rewards (Click to enlarge)">
   </a>
 </div>
 
@@ -56,7 +56,7 @@ Keep your players engaged with dynamic tasks, login streaks, competitive leaderb
 
 <div align="center">
   <a href="./images/daily_hud.png" target="_blank">
-    <img src="./images/daily_hud.png" width="100%" alt="HUD Screen (Click to enlarge)">
+    <img src="./images/daily_hud.png" width="100%" alt="HUD (Click to enlarge)">
   </a>
 </div>
 
