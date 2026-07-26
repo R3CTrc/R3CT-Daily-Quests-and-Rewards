@@ -2,7 +2,7 @@
   "_comment_version": "Do not change the version number! It is used for automatic config updates.",
   "version": 2,
 
-  "_comment_wiki": "For a detailed guide on how to create and configure quests, visit: https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Quests-Setup",
+  "_comment_wiki": "For a detailed guide on how to create and configure quests, visit: https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Customizing-Quests",
 
   "overworld_quests": [
     {
