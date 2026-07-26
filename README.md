@@ -83,16 +83,6 @@ To run this mod, you will need to install a few library mods depending on your l
 For detailed guides on how to set up quests, rewards, and technical mechanics, visit our official Wiki:
 👉 **[View the Wiki](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki)**
 
-<details>
-<summary><b>Click to see popular topics 💡</b></summary>
-
-* [📥 Getting Started](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Getting-Started)
-* [⚔️ Customizing Quests](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Quests-Setup)
-* [📅 Setting up Login Rewards](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Daily-Rewards)
-* [🖥️ Admin Commands](https://github.com/R3CTrc/R3CT-Daily-Quests-and-Rewards/wiki/Commands-&-Permissions)
-
-</details>
-
 ---
 
 ## ⚙️ Configuration & Customization
