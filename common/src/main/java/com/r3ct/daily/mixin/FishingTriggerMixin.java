@@ -4,6 +4,7 @@ import com.r3ct.daily.logic.QuestManager;
 import net.minecraft.advancements.criterion.FishingRodHookedTrigger;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,6 +24,9 @@ public abstract class FishingTriggerMixin {
                 if (!stack.isEmpty()) {
                     String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
                     QuestManager.handleAction(player, "FISHING", itemId, stack.getCount());
+                    if (stack.is(ItemTags.FISHES)) {
+                        QuestManager.handleAction(player, "FISHING", "r3ct_daily:raw_fishes", stack.getCount());
+                    }
                 }
             }
         }
