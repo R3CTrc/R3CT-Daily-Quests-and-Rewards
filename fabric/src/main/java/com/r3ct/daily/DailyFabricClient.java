@@ -21,7 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLScancode;
 
 public class DailyFabricClient implements ClientModInitializer {
 	public static KeyMapping openRewardsKey;
@@ -43,22 +43,22 @@ public class DailyFabricClient implements ClientModInitializer {
 
 		openRewardsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.open_rewards",
-				InputConstants.Type.KEYSYM,
-				GLFW.GLFW_KEY_H,
+				InputConstants.Type.KEYBOARD,
+				SDLScancode.SDL_SCANCODE_H,
 				R3CT_CATEGORY
 		));
 
 		openQuestsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.open_quests",
-				InputConstants.Type.KEYSYM,
-				GLFW.GLFW_KEY_G,
+				InputConstants.Type.KEYBOARD,
+				SDLScancode.SDL_SCANCODE_G,
 				R3CT_CATEGORY
 		));
 
 		toggleHudKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.r3ct_daily.toggle_hud",
-				InputConstants.Type.KEYSYM,
-				GLFW.GLFW_KEY_PERIOD,
+				InputConstants.Type.KEYBOARD,
+				SDLScancode.SDL_SCANCODE_PERIOD,
 				R3CT_CATEGORY
 		));
 

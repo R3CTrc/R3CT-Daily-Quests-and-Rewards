@@ -27,6 +27,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.NonNull;
+import org.lwjgl.sdl.SDLMouse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -267,7 +268,7 @@ public class QuestScreen extends Screen {
                 String costColor = (data.totalQuestPoints >= cost) ? "§a" : "§c";
                 rTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reroll.cost").getString() + " " + costColor + cost + " " + Component.translatable("r3ct_daily.unit.points").getString()).getVisualOrderText()));
 
-                guiGraphics.tooltip(this.font, rTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+                guiGraphics.tooltip(this.font, rTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
             }
         }
 
@@ -323,7 +324,7 @@ public class QuestScreen extends Screen {
             tTooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
             tTooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
             tTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
-            guiGraphics.tooltip(this.font, tTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+            guiGraphics.tooltip(this.font, tTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
         }
 
         guiGraphics.pose().popMatrix();
@@ -385,7 +386,7 @@ public class QuestScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
-        if (event.button() == 0) {
+        if (event.button() == SDLMouse.SDL_BUTTON_LEFT) {
             float scale = DailyClientConfig.getInstance().questScreenScale;
 
             int mX = (int)((event.x() - this.width / 2f) / scale + this.width / 2f);
@@ -535,7 +536,7 @@ public class QuestScreen extends Screen {
 
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.progress").getString() + " §b" + data.perfectDaysCount + "§f/" + reqDays).getVisualOrderText()));
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private void renderSimpleTooltip(GuiGraphicsExtractor guiGraphics, String title, String info, int mouseX, int mouseY) {
@@ -543,7 +544,7 @@ public class QuestScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal(title).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal(info).getVisualOrderText()));
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private void renderQuestTooltip(GuiGraphicsExtractor guiGraphics, int index, int mouseX, int mouseY) {
@@ -584,7 +585,7 @@ public class QuestScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.xp").getString() + " §e+" + xpReward + " §e" + Component.translatable("r3ct_daily.unit.xp").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reward").getString() + " §b" + itemAmount + "§bx §b" + q.getItemReward().getHoverName().getString()).getVisualOrderText()));
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private void renderDailyTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
@@ -623,7 +624,7 @@ public class QuestScreen extends Screen {
             }
         }
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private void renderLifetimeTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
@@ -648,7 +649,7 @@ public class QuestScreen extends Screen {
             ));
         }
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private Component getLifetimeTooltipLine(int current, int target, String reward, String color) {

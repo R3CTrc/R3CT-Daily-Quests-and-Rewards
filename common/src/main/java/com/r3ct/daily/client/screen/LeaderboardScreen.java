@@ -1,5 +1,6 @@
 package com.r3ct.daily.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.r3ct.daily.config.DailyClientConfig;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.data.TopEntry;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.jspecify.annotations.NonNull;
+import org.lwjgl.sdl.SDLMouse;
 
 import java.util.List;
 
@@ -108,7 +110,7 @@ public class LeaderboardScreen extends Screen {
             tt.add(ClientTooltipComponent.create(Component.literal("§f" + rewardsStr + ": §e" + hoveredEntry.totalRewards()).getVisualOrderText()));
             tt.add(ClientTooltipComponent.create(Component.literal("§f" + maxRStr + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysStr).getVisualOrderText()));
 
-            guiGraphics.tooltip(this.font, tt, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+            guiGraphics.tooltip(this.font, tt, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
 
             ItemStack head = new ItemStack(Items.PLAYER_HEAD);
             head.set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(hoveredEntry.name()));
@@ -120,7 +122,7 @@ public class LeaderboardScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
-        if (event.button() == 0) {
+        if (event.button() == SDLMouse.SDL_BUTTON_LEFT) {
             float scale = DailyClientConfig.getInstance().leaderboardScreenScale;
 
             int mX = (int)((event.x() - this.width / 2f) / scale + this.width / 2f);
@@ -161,7 +163,7 @@ public class LeaderboardScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (event.key() == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+        if (event.key() == InputConstants.KEY_ESCAPE) {
             if (this.minecraft != null && this.minecraft.player != null) {
                 this.minecraft.player.connection.sendCommand(this.boardType == 0 ? "daily quests" : "daily rewards");
             }

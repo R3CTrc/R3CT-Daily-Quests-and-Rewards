@@ -2,11 +2,11 @@ package com.r3ct.daily.network;
 
 import com.r3ct.daily.Constants;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record OpenRewardsPayload(
@@ -24,36 +24,18 @@ public record OpenRewardsPayload(
     public static final CustomPacketPayload.Type<OpenRewardsPayload> ID =
             new CustomPacketPayload.Type<>(Identifier.parse(Constants.MOD_ID + ":open_rewards"));
 
-    public static final StreamCodec<FriendlyByteBuf, OpenRewardsPayload> CODEC = CustomPacketPayload.codec(
-            OpenRewardsPayload::write,
+    public static final StreamCodec<FriendlyByteBuf, OpenRewardsPayload> CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, OpenRewardsPayload::rewardDay,
+            ByteBufCodecs.stringUtf8(32767), OpenRewardsPayload::lastRewardDate,
+            ByteBufCodecs.INT, OpenRewardsPayload::streak,
+            ByteBufCodecs.INT, OpenRewardsPayload::totalCollected,
+            ByteBufCodecs.stringUtf8(32767).apply(ByteBufCodecs.list()), OpenRewardsPayload::claimedRewardHistory,
+            ByteBufCodecs.INT, OpenRewardsPayload::availableRewardFreezes,
+            ByteBufCodecs.INT.apply(ByteBufCodecs.list()), OpenRewardsPayload::claimedBonusRewards,
+            ByteBufCodecs.INT, OpenRewardsPayload::maxRewardShields,
+            ByteBufCodecs.INT, OpenRewardsPayload::questRefreshHour,
             OpenRewardsPayload::new
-    );
-
-    public OpenRewardsPayload(FriendlyByteBuf buf) {
-        this(
-                buf.readInt(),
-                buf.readUtf(),
-                buf.readInt(),
-                buf.readInt(),
-                buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf),
-                buf.readInt(),
-                buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt),
-                buf.readInt(),
-                buf.readInt()
-        );
-    }
-
-    public void write(FriendlyByteBuf buf) {
-        buf.writeInt(rewardDay);
-        buf.writeUtf(lastRewardDate);
-        buf.writeInt(streak);
-        buf.writeInt(totalCollected);
-        buf.writeCollection(claimedRewardHistory, FriendlyByteBuf::writeUtf);
-        buf.writeInt(availableRewardFreezes);
-        buf.writeCollection(claimedBonusRewards, FriendlyByteBuf::writeInt);
-        buf.writeInt(maxRewardShields);
-        buf.writeInt(questRefreshHour);
-    }
+    ).cast();
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

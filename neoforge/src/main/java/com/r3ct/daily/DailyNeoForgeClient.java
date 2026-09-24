@@ -26,7 +26,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLScancode;
 
 public class DailyNeoForgeClient {
 
@@ -51,9 +51,9 @@ public class DailyNeoForgeClient {
 
         @SubscribeEvent
         public static void onKeyRegister(RegisterKeyMappingsEvent event) {
-            openRewardsKey = new KeyMapping("key.r3ct_daily.open_rewards", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, R3CT_CATEGORY);
-            openQuestsKey = new KeyMapping("key.r3ct_daily.open_quests", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, R3CT_CATEGORY);
-            toggleHudKey = new KeyMapping("key.r3ct_daily.toggle_hud", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_PERIOD, R3CT_CATEGORY);
+            openRewardsKey = new KeyMapping("key.r3ct_daily.open_rewards", InputConstants.Type.KEYBOARD, SDLScancode.SDL_SCANCODE_H, R3CT_CATEGORY);
+            openQuestsKey = new KeyMapping("key.r3ct_daily.open_quests", InputConstants.Type.KEYBOARD, SDLScancode.SDL_SCANCODE_G, R3CT_CATEGORY);
+            toggleHudKey = new KeyMapping("key.r3ct_daily.toggle_hud", InputConstants.Type.KEYBOARD, SDLScancode.SDL_SCANCODE_PERIOD, R3CT_CATEGORY);
 
             event.register(openRewardsKey);
             event.register(openQuestsKey);

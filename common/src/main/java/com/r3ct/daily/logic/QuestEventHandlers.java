@@ -240,7 +240,7 @@ public class QuestEventHandlers {
             var structuresAt = level.structureManager().getAllStructuresAt(pos);
 
             for (var structure : structuresAt.keySet()) {
-                var start = level.structureManager().getStructureWithPieceAt(pos, structure);
+                var start = level.structureManager().getStructureWithPieceAt(pos.getX(), pos.getY(), pos.getZ(), structure);
                 if (start != null && start.isValid()) {
                     String structId = registry.getKey(structure).toString();
                     QuestManager.handleAction(player, "ENTER_STRUCTURE", structId, 1);

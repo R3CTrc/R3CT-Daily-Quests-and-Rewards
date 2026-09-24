@@ -2,11 +2,11 @@ package com.r3ct.daily.network;
 
 import com.r3ct.daily.Constants;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record SyncQuestsPayload(
@@ -26,40 +26,20 @@ public record SyncQuestsPayload(
     public static final CustomPacketPayload.Type<SyncQuestsPayload> ID =
             new CustomPacketPayload.Type<>(Identifier.parse(Constants.MOD_ID + ":sync_quests"));
 
-    public static final StreamCodec<FriendlyByteBuf, SyncQuestsPayload> CODEC = CustomPacketPayload.codec(
-            SyncQuestsPayload::write,
+    public static final StreamCodec<FriendlyByteBuf, SyncQuestsPayload> CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, SyncQuestsPayload::questStreak,
+            ByteBufCodecs.INT, SyncQuestsPayload::totalQuestPoints,
+            ByteBufCodecs.INT, SyncQuestsPayload::dailyQuestsCompletedToday,
+            ByteBufCodecs.stringUtf8(32767).apply(ByteBufCodecs.list()), SyncQuestsPayload::activeQuests,
+            ByteBufCodecs.INT.apply(ByteBufCodecs.list()), SyncQuestsPayload::questProgress,
+            ByteBufCodecs.INT, SyncQuestsPayload::streak,
+            ByteBufCodecs.INT, SyncQuestsPayload::perfectDaysCount,
+            ByteBufCodecs.INT, SyncQuestsPayload::availableFreezes,
+            ByteBufCodecs.INT, SyncQuestsPayload::availableRewardFreezes,
+            ByteBufCodecs.BOOL.apply(ByteBufCodecs.list()), SyncQuestsPayload::questRewardsClaimed,
+            ByteBufCodecs.INT.apply(ByteBufCodecs.list()), SyncQuestsPayload::claimedPointRewards,
             SyncQuestsPayload::new
-    );
-
-    public SyncQuestsPayload(FriendlyByteBuf buf) {
-        this(
-                buf.readInt(),
-                buf.readInt(),
-                buf.readInt(),
-                buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf),
-                buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt),
-                buf.readInt(),
-                buf.readInt(),
-                buf.readInt(),
-                buf.readInt(),
-                buf.readCollection(ArrayList::new, FriendlyByteBuf::readBoolean),
-                buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt)
-        );
-    }
-
-    public void write(FriendlyByteBuf buf) {
-        buf.writeInt(questStreak);
-        buf.writeInt(totalQuestPoints);
-        buf.writeInt(dailyQuestsCompletedToday);
-        buf.writeCollection(activeQuests, FriendlyByteBuf::writeUtf);
-        buf.writeCollection(questProgress, FriendlyByteBuf::writeInt);
-        buf.writeInt(streak);
-        buf.writeInt(perfectDaysCount);
-        buf.writeInt(availableFreezes);
-        buf.writeInt(availableRewardFreezes);
-        buf.writeCollection(questRewardsClaimed, FriendlyByteBuf::writeBoolean);
-        buf.writeCollection(claimedPointRewards, FriendlyByteBuf::writeInt);
-    }
+    ).cast();
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

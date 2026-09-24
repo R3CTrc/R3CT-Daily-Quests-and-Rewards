@@ -22,6 +22,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.NonNull;
+import org.lwjgl.sdl.SDLMouse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -238,7 +239,7 @@ public class RewardScreen extends Screen {
             tTooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
             tTooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
             tTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
-            guiGraphics.tooltip(this.font, tTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+            guiGraphics.tooltip(this.font, tTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
         }
 
         guiGraphics.pose().popMatrix();
@@ -358,7 +359,7 @@ public class RewardScreen extends Screen {
             tooltip.add(ClientTooltipComponent.create(Component.literal("§6★ " + Component.translatable("r3ct_daily.rewards.tooltip.bonus_loot").getString()).getVisualOrderText()));
         }
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private void renderStreakTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
@@ -382,7 +383,7 @@ public class RewardScreen extends Screen {
         int maxRewardShields = payload.maxRewardShields();
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private void renderBonusTooltip(GuiGraphicsExtractor guiGraphics, int absoluteCollected, int mouseX, int mouseY) {
@@ -405,7 +406,7 @@ public class RewardScreen extends Screen {
             ));
         }
 
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private Component getBonusLine(int absoluteCollected, int targetDay, String reward, String color) {
@@ -427,7 +428,7 @@ public class RewardScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal(title).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal(info).getVisualOrderText()));
-        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
 
     private boolean isMouseOverSlot(double mouseX, double mouseY, int x, int y) {
@@ -436,7 +437,7 @@ public class RewardScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
-        if (event.button() == 0) {
+        if (event.button() == SDLMouse.SDL_BUTTON_LEFT) {
             float scale = DailyClientConfig.getInstance().rewardScreenScale;
 
             int mX = (int)((event.x() - this.width / 2f) / scale + this.width / 2f);

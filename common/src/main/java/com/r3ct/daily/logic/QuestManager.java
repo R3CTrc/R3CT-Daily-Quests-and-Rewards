@@ -27,6 +27,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -256,7 +257,7 @@ public class QuestManager {
                 var structureHolder = lookup.get(structureKey);
 
                 if (structureHolder.isPresent()) {
-                    return level.structureManager().getStructureWithPieceAt(pos, structureHolder.get().value()).isValid();
+                    return level.structureManager().getStructureWithPieceAt(pos.getX(), pos.getY(), pos.getZ(), structureHolder.get().value()).isValid();
                 }
             }
             return false;
@@ -625,7 +626,7 @@ public class QuestManager {
     public static void giveOrDrop(ServerPlayer player, ItemStack stack) {
         player.getInventory().add(stack);
         if (!stack.isEmpty()) {
-            player.drop(stack, false);
+            player.drop(stack, false, Prediction.PREDICTED);
         }
     }
 
