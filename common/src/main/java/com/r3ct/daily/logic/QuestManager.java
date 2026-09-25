@@ -18,6 +18,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +31,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -62,12 +62,12 @@ public class QuestManager {
     }
 
     public static void addPlacedBlock(BlockPos pos, Level level) {
-        String key = level.dimension().identifier() + ";" + pos.getX() + ";" + pos.getY() + ";" + pos.getZ();
+        String key = level.dimension().location().toString() + ";" + pos.getX() + ";" + pos.getY() + ";" + pos.getZ();
         PLACED_BLOCKS.add(key);
     }
 
     public static boolean removePlacedBlock(BlockPos pos, Level level) {
-        String key = level.dimension().identifier() + ";" + pos.getX() + ";" + pos.getY() + ";" + pos.getZ();
+        String key = level.dimension().location().toString() + ";" + pos.getX() + ";" + pos.getY() + ";" + pos.getZ();
         return PLACED_BLOCKS.remove(key);
     }
 
@@ -227,7 +227,7 @@ public class QuestManager {
     public static boolean isLocationValid(ServerPlayer player, String location) {
         if (location == null || location.isEmpty() || location.equalsIgnoreCase("any")) return true;
 
-        ServerLevel level = player.level();
+        ServerLevel level = player.serverLevel();
         BlockPos pos = player.blockPosition();
 
         if (location.startsWith("biome:")) {
@@ -235,10 +235,10 @@ public class QuestManager {
             Holder<Biome> currentBiome = level.getBiome(pos);
 
             if (biomeId.startsWith("#")) {
-                TagKey<Biome> tagKey = TagKey.create(Registries.BIOME, Identifier.parse(biomeId.substring(1).toLowerCase(Locale.ROOT)));
+                TagKey<Biome> tagKey = TagKey.create(Registries.BIOME, net.minecraft.resources.ResourceLocation.parse(biomeId.substring(1).toLowerCase(Locale.ROOT)));
                 return currentBiome.is(tagKey);
             } else {
-                ResourceKey<Biome> resKey = ResourceKey.create(Registries.BIOME, Identifier.parse(biomeId.toLowerCase(Locale.ROOT)));
+                ResourceKey<Biome> resKey = ResourceKey.create(Registries.BIOME, net.minecraft.resources.ResourceLocation.parse(biomeId.toLowerCase(Locale.ROOT)));
                 return currentBiome.is(resKey);
             }
         }
@@ -247,11 +247,11 @@ public class QuestManager {
             String structureId = location.substring(10);
 
             if (structureId.startsWith("#")) {
-                TagKey<Structure> tagKey = TagKey.create(Registries.STRUCTURE, Identifier.parse(structureId.substring(1).toLowerCase(Locale.ROOT)));
+                TagKey<Structure> tagKey = TagKey.create(Registries.STRUCTURE, net.minecraft.resources.ResourceLocation.parse(structureId.substring(1).toLowerCase(Locale.ROOT)));
                 return level.structureManager().getStructureWithPieceAt(pos, tagKey).isValid();
             } else {
                 var lookup = level.registryAccess().lookupOrThrow(Registries.STRUCTURE);
-                var structureKey = ResourceKey.create(Registries.STRUCTURE, Identifier.parse(structureId.toLowerCase(Locale.ROOT)));
+                var structureKey = ResourceKey.create(Registries.STRUCTURE, net.minecraft.resources.ResourceLocation.parse(structureId.toLowerCase(Locale.ROOT)));
                 var structureHolder = lookup.get(structureKey);
 
                 if (structureHolder.isPresent()) {
@@ -352,7 +352,6 @@ public class QuestManager {
             if (target.equals("r3ct_daily:dark_oak_logs") && stack.is(ItemTags.DARK_OAK_LOGS)) return true;
             if (target.equals("r3ct_daily:mangrove_logs") && stack.is(ItemTags.MANGROVE_LOGS)) return true;
             if (target.equals("r3ct_daily:cherry_logs") && stack.is(ItemTags.CHERRY_LOGS)) return true;
-            if (target.equals("r3ct_daily:pale_oak_logs") && stack.is(ItemTags.PALE_OAK_LOGS)) return true;
 
             if (target.equals("r3ct_daily:coal_ores") && stack.is(ItemTags.COAL_ORES)) return true;
             if (target.equals("r3ct_daily:iron_ores") && stack.is(ItemTags.IRON_ORES)) return true;
@@ -365,7 +364,7 @@ public class QuestManager {
 
             if (target.equals("r3ct_daily:full_beehive") && (invId.equals("minecraft:beehive") || invId.equals("minecraft:bee_nest"))) {
                 var beesData = stack.get(DataComponents.BEES);
-                if (beesData != null && beesData.bees().size() >= 3) {
+                if (beesData != null && beesData.size() >= 3) {
                     return true;
                 }
             }
@@ -581,7 +580,7 @@ public class QuestManager {
         }
 
         String parsedItem = selectedEntry.item != null ? selectedEntry.item.toLowerCase(Locale.ROOT) : "minecraft:paper";
-        var itemOpt = BuiltInRegistries.ITEM.getOptional(Identifier.parse(parsedItem));
+        var itemOpt = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(parsedItem));
         Item item = itemOpt.orElse(Items.PAPER);
 
         int baseAmount = selectedEntry.minAmount + rand.nextInt(Math.max(1, selectedEntry.maxAmount - selectedEntry.minAmount + 1));
@@ -630,7 +629,7 @@ public class QuestManager {
 
     public static ItemStack getMilestoneRewardStack(DailyServerConfig.MilestoneReward mr) {
         String parsedItem = mr.item != null ? mr.item.toLowerCase(Locale.ROOT) : "minecraft:paper";
-        var itemOpt = BuiltInRegistries.ITEM.getOptional(Identifier.parse(parsedItem));
+        var itemOpt = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(parsedItem));
         Item item = itemOpt.orElse(Items.PAPER);
 
         ItemStack stack = new ItemStack(item, mr.amount);
@@ -646,7 +645,7 @@ public class QuestManager {
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
 
-        var advancementHolder = server.getAdvancements().get(Identifier.parse(advancementId));
+        var advancementHolder = server.getAdvancements().get(ResourceLocation.parse(advancementId));
         if (advancementHolder != null) {
             var progress = player.getAdvancements().getOrStartProgress(advancementHolder);
             if (!progress.isDone()) {
@@ -841,8 +840,8 @@ public class QuestManager {
         Component clickHereRewardsComp = Component.translatable("r3ct_daily.message.click_here")
                 .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD)
                 .withStyle(style -> style
-                        .withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
-                        .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.rewards.open_menu"))));
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/daily rewards"))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("r3ct_daily.message.rewards.open_menu"))));
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.rewards.new_reward").withStyle(ChatFormatting.GREEN)
@@ -851,8 +850,8 @@ public class QuestManager {
         Component clickHereQuestsComp = Component.translatable("r3ct_daily.message.click_here")
                 .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD)
                 .withStyle(style -> style
-                        .withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-                        .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu"))));
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/daily quests"))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("r3ct_daily.message.quests.open_menu"))));
 
         player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                 Component.translatable("r3ct_daily.message.quests.new_quests").withStyle(ChatFormatting.GREEN)
@@ -902,7 +901,7 @@ public class QuestManager {
 
         MinecraftServer server = player.level().getServer();
         if (server != null) {
-            server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+            ModState.get(server).setDirty();
         }
         Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
                 data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,

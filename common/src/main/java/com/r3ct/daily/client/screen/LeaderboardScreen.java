@@ -1,15 +1,12 @@
 package com.r3ct.daily.client.screen;
 
+import com.mojang.authlib.properties.PropertyMap;
 import com.r3ct.daily.config.DailyClientConfig;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.data.TopEntry;
 import com.r3ct.daily.network.RequestLeaderboardPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -17,9 +14,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Optional;
 
 public class LeaderboardScreen extends Screen {
     private final int boardType;
@@ -38,17 +35,17 @@ public class LeaderboardScreen extends Screen {
     }
 
     @Override
-    public void render(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 
         float scale = DailyClientConfig.getInstance().leaderboardScreenScale;
 
         mouseX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
         mouseY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
 
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(this.width / 2f, this.height / 2f);
-        guiGraphics.pose().scale(scale, scale);
-        guiGraphics.pose().translate(-this.width / 2f, -this.height / 2f);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(this.width / 2f, this.height / 2f, 0f);
+        guiGraphics.pose().scale(scale, scale, 1f);
+        guiGraphics.pose().translate(-this.width / 2f, -this.height / 2f, 0f);
 
         int leftPos = (this.width - boardWidth) / 2;
         int topPos = (this.height - boardHeight) / 2;
@@ -93,7 +90,7 @@ public class LeaderboardScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (hoveredEntry != null) {
-            java.util.List<ClientTooltipComponent> tt = new java.util.ArrayList<>();
+            java.util.List<Component> tt = new java.util.ArrayList<>();
 
             String questsStr = Component.translatable("r3ct_daily.leaderboard.tooltip.quests_completed").getString();
             String maxQStr = Component.translatable("r3ct_daily.leaderboard.tooltip.max_quest_streak").getString();
@@ -101,30 +98,30 @@ public class LeaderboardScreen extends Screen {
             String maxRStr = Component.translatable("r3ct_daily.leaderboard.tooltip.max_reward_streak").getString();
             String daysStr = Component.translatable("r3ct_daily.leaderboard.tooltip.days").getString();
 
-            tt.add(ClientTooltipComponent.create(Component.literal("     §f§l" + hoveredEntry.name()).getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§f" + questsStr + ": §e" + hoveredEntry.totalQuests()).getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§f" + maxQStr + ": §e" + hoveredEntry.maxQuestStreak() + " " + daysStr).getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§f" + rewardsStr + ": §e" + hoveredEntry.totalRewards()).getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§f" + maxRStr + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysStr).getVisualOrderText()));
+            tt.add(Component.literal("     §f§l" + hoveredEntry.name()));
+            tt.add(Component.literal("§8----------------"));
+            tt.add(Component.literal("§f" + questsStr + ": §e" + hoveredEntry.totalQuests()));
+            tt.add(Component.literal("§f" + maxQStr + ": §e" + hoveredEntry.maxQuestStreak() + " " + daysStr));
+            tt.add(Component.literal("§f" + rewardsStr + ": §e" + hoveredEntry.totalRewards()));
+            tt.add(Component.literal("§f" + maxRStr + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysStr));
 
-            guiGraphics.renderTooltip(this.font, tt, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+            guiGraphics.renderComponentTooltip(this.font, tt, mouseX, mouseY);
 
             ItemStack head = new ItemStack(Items.PLAYER_HEAD);
-            head.set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(hoveredEntry.name()));
+            head.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(hoveredEntry.name()), Optional.empty(), new PropertyMap()));
             guiGraphics.renderItem(head, mouseX + 11, mouseY - 14);
         }
 
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
-        if (event.button() == 0) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
             float scale = DailyClientConfig.getInstance().leaderboardScreenScale;
 
-            int mX = (int)((event.x() - this.width / 2f) / scale + this.width / 2f);
-            int mY = (int)((event.y() - this.height / 2f) / scale + this.height / 2f);
+            int mX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
+            int mY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
 
             int leftPos = (this.width - boardWidth) / 2;
             int topPos = (this.height - boardHeight) / 2;
@@ -160,24 +157,24 @@ public class LeaderboardScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        if (event.key() == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
             if (this.minecraft != null && this.minecraft.player != null) {
                 this.minecraft.player.connection.sendCommand(this.boardType == 0 ? "daily quests" : "daily rewards");
             }
             return true;
         }
 
-        if (Services.PLATFORM.isQuestKey(event)) {
+        if (Services.PLATFORM.isQuestKey(keyCode)) {
             this.onClose();
             return true;
         }
-        if (Services.PLATFORM.isRewardKey(event)) {
+        if (Services.PLATFORM.isRewardKey(keyCode)) {
             this.onClose();
             return true;
         }
 
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void renderList(GuiGraphics guiGraphics, List<TopEntry> list, int startX, int startY, int mouseX, int mouseY) {
@@ -196,7 +193,7 @@ public class LeaderboardScreen extends Screen {
             String valColor = (i == 0) ? "§d" : (i == 1) ? "§e" : (i == 2) ? "§b" : "§f";
 
             ItemStack head = new ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
-            head.set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(entry.name()));
+            head.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(entry.name()), Optional.empty(), new PropertyMap()));
             guiGraphics.renderItem(head, startX, y);
 
             guiGraphics.drawString(this.font, "§6" + (i + 1) + ". " + nameColor + entry.name(), startX + 20, y + 4, 0xFFFFFFFF, true);

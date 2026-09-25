@@ -18,9 +18,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,7 +38,7 @@ public class DailyCommands {
     private static void syncPlayerData(ServerPlayer target, PlayerData data) {
         MinecraftServer server = target.level().getServer();
         if (server != null) {
-            server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+            ModState.get(server).setDirty();
         }
         Services.PLATFORM.sendToPlayer(target, new SyncQuestsPayload(
                 data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
@@ -51,13 +49,7 @@ public class DailyCommands {
     }
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        Predicate<CommandSourceStack> isOp = source -> {
-            if (source.getPlayer() != null) {
-                NameAndId nameAndId = new NameAndId(source.getPlayer().getGameProfile());
-                return source.getServer().getPlayerList().isOp(nameAndId);
-            }
-            return true;
-        };
+        Predicate<CommandSourceStack> isOp = source -> source.hasPermission(2);
 
         dispatcher.register(Commands.literal("daily")
 
@@ -202,7 +194,8 @@ public class DailyCommands {
 
                     data.lastRewardDate = today.toString();
                     data.rewardDay = (data.rewardDay >= 7) ? 1 : data.rewardDay + 1;
-                    context.getSource().getServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+
+                    ModState.get(context.getSource().getServer()).setDirty();
 
                     Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
                             data.rewardDay, data.lastRewardDate, data.streak,
@@ -445,7 +438,7 @@ public class DailyCommands {
                                             ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                             ModState state = ModState.get(context.getSource().getServer());
                                             PlayerData newData = new PlayerData();
-                                            newData.lastKnownName = target.getGameProfile().name();
+                                            newData.lastKnownName = target.getGameProfile().getName();
                                             state.players.put(target.getUUID(), newData);
                                             syncPlayerData(target, newData);
 

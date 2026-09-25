@@ -8,7 +8,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class ItemSelectionScreen extends Screen {
     }
 
     @Override
-    public void render(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.fill(0, 0, this.width, this.height, 0xD9000000);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
@@ -70,39 +69,38 @@ public class ItemSelectionScreen extends Screen {
 
             if (mouseX >= slotX && mouseX <= slotX + slotSize && mouseY >= slotY && mouseY <= slotY + slotSize) {
                 guiGraphics.fill(slotX, slotY, slotX + slotSize, slotY + slotSize, 0x44FFFFFF);
-                guiGraphics.setTooltipForNextFrame(this.font, stack.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(this.minecraft.level), this.minecraft.player, net.minecraft.world.item.TooltipFlag.NORMAL), java.util.Optional.empty(), mouseX, mouseY);
+                guiGraphics.renderTooltip(this.font, stack, mouseX, mouseY);
             }
         }
     }
 
     @Override
-    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
-        double mouseX = event.x();
-        double mouseY = event.y();
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
+            int slotSize = 24;
+            int spacing = 4;
+            int step = slotSize + spacing;
+            int totalWidth = (slots.size() * step) - spacing;
+            int startX = (this.width - totalWidth) / 2;
+            int startY = this.height / 2 - (slotSize / 2);
 
-        int slotSize = 24;
-        int spacing = 4;
-        int step = slotSize + spacing;
-        int totalWidth = (slots.size() * step) - spacing;
-        int startX = (this.width - totalWidth) / 2;
-        int startY = this.height / 2 - (slotSize / 2);
+            Player player = Minecraft.getInstance().player;
 
-        Player player = Minecraft.getInstance().player;
+            for (int i = 0; i < slots.size(); i++) {
+                int slotX = startX + (i * step);
+                int slotY = startY;
 
-        for (int i = 0; i < slots.size(); i++) {
-            int slotX = startX + (i * step);
-            int slotY = startY;
-
-            if (mouseX >= slotX && mouseX <= slotX + slotSize && mouseY >= slotY && mouseY <= slotY + slotSize) {
-                if (player != null) {
-                    int slot = slots.get(i);
-                    ItemStack stack = player.getInventory().getItem(slot);
-                    int actualTake = Math.min(amountToTake, stack.getCount());
-                    this.minecraft.setScreen(new ConfirmSubmitScreen(this.parent, quest, questIndex, slot, actualTake));
+                if (mouseX >= slotX && mouseX <= slotX + slotSize && mouseY >= slotY && mouseY <= slotY + slotSize) {
+                    if (player != null) {
+                        int slot = slots.get(i);
+                        ItemStack stack = player.getInventory().getItem(slot);
+                        int actualTake = Math.min(amountToTake, stack.getCount());
+                        this.minecraft.setScreen(new ConfirmSubmitScreen(this.parent, quest, questIndex, slot, actualTake));
+                    }
+                    return true;
                 }
-                return true;
             }
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 }

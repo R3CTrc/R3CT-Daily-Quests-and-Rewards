@@ -12,12 +12,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Ravager;
-import net.minecraft.world.entity.monster.illager.Pillager;
+import net.minecraft.world.entity.monster.Pillager;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -48,7 +47,7 @@ public class QuestEventHandlers {
                     Component.translatable("r3ct_daily.message.dimension_discovered", dimComp).withStyle(ChatFormatting.GREEN)
             ));
 
-            server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+            ModState.get(server).setDirty();
         }
     }
 
@@ -92,8 +91,6 @@ public class QuestEventHandlers {
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:mangrove_logs", -1);
                 else if (state.is(BlockTags.CHERRY_LOGS))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:cherry_logs", -1);
-                else if (state.is(BlockTags.PALE_OAK_LOGS))
-                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:pale_oak_logs", -1);
 
                 return;
             }
@@ -112,7 +109,6 @@ public class QuestEventHandlers {
         else if (state.is(BlockTags.DARK_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:dark_oak_logs", 1);
         else if (state.is(BlockTags.MANGROVE_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:mangrove_logs", 1);
         else if (state.is(BlockTags.CHERRY_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:cherry_logs", 1);
-        else if (state.is(BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:pale_oak_logs", 1);
 
         if (state.is(BlockTags.COAL_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:coal_ores", 1);
         if (state.is(BlockTags.IRON_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:iron_ores", 1);
@@ -162,7 +158,7 @@ public class QuestEventHandlers {
 
         enchantments.keySet().forEach(holder -> {
             holder.unwrapKey().ifPresent(key -> {
-                String enchantId = key.identifier().toString();
+                String enchantId = key.location().toString();
                 QuestManager.handleAction(player, "ENCHANT_WITH", enchantId, 1);
             });
         });
@@ -209,7 +205,7 @@ public class QuestEventHandlers {
             }
 
             if (needsBiomeCheck) {
-                String biomeId = player.level().getBiome(player.blockPosition()).unwrapKey().map(key -> key.identifier().toString()).orElse("unknown");
+                String biomeId = player.level().getBiome(player.blockPosition()).unwrapKey().map(key -> key.location().toString()).orElse("unknown");
 
                 QuestManager.handleAction(player, "VISIT_BIOME", biomeId, 1);
                 QuestManager.handleAction(player, "TIME_IN_BIOME", biomeId, 1);
@@ -236,13 +232,16 @@ public class QuestEventHandlers {
 
             ServerLevel level = (ServerLevel) player.level();
             BlockPos pos = player.blockPosition();
-            var registry = level.registryAccess().lookupOrThrow(Registries.STRUCTURE);
+
+            var registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
             var structuresAt = level.structureManager().getAllStructuresAt(pos);
 
             for (var structure : structuresAt.keySet()) {
                 var start = level.structureManager().getStructureWithPieceAt(pos, structure);
                 if (start != null && start.isValid()) {
-                    String structId = registry.getKey(structure).toString();
+                    net.minecraft.resources.ResourceLocation loc = registry.getKey(structure);
+                    String structId = loc != null ? loc.toString() : "unknown";
+
                     QuestManager.handleAction(player, "ENTER_STRUCTURE", structId, 1);
                 }
             }

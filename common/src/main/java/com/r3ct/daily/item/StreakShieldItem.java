@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ public class StreakShieldItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
@@ -62,7 +62,7 @@ public class StreakShieldItem extends Item {
                             Component.translatable("r3ct_daily.message.shield.quest.full", maxComp).withStyle(ChatFormatting.RED)
                     ));
 
-                    return InteractionResult.FAIL;
+                    return InteractionResultHolder.fail(stack);
                 }
             } else {
                 int maxRewardShields = DailyServerConfig.mechanics.streaks.maxStoredRewardShields;
@@ -92,11 +92,11 @@ public class StreakShieldItem extends Item {
                             Component.translatable("r3ct_daily.message.shield.reward.full", maxComp).withStyle(ChatFormatting.RED)
                     ));
 
-                    return InteractionResult.FAIL;
+                    return InteractionResultHolder.fail(stack);
                 }
             }
 
-            world.getServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+            ModState.get(world.getServer()).setDirty();
 
             Services.PLATFORM.sendToPlayer(serverPlayer, new SyncQuestsPayload(
                     data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
@@ -105,9 +105,9 @@ public class StreakShieldItem extends Item {
                     data.questRewardsClaimed, data.claimedPointRewards
             ));
 
-            return InteractionResult.CONSUME;
+            return InteractionResultHolder.consume(stack);
         }
 
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.success(stack);
     }
 }

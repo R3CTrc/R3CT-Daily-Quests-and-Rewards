@@ -11,17 +11,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,7 +43,7 @@ public class RewardScreen extends Screen {
     }
 
     @Override
-    public void render(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         float scale = DailyClientConfig.getInstance().rewardScreenScale;
@@ -56,10 +51,10 @@ public class RewardScreen extends Screen {
         mouseX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
         mouseY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
 
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(this.width / 2f, this.height / 2f);
-        guiGraphics.pose().scale(scale, scale);
-        guiGraphics.pose().translate(-this.width / 2f, -this.height / 2f);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(this.width / 2f, this.height / 2f, 0f);
+        guiGraphics.pose().scale(scale, scale, 1f);
+        guiGraphics.pose().translate(-this.width / 2f, -this.height / 2f, 0f);
 
         int leftPos = (this.width - imageWidth) / 2;
         int topPos = (this.height - imageHeight) / 2;
@@ -234,14 +229,14 @@ public class RewardScreen extends Screen {
         }
 
         if (trophyHover) {
-            List<ClientTooltipComponent> tTooltip = new ArrayList<>();
-            tTooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
-            tTooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-            tTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
-            guiGraphics.renderTooltip(this.font, tTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+            List<Component> tTooltip = new ArrayList<>();
+            tTooltip.add(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()));
+            tTooltip.add(Component.literal("§8----------------"));
+            tTooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()));
+            guiGraphics.renderComponentTooltip(this.font, tTooltip, mouseX, mouseY);
         }
 
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
     }
 
     private void renderBonusMilestones(GuiGraphics g, int x, int y, int bWidth, int mouseX, int mouseY) {
@@ -295,17 +290,17 @@ public class RewardScreen extends Screen {
             g.drawString(this.font, amounts[i], startX + 18, startY + 4, 0xFF000000, false);
 
             if (claimed) {
-                g.pose().pushMatrix();
-                g.pose().translate(0, 0);
+                g.pose().pushPose();
+                g.pose().translate(0, 0, 0f);
                 g.drawString(this.font, "§a✔", startX + 10, startY + 8, 0xFFFFFFFF, true);
-                g.pose().popMatrix();
+                g.pose().popPose();
             } else if (canClaim) {
-                g.pose().pushMatrix();
-                g.pose().translate(mX, startY + 22);
-                g.pose().scale(1.5f, 1.5f);
+                g.pose().pushPose();
+                g.pose().translate(mX, startY + 22, 0f);
+                g.pose().scale(1.5f, 1.5f, 1f);
                 String arrow = (time % 1000 < 500) ? "§e↑" : "§6↑";
                 g.drawString(this.font, arrow, -this.font.width("↑") / 2, 0, 0xFF000000, true);
-                g.pose().popMatrix();
+                g.pose().popPose();
             }
         }
     }
@@ -316,18 +311,18 @@ public class RewardScreen extends Screen {
         boolean czyOdebrane = juzDzisiajOdebrane ? ((data.rewardDay == 1) || (day < data.rewardDay)) : (day < data.rewardDay);
         boolean czyMoznaOdebrac = (day == data.rewardDay) && !juzDzisiajOdebrane;
 
-        List<ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.rewards.tooltip.day.title", day).getString()).getVisualOrderText()));
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add(Component.literal("§6§l" + Component.translatable("r3ct_daily.rewards.tooltip.day.title", day).getString()));
 
         String statusRaw = czyOdebrane ? "§a" + Component.translatable("r3ct_daily.rewards.status.claimed").getString() : (czyMoznaOdebrac ? "§e" + Component.translatable("r3ct_daily.rewards.status.claimable").getString() : "§c" + Component.translatable("r3ct_daily.rewards.status.locked").getString());
-        tooltip.add(ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.rewards.tooltip.status").getString() + " " + statusRaw).getVisualOrderText()));
+        tooltip.add(Component.literal(Component.translatable("r3ct_daily.rewards.tooltip.status").getString() + " " + statusRaw));
 
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+        tooltip.add(Component.literal("§8----------------"));
 
         if (czyOdebrane) {
             String zHisto = (data.claimedRewardHistory != null && data.claimedRewardHistory.size() > day - 1) ? data.claimedRewardHistory.get(day - 1) : "";
             if (zHisto != null && !zHisto.isEmpty()) {
-                tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString()).getVisualOrderText()));
+                tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString()));
 
                 String[] items = zHisto.split(",");
                 for (String itemStr : items) {
@@ -339,56 +334,56 @@ public class RewardScreen extends Screen {
                         String translationKey = parts[1];
 
                         MutableComponent line = Component.literal("  - §b" + amount + "x ").append(Component.translatable(translationKey).withStyle(ChatFormatting.AQUA));
-                        tooltip.add(ClientTooltipComponent.create(line.getVisualOrderText()));
+                        tooltip.add(line);
                     } else {
-                        tooltip.add(ClientTooltipComponent.create(Component.literal("  - " + itemStr).getVisualOrderText()));
+                        tooltip.add(Component.literal("  - " + itemStr));
                     }
                 }
             } else {
-                tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §8(" + Component.translatable("r3ct_daily.rewards.tooltip.no_data").getString() + ")").getVisualOrderText()));
+                tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §8(" + Component.translatable("r3ct_daily.rewards.tooltip.no_data").getString() + ")"));
             }
         } else if (day == 7) {
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §d" + Component.translatable("r3ct_daily.rewards.tooltip.epic_rewards").getString()).getVisualOrderText()));
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§b+ 1 " + Component.translatable("r3ct_daily.rewards.tooltip.shield").getString()).getVisualOrderText()));
+            tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §d" + Component.translatable("r3ct_daily.rewards.tooltip.epic_rewards").getString()));
+            tooltip.add(Component.literal("§b+ 1 " + Component.translatable("r3ct_daily.rewards.tooltip.shield").getString()));
         } else {
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §7§k???").getVisualOrderText()));
+            tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §7§k???"));
         }
 
         if (czyMoznaOdebrac && data.streak >= 7) {
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§6★ " + Component.translatable("r3ct_daily.rewards.tooltip.bonus_loot").getString()).getVisualOrderText()));
+            tooltip.add(Component.literal("§6★ " + Component.translatable("r3ct_daily.rewards.tooltip.bonus_loot").getString()));
         }
 
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
     }
 
     private void renderStreakTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        List<ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.rewards.tooltip.streak.title").getString()).getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add(Component.literal("§6§l" + Component.translatable("r3ct_daily.rewards.tooltip.streak.title").getString()));
+        tooltip.add(Component.literal("§8----------------"));
         if (data.streak >= 7) {
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§6" + Component.translatable("r3ct_daily.rewards.tooltip.streak.bonus_active").getString()).getVisualOrderText()));
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§7" + Component.translatable("r3ct_daily.rewards.tooltip.streak.bonus_desc").getString()).getVisualOrderText()));
+            tooltip.add(Component.literal("§6" + Component.translatable("r3ct_daily.rewards.tooltip.streak.bonus_active").getString()));
+            tooltip.add(Component.literal("§7" + Component.translatable("r3ct_daily.rewards.tooltip.streak.bonus_desc").getString()));
         } else {
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req1").getString()).getVisualOrderText()));
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req2").getString()).getVisualOrderText()));
+            tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req1").getString()));
+            tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req2").getString()));
         }
 
-        tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_title").getString()).getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.freeze_desc1").getString()).getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.literal("§b" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_title").getString()));
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.freeze_desc1").getString()));
+        tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.freeze_desc2").getString()));
+        tooltip.add(Component.literal(""));
         int maxRewardShields = payload.maxRewardShields();
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
+        tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields));
 
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
     }
 
     private void renderBonusTooltip(GuiGraphics guiGraphics, int absoluteCollected, int mouseX, int mouseY) {
-        List<ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct_daily.rewards.tooltip.bonus_main.title").getString()).getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add(Component.literal("§d§l" + Component.translatable("r3ct_daily.rewards.tooltip.bonus_main.title").getString()));
+        tooltip.add(Component.literal("§8----------------"));
 
         DailyServerConfig.MilestoneReward[] mr = {
                 DailyServerConfig.bonuses.bonus_7,
@@ -400,12 +395,10 @@ public class RewardScreen extends Screen {
         for (int i = 0; i < 3; i++) {
             ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
             String label = mr[i].amount + "x " + stack.getHoverName().getString();
-            tooltip.add(ClientTooltipComponent.create(
-                    getBonusLine(absoluteCollected, thresholds[i], label, mr[i].getFormattedColor()).getVisualOrderText()
-            ));
+            tooltip.add(getBonusLine(absoluteCollected, thresholds[i], label, mr[i].getFormattedColor()));
         }
 
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        guiGraphics.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
     }
 
     private Component getBonusLine(int absoluteCollected, int targetDay, String reward, String color) {
@@ -423,11 +416,11 @@ public class RewardScreen extends Screen {
     }
 
     private void renderSimpleTooltip(GuiGraphics guiGraphics, String title, String info, int mouseX, int mouseY) {
-        List<ClientTooltipComponent> tooltip = new ArrayList<>();
-        tooltip.add(ClientTooltipComponent.create(Component.literal(title).getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal(info).getVisualOrderText()));
-        guiGraphics.renderTooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add(Component.literal(title));
+        tooltip.add(Component.literal("§8----------------"));
+        tooltip.add(Component.literal(info));
+        guiGraphics.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
     }
 
     private boolean isMouseOverSlot(double mouseX, double mouseY, int x, int y) {
@@ -435,12 +428,12 @@ public class RewardScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
-        if (event.button() == 0) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
             float scale = DailyClientConfig.getInstance().rewardScreenScale;
 
-            int mX = (int)((event.x() - this.width / 2f) / scale + this.width / 2f);
-            int mY = (int)((event.y() - this.height / 2f) / scale + this.height / 2f);
+            int mX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
+            int mY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
 
             int leftPos = (this.width - imageWidth) / 2;
             int topPos = (this.height - imageHeight) / 2;
@@ -531,16 +524,16 @@ public class RewardScreen extends Screen {
                 }
             }
         }
-        return false;
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        if (Services.PLATFORM.isRewardKey(event)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (Services.PLATFORM.isRewardKey(keyCode)) {
             this.onClose();
             return true;
         }
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private ItemStack getIconForDay(int day) {

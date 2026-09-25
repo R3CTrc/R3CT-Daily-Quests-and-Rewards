@@ -11,7 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -25,7 +25,6 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -99,7 +98,7 @@ public class RewardManager {
                 if (potionLookup != null) {
                     var potionList = potionLookup.listElements().filter(ref -> {
                         if (ref.unwrapKey().isEmpty()) return true;
-                        String path = ref.unwrapKey().get().identifier().getPath();
+                        String path = ref.unwrapKey().get().location().getPath();
                         return !path.equals("empty") && !path.equals("water") && !path.equals("mundane")
                                 && !path.equals("thick") && !path.equals("awkward");
                     }).toList();
@@ -242,7 +241,7 @@ public class RewardManager {
                 return speedPot;
 
             default:
-                var item = BuiltInRegistries.ITEM.getOptional(Identifier.parse(rewardId)).orElse(Items.AIR);
+                var item = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(rewardId)).orElse(Items.AIR);
                 return item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item, amount);
         }
     }
@@ -353,7 +352,7 @@ public class RewardManager {
             ));
         }
 
-        server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+        ModState.get(server).setDirty();
 
         int visualStreak = data.streak;
         LocalDate today = LocalDateTime.now().minusHours(DailyServerConfig.mechanics.technical.questRefreshHour).toLocalDate();

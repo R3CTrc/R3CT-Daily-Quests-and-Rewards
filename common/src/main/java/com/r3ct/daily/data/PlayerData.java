@@ -48,11 +48,11 @@ public class PlayerData {
     public static final Codec<PlayerData> CODEC = CompoundTag.CODEC.xmap(PlayerData::fromNbt, PlayerData::toNbt);
 
     public PlayerData() {
-        for(int i=0; i<7; i++) claimedRewardHistory.add("");
+        for (int i = 0; i < 7; i++) claimedRewardHistory.add("");
         activeQuests.clear();
         questProgress.clear();
         questRewardsClaimed.clear();
-        for(int i=0; i<5; i++) {
+        for (int i = 0; i < 5; i++) {
             activeQuests.add("");
             questProgress.add(0);
             questRewardsClaimed.add(false);
@@ -119,35 +119,37 @@ public class PlayerData {
     public static PlayerData fromNbt(CompoundTag nbt) {
         PlayerData data = new PlayerData();
 
-        data.rewardDay = nbt.getInt("rewardDay").orElse(1);
-        data.streak = nbt.getInt("streak").orElse(0);
-        data.totalCollected = nbt.getInt("totalCollected").orElse(0);
-        data.availableRewardFreezes = nbt.getInt("availableRewardFreezes").orElse(0);
+        data.rewardDay = nbt.contains("rewardDay") ? nbt.getInt("rewardDay") : 1;
 
-        data.questStreak = nbt.getInt("questStreak").orElse(0);
-        data.totalQuestPoints = nbt.getInt("totalQuestPoints").orElse(0);
-        data.dailyQuestsCompletedToday = nbt.getInt("dailyQuestsCompletedToday").orElse(0);
+        data.streak = nbt.getInt("streak");
+        data.totalCollected = nbt.getInt("totalCollected");
+        data.availableRewardFreezes = nbt.getInt("availableRewardFreezes");
 
-        data.maxQuestStreak = nbt.getInt("maxQuestStreak").orElse(0);
-        data.absoluteRewardStreak = nbt.getInt("absoluteRewardStreak").orElse(0);
-        data.maxRewardStreak = nbt.getInt("maxRewardStreak").orElse(0);
-        data.lastKnownName = nbt.getString("lastKnownName").orElse(Component.translatable("r3ct_daily.misc.none").getString());
+        data.questStreak = nbt.getInt("questStreak");
+        data.totalQuestPoints = nbt.getInt("totalQuestPoints");
+        data.dailyQuestsCompletedToday = nbt.getInt("dailyQuestsCompletedToday");
 
-        data.perfectDaysCount = nbt.getInt("perfectDaysCount").orElse(0);
-        data.availableFreezes = nbt.getInt("availableFreezes").orElse(0);
+        data.maxQuestStreak = nbt.getInt("maxQuestStreak");
+        data.absoluteRewardStreak = nbt.getInt("absoluteRewardStreak");
+        data.maxRewardStreak = nbt.getInt("maxRewardStreak");
 
-        data.totalQuestsCompleted = nbt.getInt("totalQuestsCompleted").orElse(0);
+        data.lastKnownName = nbt.contains("lastKnownName") ? nbt.getString("lastKnownName") : Component.translatable("r3ct_daily.misc.none").getString();
 
-        data.lastRewardDate = nbt.getString("lastRewardDate").orElse("");
-        data.lastStreakDate = nbt.getString("lastStreakDate").orElse("");
-        data.lastQuestDate = nbt.getString("lastQuestDate").orElse("");
-        data.lastQuestStreakDate = nbt.getString("lastQuestStreakDate").orElse("");
+        data.perfectDaysCount = nbt.getInt("perfectDaysCount");
+        data.availableFreezes = nbt.getInt("availableFreezes");
+
+        data.totalQuestsCompleted = nbt.getInt("totalQuestsCompleted");
+
+        data.lastRewardDate = nbt.getString("lastRewardDate");
+        data.lastStreakDate = nbt.getString("lastStreakDate");
+        data.lastQuestDate = nbt.getString("lastQuestDate");
+        data.lastQuestStreakDate = nbt.getString("lastQuestStreakDate");
 
         if (nbt.contains("activeQuests")) {
             data.activeQuests.clear();
             if (nbt.get("activeQuests") instanceof ListTag list) {
                 for (int i = 0; i < list.size(); i++) {
-                    data.activeQuests.add(list.getString(i).orElse(""));
+                    data.activeQuests.add(list.getString(i));
                 }
             }
         }
@@ -156,7 +158,7 @@ public class PlayerData {
             data.questProgress.clear();
             if (nbt.get("questProgress") instanceof ListTag list) {
                 for (int i = 0; i < list.size(); i++) {
-                    data.questProgress.add(list.getInt(i).orElse(0));
+                    data.questProgress.add(list.getInt(i));
                 }
             }
         }
@@ -165,7 +167,7 @@ public class PlayerData {
             data.claimedRewardHistory.clear();
             if (nbt.get("claimedRewardHistory") instanceof ListTag list) {
                 for (int i = 0; i < list.size(); i++) {
-                    data.claimedRewardHistory.add(list.getString(i).orElse(""));
+                    data.claimedRewardHistory.add(list.getString(i));
                 }
             }
         }
@@ -174,7 +176,7 @@ public class PlayerData {
             data.unlockedDimensions.clear();
             if (nbt.get("unlockedDimensions") instanceof ListTag list) {
                 for (int i = 0; i < list.size(); i++) {
-                    data.unlockedDimensions.add(list.getString(i).orElse(""));
+                    data.unlockedDimensions.add(list.getString(i));
                 }
             }
         }
@@ -183,7 +185,7 @@ public class PlayerData {
             data.questRewardsClaimed.clear();
             if (nbt.get("questRewardsClaimed") instanceof ListTag list) {
                 for (int i = 0; i < list.size(); i++) {
-                    data.questRewardsClaimed.add(list.getInt(i).orElse(0) == 1);
+                    data.questRewardsClaimed.add(list.getInt(i) == 1);
                 }
             }
         }
@@ -192,7 +194,7 @@ public class PlayerData {
             data.claimedPointRewards.clear();
             if (nbt.get("claimedPointRewards") instanceof ListTag list) {
                 for (int i = 0; i < list.size(); i++) {
-                    data.claimedPointRewards.add(list.getInt(i).orElse(0));
+                    data.claimedPointRewards.add(list.getInt(i));
                 }
             }
         }
@@ -201,7 +203,7 @@ public class PlayerData {
             data.claimedBonusRewards.clear();
             if (nbt.get("claimedBonusRewards") instanceof ListTag list) {
                 for (int i = 0; i < list.size(); i++) {
-                    data.claimedBonusRewards.add(list.getInt(i).orElse(0));
+                    data.claimedBonusRewards.add(list.getInt(i));
                 }
             }
         }
