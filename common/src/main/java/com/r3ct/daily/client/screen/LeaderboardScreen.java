@@ -1,22 +1,20 @@
 package com.r3ct.daily.client.screen;
 
-import com.mojang.authlib.properties.PropertyMap;
 import com.r3ct.daily.config.DailyClientConfig;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.data.TopEntry;
 import com.r3ct.daily.network.RequestLeaderboardPayload;
+import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ResolvableProfile;
 
 import java.util.List;
-import java.util.Optional;
 
 public class LeaderboardScreen extends Screen {
     private final int boardType;
@@ -108,7 +106,7 @@ public class LeaderboardScreen extends Screen {
             guiGraphics.renderComponentTooltip(this.font, tt, mouseX, mouseY);
 
             ItemStack head = new ItemStack(Items.PLAYER_HEAD);
-            head.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(hoveredEntry.name()), Optional.empty(), new PropertyMap()));
+            head.getOrCreateTag().putString("SkullOwner", hoveredEntry.name());
             guiGraphics.renderItem(head, mouseX + 11, mouseY - 14);
         }
 
@@ -135,7 +133,9 @@ public class LeaderboardScreen extends Screen {
             if (mX >= switchX && mX <= switchX + switchWidth && mY >= switchY - 2 && mY <= switchY + 10) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.0F));
-                    Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(boardType == 0 ? 1 : 0));
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    new RequestLeaderboardPayload(boardType == 0 ? 1 : 0).write(buf);
+                    Services.PLATFORM.sendToServer(RequestLeaderboardPayload.ID, buf);
                     return true;
                 }
             }
@@ -192,8 +192,8 @@ public class LeaderboardScreen extends Screen {
 
             String valColor = (i == 0) ? "§d" : (i == 1) ? "§e" : (i == 2) ? "§b" : "§f";
 
-            ItemStack head = new ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
-            head.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(entry.name()), Optional.empty(), new PropertyMap()));
+            ItemStack head = new ItemStack(Items.PLAYER_HEAD);
+            head.getOrCreateTag().putString("SkullOwner", entry.name());
             guiGraphics.renderItem(head, startX, y);
 
             guiGraphics.drawString(this.font, "§6" + (i + 1) + ". " + nameColor + entry.name(), startX + 20, y + 4, 0xFFFFFFFF, true);

@@ -24,14 +24,14 @@ public abstract class TntBlockMixin {
     @Unique
     private boolean r3ct_daily$wasHoldingIgniter = false;
 
-    @Inject(method = "useItemOn", at = @At("HEAD"))
-    private void r3ct_daily$beforeIgnite(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
+    @Inject(method = "use", at = @At("HEAD"))
+    private void r3ct_daily$beforeIgnite(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack itemInHand = player.getItemInHand(hand);
         this.r3ct_daily$wasHoldingIgniter = itemInHand.is(Items.FLINT_AND_STEEL) || itemInHand.is(Items.FIRE_CHARGE);
     }
 
-    @Inject(method = "useItemOn", at = @At("RETURN"))
-    private void r3ct_daily$onTntIgnite(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
+    @Inject(method = "use", at = @At("RETURN"))
+    private void r3ct_daily$onTntIgnite(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
 
         InteractionResult result = cir.getReturnValue();
 

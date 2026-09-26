@@ -9,7 +9,6 @@ import com.r3ct.daily.network.SyncQuestsPayload;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
@@ -235,10 +234,10 @@ public class QuestManager {
             Holder<Biome> currentBiome = level.getBiome(pos);
 
             if (biomeId.startsWith("#")) {
-                TagKey<Biome> tagKey = TagKey.create(Registries.BIOME, net.minecraft.resources.ResourceLocation.parse(biomeId.substring(1).toLowerCase(Locale.ROOT)));
+                TagKey<Biome> tagKey = TagKey.create(Registries.BIOME, new ResourceLocation(biomeId.substring(1).toLowerCase(Locale.ROOT)));
                 return currentBiome.is(tagKey);
             } else {
-                ResourceKey<Biome> resKey = ResourceKey.create(Registries.BIOME, net.minecraft.resources.ResourceLocation.parse(biomeId.toLowerCase(Locale.ROOT)));
+                ResourceKey<Biome> resKey = ResourceKey.create(Registries.BIOME, new ResourceLocation(biomeId.toLowerCase(Locale.ROOT)));
                 return currentBiome.is(resKey);
             }
         }
@@ -247,11 +246,11 @@ public class QuestManager {
             String structureId = location.substring(10);
 
             if (structureId.startsWith("#")) {
-                TagKey<Structure> tagKey = TagKey.create(Registries.STRUCTURE, net.minecraft.resources.ResourceLocation.parse(structureId.substring(1).toLowerCase(Locale.ROOT)));
+                TagKey<Structure> tagKey = TagKey.create(Registries.STRUCTURE, new ResourceLocation(structureId.substring(1).toLowerCase(Locale.ROOT)));
                 return level.structureManager().getStructureWithPieceAt(pos, tagKey).isValid();
             } else {
                 var lookup = level.registryAccess().lookupOrThrow(Registries.STRUCTURE);
-                var structureKey = ResourceKey.create(Registries.STRUCTURE, net.minecraft.resources.ResourceLocation.parse(structureId.toLowerCase(Locale.ROOT)));
+                var structureKey = ResourceKey.create(Registries.STRUCTURE, new ResourceLocation(structureId.toLowerCase(Locale.ROOT)));
                 var structureHolder = lookup.get(structureKey);
 
                 if (structureHolder.isPresent()) {
@@ -363,9 +362,14 @@ public class QuestManager {
             if (target.equals("r3ct_daily:nether_quartz_ores") && invId.equals("minecraft:nether_quartz_ore")) return true;
 
             if (target.equals("r3ct_daily:full_beehive") && (invId.equals("minecraft:beehive") || invId.equals("minecraft:bee_nest"))) {
-                var beesData = stack.get(DataComponents.BEES);
-                if (beesData != null && beesData.size() >= 3) {
-                    return true;
+                if (stack.hasTag() && stack.getTag().contains("BlockEntityTag", 10)) {
+                    net.minecraft.nbt.CompoundTag blockEntityTag = stack.getTag().getCompound("BlockEntityTag");
+                    if (blockEntityTag.contains("Bees", 9)) {
+                        net.minecraft.nbt.ListTag beesList = blockEntityTag.getList("Bees", 10);
+                        if (beesList.size() >= 3) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -580,7 +584,8 @@ public class QuestManager {
         }
 
         String parsedItem = selectedEntry.item != null ? selectedEntry.item.toLowerCase(Locale.ROOT) : "minecraft:paper";
-        var itemOpt = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(parsedItem));
+
+        var itemOpt = BuiltInRegistries.ITEM.getOptional(new ResourceLocation(parsedItem));
         Item item = itemOpt.orElse(Items.PAPER);
 
         int baseAmount = selectedEntry.minAmount + rand.nextInt(Math.max(1, selectedEntry.maxAmount - selectedEntry.minAmount + 1));
@@ -588,7 +593,7 @@ public class QuestManager {
         ItemStack reward = new ItemStack(item, finalAmount);
 
         if (itemOpt.isEmpty()) {
-            reward.set(DataComponents.CUSTOM_NAME, Component.literal("Report this to admin!"));
+            reward.setHoverName(Component.literal("Report this to admin!"));
         }
 
         if (item == Items.DIAMOND) {
@@ -629,13 +634,14 @@ public class QuestManager {
 
     public static ItemStack getMilestoneRewardStack(DailyServerConfig.MilestoneReward mr) {
         String parsedItem = mr.item != null ? mr.item.toLowerCase(Locale.ROOT) : "minecraft:paper";
-        var itemOpt = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(parsedItem));
+
+        var itemOpt = BuiltInRegistries.ITEM.getOptional(new ResourceLocation(parsedItem));
         Item item = itemOpt.orElse(Items.PAPER);
 
         ItemStack stack = new ItemStack(item, mr.amount);
 
         if (itemOpt.isEmpty()) {
-            stack.set(DataComponents.CUSTOM_NAME, Component.literal("Report this to admin!"));
+            stack.setHoverName(Component.literal("Report this to admin!"));
         }
 
         return stack;
@@ -645,12 +651,12 @@ public class QuestManager {
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
 
-        var advancementHolder = server.getAdvancements().get(ResourceLocation.parse(advancementId));
-        if (advancementHolder != null) {
-            var progress = player.getAdvancements().getOrStartProgress(advancementHolder);
+        net.minecraft.advancements.Advancement advancement = server.getAdvancements().getAdvancement(new ResourceLocation(advancementId));
+        if (advancement != null) {
+            var progress = player.getAdvancements().getOrStartProgress(advancement);
             if (!progress.isDone()) {
                 for (String criterion : progress.getRemainingCriteria()) {
-                    player.getAdvancements().award(advancementHolder, criterion);
+                    player.getAdvancements().award(advancement, criterion);
                 }
             }
         }
@@ -903,11 +909,15 @@ public class QuestManager {
         if (server != null) {
             ModState.get(server).setDirty();
         }
-        Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
+
+        net.minecraft.network.FriendlyByteBuf buf = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+        new SyncQuestsPayload(
                 data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
                 data.activeQuests, data.questProgress, data.streak,
                 data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
                 data.questRewardsClaimed, data.claimedPointRewards
-        ));
+        ).write(buf);
+
+        Services.PLATFORM.sendToPlayer(player, SyncQuestsPayload.ID, buf);
     }
 }

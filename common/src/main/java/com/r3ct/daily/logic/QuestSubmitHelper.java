@@ -33,7 +33,7 @@ public class QuestSubmitHelper {
         boolean allSame = true;
         ItemStack firstStack = player.getInventory().getItem(matchingSlots.get(0));
         for (int slot : matchingSlots) {
-            if (!ItemStack.isSameItemSameComponents(firstStack, player.getInventory().getItem(slot))) {
+            if (!ItemStack.isSameItemSameTags(firstStack, player.getInventory().getItem(slot))) {
                 allSame = false;
                 break;
             }

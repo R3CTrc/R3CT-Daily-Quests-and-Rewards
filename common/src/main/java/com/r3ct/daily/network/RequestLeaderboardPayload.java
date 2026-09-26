@@ -1,19 +1,16 @@
 package com.r3ct.daily.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
-public record RequestLeaderboardPayload(int boardType) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<RequestLeaderboardPayload> ID = new CustomPacketPayload.Type<>(ResourceLocation.parse("r3ct_daily:req_leaderboard"));
+public record RequestLeaderboardPayload(int boardType) {
+    public static final ResourceLocation ID = new ResourceLocation("r3ct_daily", "req_leaderboard");
 
-    public static final StreamCodec<FriendlyByteBuf, RequestLeaderboardPayload> CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT, RequestLeaderboardPayload::boardType,
-            RequestLeaderboardPayload::new
-    );
+    public RequestLeaderboardPayload(FriendlyByteBuf buf) {
+        this(buf.readInt());
+    }
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() { return ID; }
+    public void write(FriendlyByteBuf buf) {
+        buf.writeInt(this.boardType);
+    }
 }

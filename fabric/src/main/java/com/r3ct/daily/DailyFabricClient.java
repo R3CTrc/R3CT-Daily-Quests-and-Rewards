@@ -78,8 +78,9 @@ public class DailyFabricClient implements ClientModInitializer {
 			}
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(ConfigSyncPayload.TYPE, (payload, context) -> {
-			context.client().execute(() -> {
+		ClientPlayNetworking.registerGlobalReceiver(ConfigSyncPayload.ID, (client, handler, buf, responseSender) -> {
+			ConfigSyncPayload payload = new ConfigSyncPayload(buf);
+			client.execute(() -> {
 				DailyServerConfig.syncFromServer(payload.questsJson(), payload.rewardsJson(), payload.serverJson());
 			});
 		});
@@ -88,8 +89,9 @@ public class DailyFabricClient implements ClientModInitializer {
 			DailyServerConfig.loadAll();
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(OpenRewardsPayload.ID, (payload, context) -> {
-			context.client().execute(() -> {
+		ClientPlayNetworking.registerGlobalReceiver(OpenRewardsPayload.ID, (client, handler, buf, responseSender) -> {
+			OpenRewardsPayload payload = new OpenRewardsPayload(buf);
+			client.execute(() -> {
 				PlayerData data = new PlayerData();
 				data.rewardDay = payload.rewardDay();
 				data.lastRewardDate = payload.lastRewardDate();
@@ -98,12 +100,13 @@ public class DailyFabricClient implements ClientModInitializer {
 				data.claimedRewardHistory = payload.claimedRewardHistory();
 				data.availableRewardFreezes = payload.availableRewardFreezes();
 				data.claimedBonusRewards = payload.claimedBonusRewards();
-				context.client().setScreen(new RewardScreen(data, payload));
+				client.setScreen(new RewardScreen(data, payload));
 			});
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(OpenQuestsPayload.ID, (payload, context) -> {
-			context.client().execute(() -> {
+		ClientPlayNetworking.registerGlobalReceiver(OpenQuestsPayload.ID, (client, handler, buf, responseSender) -> {
+			OpenQuestsPayload payload = new OpenQuestsPayload(buf);
+			client.execute(() -> {
 				PlayerData data = new PlayerData();
 				data.questStreak = payload.questStreak();
 				data.totalQuestPoints = payload.totalQuestPoints();
@@ -119,12 +122,13 @@ public class DailyFabricClient implements ClientModInitializer {
 				data.claimedPointRewards = payload.claimedPointRewards();
 
 				clientQuestData = data;
-				context.client().setScreen(new QuestScreen(data, payload));
+				client.setScreen(new QuestScreen(data, payload));
 			});
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(SyncQuestsPayload.ID, (payload, context) -> {
-			context.client().execute(() -> {
+		ClientPlayNetworking.registerGlobalReceiver(SyncQuestsPayload.ID, (client, handler, buf, responseSender) -> {
+			SyncQuestsPayload payload = new SyncQuestsPayload(buf);
+			client.execute(() -> {
 				if (clientQuestData != null && clientQuestData.questProgress != null) {
 					for (int i = 0; i < payload.questProgress().size() && i < clientQuestData.questProgress.size(); i++) {
 						int oldVal = clientQuestData.questProgress.get(i);
@@ -160,7 +164,7 @@ public class DailyFabricClient implements ClientModInitializer {
 		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
 			Minecraft client = Minecraft.getInstance();
 
-			if (client.options.hideGui || client.getDebugOverlay().showDebugScreen() || client.player == null) return;
+			if (client.options.hideGui || client.options.renderDebug || client.player == null) return;
 
 			if (client.screen != null && !(client.screen instanceof ChatScreen)) return;
 
@@ -196,7 +200,7 @@ public class DailyFabricClient implements ClientModInitializer {
 				if (!minimizedHud) {
 					String loadingMsg = "§e" + Component.translatable("r3ct_daily.hud.loading").getString();
 					int xPos = isRight ? virtualWidth - client.font.width(loadingMsg) - xOffset : xOffset;
-					guiGraphics.drawString(client.font, loadingMsg, xPos, currentY, baseColor, true); // Ostatni parametr to dropShadow w 1.21.1
+					guiGraphics.drawString(client.font, loadingMsg, xPos, currentY, baseColor, true);
 				}
 				guiGraphics.pose().popPose();
 				return;
@@ -259,9 +263,10 @@ public class DailyFabricClient implements ClientModInitializer {
 			guiGraphics.pose().popPose();
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(LeaderboardResponsePayload.ID, (payload, context) -> {
-			context.client().execute(() -> {
-				context.client().setScreen(new LeaderboardScreen(payload.boardType(), payload.leftList(), payload.rightList()));
+		ClientPlayNetworking.registerGlobalReceiver(LeaderboardResponsePayload.ID, (client, handler, buf, responseSender) -> {
+			LeaderboardResponsePayload payload = new LeaderboardResponsePayload(buf);
+			client.execute(() -> {
+				client.setScreen(new LeaderboardScreen(payload.boardType(), payload.leftList(), payload.rightList()));
 			});
 		});
 	}

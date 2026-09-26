@@ -10,11 +10,13 @@ import com.r3ct.daily.logic.QuestManager;
 import com.r3ct.daily.config.DailyServerConfig;
 import com.r3ct.daily.network.RequestLeaderboardPayload;
 import com.r3ct.daily.network.RerollQuestPayload;
+import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -396,7 +398,10 @@ public class QuestScreen extends Screen {
             if (mX >= trophyX && mX <= trophyX + 16 && mY >= trophyY && mY <= trophyY + 16) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                    Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(0));
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    new RequestLeaderboardPayload(0).write(buf);
+                    Services.PLATFORM.sendToServer(RequestLeaderboardPayload.ID, buf);
+
                     return true;
                 }
             }
@@ -417,7 +422,9 @@ public class QuestScreen extends Screen {
 
                 if (!done && payload.enableQuestRerolling() && mX >= btnX && mX <= btnX + btnSize && mY >= btnY && mY <= btnY + btnSize) {
                     if (this.minecraft != null && this.minecraft.player != null) {
-                        Services.PLATFORM.sendToServer(new RerollQuestPayload(i));
+                        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                        new RerollQuestPayload(i).write(buf);
+                        Services.PLATFORM.sendToServer(RerollQuestPayload.ID, buf);
                         return true;
                     }
                 }
@@ -599,7 +606,7 @@ public class QuestScreen extends Screen {
             for (DailyServerConfig.RewardEntry entry : DailyServerConfig.dailyQuestRewards) {
 
                 Item item = BuiltInRegistries.ITEM.getOptional(
-                        ResourceLocation.parse(entry.item)
+                        new ResourceLocation(entry.item)
                 ).orElse(Items.AIR);
 
                 String itemName = new ItemStack(item).getHoverName().getString();

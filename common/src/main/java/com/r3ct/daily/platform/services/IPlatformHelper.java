@@ -1,6 +1,7 @@
 package com.r3ct.daily.platform.services;
 
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
@@ -35,15 +36,14 @@ public interface IPlatformHelper {
      * @return The name of the environment type.
      */
     default String getEnvironmentName() {
-
         return isDevelopmentEnvironment() ? "development" : "production";
     }
 
     Path getConfigDir();
 
-    <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T payload);
+    void sendToPlayer(ServerPlayer player, ResourceLocation id, FriendlyByteBuf buf);
 
-    <T extends CustomPacketPayload> void sendToServer(T payload);
+    void sendToServer(ResourceLocation id, FriendlyByteBuf buf);
 
     boolean isQuestKey(Object event);
 

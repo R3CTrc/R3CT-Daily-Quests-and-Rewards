@@ -1,7 +1,6 @@
 package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
@@ -44,10 +43,9 @@ public abstract class BlockInteractMixin {
                     if (this.r3ct_daily$cachedBlockStack.is(Items.GLOWSTONE)) QuestManager.handleAction(player, "CHARGE_RESPAWN_ANCHOR", "any", 1);
                 }
                 if (state.is(Blocks.JUKEBOX)) {
-                    if (this.r3ct_daily$cachedBlockStack.has(DataComponents.JUKEBOX_PLAYABLE)) QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
-                }
-                if (state.is(Blocks.VAULT)) {
-                    if (this.r3ct_daily$cachedBlockStack.is(Items.TRIAL_KEY) || this.r3ct_daily$cachedBlockStack.is(Items.OMINOUS_TRIAL_KEY)) QuestManager.handleAction(player, "OPEN_VAULT", "any", 1);
+                    if (this.r3ct_daily$cachedBlockStack.getItem() instanceof net.minecraft.world.item.RecordItem) {
+                        QuestManager.handleAction(player, "PLAY_JUKEBOX", "any", 1);
+                    }
                 }
             }
 

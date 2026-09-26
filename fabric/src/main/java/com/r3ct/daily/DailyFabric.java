@@ -14,13 +14,14 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -52,7 +53,7 @@ public class DailyFabric implements ModInitializer {
 
 		ResourceKey<CreativeModeTab> R3CT_TAB_KEY = ResourceKey.create(
 				Registries.CREATIVE_MODE_TAB,
-				ResourceLocation.parse("r3ct_daily:main_tab")
+				new ResourceLocation("r3ct_daily", "main_tab")
 		);
 		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, R3CT_TAB_KEY, FabricItemGroup.builder()
 				.title(Component.translatable("itemGroup.r3ct_daily.main_tab"))
@@ -66,38 +67,34 @@ public class DailyFabric implements ModInitializer {
 
 		DailyServerConfig.loadAll();
 
-		PayloadTypeRegistry.playS2C().register(OpenRewardsPayload.ID, OpenRewardsPayload.CODEC);
-		PayloadTypeRegistry.playS2C().register(OpenQuestsPayload.ID, OpenQuestsPayload.CODEC);
-		PayloadTypeRegistry.playS2C().register(SyncQuestsPayload.ID, SyncQuestsPayload.CODEC);
-		PayloadTypeRegistry.playS2C().register(LeaderboardResponsePayload.ID, LeaderboardResponsePayload.CODEC);
-
-		PayloadTypeRegistry.playS2C().register(ConfigSyncPayload.TYPE, ConfigSyncPayload.CODEC);
-
-		PayloadTypeRegistry.playC2S().register(SubmitQuestItemPayload.TYPE, SubmitQuestItemPayload.STREAM_CODEC);
-		PayloadTypeRegistry.playC2S().register(RequestLeaderboardPayload.ID, RequestLeaderboardPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(RerollQuestPayload.ID, RerollQuestPayload.CODEC);
-
-		ServerPlayNetworking.registerGlobalReceiver(RequestLeaderboardPayload.ID, (payload, context) -> {
-			context.server().execute(() -> {
+		ServerPlayNetworking.registerGlobalReceiver(RequestLeaderboardPayload.ID, (server, player, handler, buf, responseSender) -> {
+			RequestLeaderboardPayload payload = new RequestLeaderboardPayload(buf);
+			server.execute(() -> {
 				int type = payload.boardType();
-				int currentTick = context.server().getTickCount();
+				int currentTick = server.getTickCount();
 				if (LeaderboardManager.lastLeaderboardUpdateTick == -1 || (currentTick - LeaderboardManager.lastLeaderboardUpdateTick) >= DailyServerConfig.mechanics.technical.leaderboardUpdateIntervalTicks) {
-					LeaderboardManager.updateLeaderboardCache(context.server());
+					LeaderboardManager.updateLeaderboardCache(server);
 					LeaderboardManager.lastLeaderboardUpdateTick = currentTick;
 				}
-				Services.PLATFORM.sendToPlayer(context.player(), type == 0 ? LeaderboardManager.cachedQuestsBoard : LeaderboardManager.cachedRewardsBoard);
+
+				FriendlyByteBuf outBuf = PacketByteBufs.create();
+				LeaderboardResponsePayload res = type == 0 ? LeaderboardManager.cachedQuestsBoard : LeaderboardManager.cachedRewardsBoard;
+				res.write(outBuf);
+				Services.PLATFORM.sendToPlayer(player, LeaderboardResponsePayload.ID, outBuf);
 			});
 		});
 
-		ServerPlayNetworking.registerGlobalReceiver(SubmitQuestItemPayload.TYPE, (payload, context) -> {
-			context.server().execute(() -> {
-				QuestManager.submitQuestItem(context.player(), payload.questIndex(), payload.slotIndex());
+		ServerPlayNetworking.registerGlobalReceiver(SubmitQuestItemPayload.TYPE, (server, player, handler, buf, responseSender) -> {
+			SubmitQuestItemPayload payload = new SubmitQuestItemPayload(buf);
+			server.execute(() -> {
+				QuestManager.submitQuestItem(player, payload.questIndex(), payload.slotIndex());
 			});
 		});
 
-		ServerPlayNetworking.registerGlobalReceiver(RerollQuestPayload.ID, (payload, context) -> {
-			context.server().execute(() -> {
-				QuestManager.rerollQuest(context.player(), payload.questIndex());
+		ServerPlayNetworking.registerGlobalReceiver(RerollQuestPayload.ID, (server, player, handler, buf, responseSender) -> {
+			RerollQuestPayload payload = new RerollQuestPayload(buf);
+			server.execute(() -> {
+				QuestManager.rerollQuest(player, payload.questIndex());
 			});
 		});
 
@@ -107,7 +104,10 @@ public class DailyFabric implements ModInitializer {
 			String questsJson = DailyServerConfig.getQuestsConfigString();
 			String rewardsJson = DailyServerConfig.getRewardsConfigString();
 			String mechanicsJson = DailyServerConfig.getServerConfigString();
-			ServerPlayNetworking.send(player, new ConfigSyncPayload(questsJson, rewardsJson, mechanicsJson));
+
+			FriendlyByteBuf configBuf = PacketByteBufs.create();
+			new ConfigSyncPayload(questsJson, rewardsJson, mechanicsJson).write(configBuf);
+			ServerPlayNetworking.send(player, ConfigSyncPayload.ID, configBuf);
 
 			LocalDate today = QuestManager.getCurrentQuestDate();
 			PlayerData data = ModState.getPlayerData(server, player.getUUID());
@@ -191,12 +191,14 @@ public class DailyFabric implements ModInitializer {
 
 			final int remainingQuests = 5 - data.dailyQuestsCompletedToday;
 
-			ServerPlayNetworking.send(player, new SyncQuestsPayload(
+			FriendlyByteBuf syncBuf = PacketByteBufs.create();
+			new SyncQuestsPayload(
 					data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
 					data.activeQuests, data.questProgress, data.streak,
 					data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
 					data.questRewardsClaimed, data.claimedPointRewards
-			));
+			).write(syncBuf);
+			ServerPlayNetworking.send(player, SyncQuestsPayload.ID, syncBuf);
 
 			server.execute(() -> {
 				if (hasRewards) {

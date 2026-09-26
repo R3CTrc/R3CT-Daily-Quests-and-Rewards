@@ -5,7 +5,8 @@ import com.r3ct.daily.platform.services.IPlatformHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
@@ -33,13 +34,13 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T payload) {
-        ServerPlayNetworking.send(player, payload);
+    public void sendToPlayer(ServerPlayer player, ResourceLocation id, FriendlyByteBuf buf) {
+        ServerPlayNetworking.send(player, id, buf);
     }
 
     @Override
-    public <T extends CustomPacketPayload> void sendToServer(T payload) {
-        ClientPlayNetworking.send(payload);
+    public void sendToServer(ResourceLocation id, FriendlyByteBuf buf) {
+        ClientPlayNetworking.send(id, buf);
     }
 
     @Override

@@ -11,10 +11,12 @@ import com.r3ct.daily.network.OpenQuestsPayload;
 import com.r3ct.daily.network.OpenRewardsPayload;
 import com.r3ct.daily.network.SyncQuestsPayload;
 import com.r3ct.daily.platform.Services;
+import io.netty.buffer.Unpooled;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,12 +42,16 @@ public class DailyCommands {
         if (server != null) {
             ModState.get(server).setDirty();
         }
-        Services.PLATFORM.sendToPlayer(target, new SyncQuestsPayload(
+
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        new SyncQuestsPayload(
                 data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
                 data.activeQuests, data.questProgress, data.streak,
                 data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
                 data.questRewardsClaimed, data.claimedPointRewards
-        ));
+        ).write(buf);
+
+        Services.PLATFORM.sendToPlayer(target, SyncQuestsPayload.ID, buf);
     }
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -58,7 +64,8 @@ public class DailyCommands {
                     if (player == null) return 0;
                     QuestManager.grantAdvancement(player, "r3ct_daily:quests/root");
                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), player.getUUID());
-                    Services.PLATFORM.sendToPlayer(player, new OpenQuestsPayload(
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    new OpenQuestsPayload(
                             data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
                             data.activeQuests, data.questProgress, data.streak,
                             data.perfectDaysCount, data.availableFreezes,
@@ -74,7 +81,9 @@ public class DailyCommands {
                             DailyServerConfig.mechanics.streaks.perfectDaysForShield,
                             DailyServerConfig.mechanics.streaks.maxStoredQuestShields,
                             DailyServerConfig.mechanics.quests.questStreakXpMultiplier
-                    ));
+                    ).write(buf);
+
+                    Services.PLATFORM.sendToPlayer(player, OpenQuestsPayload.ID, buf);
                     return 1;
                 }))
                 .then(Commands.literal("claimquest").then(Commands.argument("index", IntegerArgumentType.integer(0, 4)).executes(context -> {
@@ -106,13 +115,16 @@ public class DailyCommands {
                             visualStreak = 0;
                         }
                     }
-                    Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    new OpenRewardsPayload(
                             data.rewardDay, data.lastRewardDate, visualStreak,
                             data.totalCollected, data.claimedRewardHistory,
                             data.availableRewardFreezes, data.claimedBonusRewards,
                             DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
                             DailyServerConfig.mechanics.technical.questRefreshHour
-                    ));
+                    ).write(buf);
+
+                    Services.PLATFORM.sendToPlayer(player, OpenRewardsPayload.ID, buf);
                     return 1;
                 }))
                 .then(Commands.literal("claimreward").executes(context -> {
@@ -197,13 +209,16 @@ public class DailyCommands {
 
                     ModState.get(context.getSource().getServer()).setDirty();
 
-                    Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    new OpenRewardsPayload(
                             data.rewardDay, data.lastRewardDate, data.streak,
                             data.totalCollected, data.claimedRewardHistory,
                             data.availableRewardFreezes, data.claimedBonusRewards,
                             DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
                             DailyServerConfig.mechanics.technical.questRefreshHour
-                    ));
+                    ).write(buf);
+
+                    Services.PLATFORM.sendToPlayer(player, OpenRewardsPayload.ID, buf);
                     return 1;
                 }))
 

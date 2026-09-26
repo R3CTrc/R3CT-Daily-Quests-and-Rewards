@@ -2,8 +2,6 @@ package com.r3ct.daily.network;
 
 import com.r3ct.daily.Constants;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -19,15 +17,9 @@ public record OpenRewardsPayload(
         List<Integer> claimedBonusRewards,
         int maxRewardShields,
         int questRefreshHour
-) implements CustomPacketPayload {
+) {
 
-    public static final CustomPacketPayload.Type<OpenRewardsPayload> ID =
-            new CustomPacketPayload.Type<>(ResourceLocation.parse(Constants.MOD_ID + ":open_rewards"));
-
-    public static final StreamCodec<FriendlyByteBuf, OpenRewardsPayload> CODEC = CustomPacketPayload.codec(
-            OpenRewardsPayload::write,
-            OpenRewardsPayload::new
-    );
+    public static final ResourceLocation ID = new ResourceLocation(Constants.MOD_ID, "open_rewards");
 
     public OpenRewardsPayload(FriendlyByteBuf buf) {
         this(
@@ -44,19 +36,14 @@ public record OpenRewardsPayload(
     }
 
     public void write(FriendlyByteBuf buf) {
-        buf.writeInt(rewardDay);
-        buf.writeUtf(lastRewardDate);
-        buf.writeInt(streak);
-        buf.writeInt(totalCollected);
-        buf.writeCollection(claimedRewardHistory, FriendlyByteBuf::writeUtf);
-        buf.writeInt(availableRewardFreezes);
-        buf.writeCollection(claimedBonusRewards, FriendlyByteBuf::writeInt);
-        buf.writeInt(maxRewardShields);
-        buf.writeInt(questRefreshHour);
-    }
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return ID;
+        buf.writeInt(this.rewardDay);
+        buf.writeUtf(this.lastRewardDate);
+        buf.writeInt(this.streak);
+        buf.writeInt(this.totalCollected);
+        buf.writeCollection(this.claimedRewardHistory, FriendlyByteBuf::writeUtf);
+        buf.writeInt(this.availableRewardFreezes);
+        buf.writeCollection(this.claimedBonusRewards, FriendlyByteBuf::writeInt);
+        buf.writeInt(this.maxRewardShields);
+        buf.writeInt(this.questRefreshHour);
     }
 }

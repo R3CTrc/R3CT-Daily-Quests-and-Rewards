@@ -4,7 +4,6 @@ import com.r3ct.daily.data.ModState;
 import com.r3ct.daily.data.PlayerData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -19,7 +18,6 @@ import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Pillager;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.NetherWartBlock;
@@ -151,17 +149,16 @@ public class QuestEventHandlers {
     public static void onItemEnchanted(ServerPlayer player, ItemStack item) {
         QuestManager.handleAction(player, "ENCHANT_ITEM", "any", 1);
 
-        ItemEnchantments enchantments = item.getOrDefault(
-                DataComponents.ENCHANTMENTS,
-                ItemEnchantments.EMPTY
-        );
+        java.util.Map<net.minecraft.world.item.enchantment.Enchantment, Integer> enchantments =
+                net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(item);
 
-        enchantments.keySet().forEach(holder -> {
-            holder.unwrapKey().ifPresent(key -> {
-                String enchantId = key.location().toString();
+        for (net.minecraft.world.item.enchantment.Enchantment enchant : enchantments.keySet()) {
+            net.minecraft.resources.ResourceLocation loc = BuiltInRegistries.ENCHANTMENT.getKey(enchant);
+            if (loc != null) {
+                String enchantId = loc.toString();
                 QuestManager.handleAction(player, "ENCHANT_WITH", enchantId, 1);
-            });
-        });
+            }
+        }
     }
 
     public static void onPlayerTick(ServerPlayer player) {

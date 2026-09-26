@@ -5,10 +5,11 @@ import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.data.ModState;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.network.OpenRewardsPayload;
+import io.netty.buffer.Unpooled;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -16,14 +17,15 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.EnchantmentTags;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.Fireworks;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 import java.time.LocalDate;
@@ -94,35 +96,26 @@ public class RewardManager {
 
         switch (rewardAction) {
             case "random_potion":
-                var potionLookup = server.registryAccess().lookup(Registries.POTION).orElse(null);
-                if (potionLookup != null) {
-                    var potionList = potionLookup.listElements().filter(ref -> {
-                        if (ref.unwrapKey().isEmpty()) return true;
-                        String path = ref.unwrapKey().get().location().getPath();
-                        return !path.equals("empty") && !path.equals("water") && !path.equals("mundane")
-                                && !path.equals("thick") && !path.equals("awkward");
-                    }).toList();
+                List<Potion> potionList = BuiltInRegistries.POTION.stream().filter(p -> {
+                    String path = BuiltInRegistries.POTION.getKey(p).getPath();
+                    return !path.equals("empty") && !path.equals("water") && !path.equals("mundane")
+                            && !path.equals("thick") && !path.equals("awkward");
+                }).toList();
 
-                    if (!potionList.isEmpty()) {
-                        var randomPotion = potionList.get(RANDOM.nextInt(potionList.size()));
-                        ItemStack stack = PotionContents.createItemStack(Items.POTION, randomPotion);
-                        stack.setCount(amount);
-                        return stack;
-                    }
+                if (!potionList.isEmpty()) {
+                    Potion randomPotion = potionList.get(RANDOM.nextInt(potionList.size()));
+                    ItemStack stack = new ItemStack(Items.POTION, amount);
+                    PotionUtils.setPotion(stack, randomPotion);
+                    return stack;
                 }
                 return new ItemStack(Items.POTION, amount);
 
             case "random_enchanted_book":
-                var enchLookup = server.registryAccess().lookup(Registries.ENCHANTMENT).orElse(null);
+                List<Enchantment> enchList = BuiltInRegistries.ENCHANTMENT.stream().filter(e -> !e.isCurse()).toList();
                 ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK, amount);
-                if (enchLookup != null) {
-                    var enchList = enchLookup.listElements().filter(ref -> !ref.is(EnchantmentTags.CURSE)).toList();
-                    if (!enchList.isEmpty()) {
-                        var randomEnch = enchList.get(RANDOM.nextInt(enchList.size()));
-                        EnchantmentHelper.updateEnchantments(enchantedBook, builder -> {
-                            builder.set(randomEnch, 1);
-                        });
-                    }
+                if (!enchList.isEmpty()) {
+                    Enchantment randomEnch = enchList.get(RANDOM.nextInt(enchList.size()));
+                    EnchantedBookItem.addEnchantment(enchantedBook, new EnchantmentInstance(randomEnch, 1));
                 }
                 return enchantedBook;
 
@@ -156,92 +149,73 @@ public class RewardManager {
                 return new ItemStack(blocks[RANDOM.nextInt(blocks.length)], amount);
 
             case "unbreaking_2_book":
-                ItemStack unbreakingBook = new ItemStack(Items.ENCHANTED_BOOK);
-                var unbreakingReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                EnchantmentHelper.updateEnchantments(unbreakingBook, builder -> {
-                    builder.set(unbreakingReg.getOrThrow(Enchantments.UNBREAKING), 2);
-                });
-                unbreakingBook.setCount(amount);
+                ItemStack unbreakingBook = new ItemStack(Items.ENCHANTED_BOOK, amount);
+                EnchantedBookItem.addEnchantment(unbreakingBook, new EnchantmentInstance(Enchantments.UNBREAKING, 2));
                 return unbreakingBook;
 
             case "efficiency_3_book":
-                ItemStack effBook = new ItemStack(Items.ENCHANTED_BOOK);
-                var effReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                EnchantmentHelper.updateEnchantments(effBook, builder -> {
-                    builder.set(effReg.getOrThrow(Enchantments.EFFICIENCY), 3);
-                });
-                effBook.setCount(amount);
+                ItemStack effBook = new ItemStack(Items.ENCHANTED_BOOK, amount);
+                EnchantedBookItem.addEnchantment(effBook, new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 3));
                 return effBook;
 
             case "infinity_book":
-                ItemStack infBook = new ItemStack(Items.ENCHANTED_BOOK);
-                var infReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                EnchantmentHelper.updateEnchantments(infBook, builder -> {
-                    builder.set(infReg.getOrThrow(Enchantments.INFINITY), 1);
-                });
-                infBook.setCount(amount);
+                ItemStack infBook = new ItemStack(Items.ENCHANTED_BOOK, amount);
+                EnchantedBookItem.addEnchantment(infBook, new EnchantmentInstance(Enchantments.INFINITY_ARROWS, 1));
                 return infBook;
 
             case "feather_falling_3_book":
-                ItemStack featherBook = new ItemStack(Items.ENCHANTED_BOOK);
-                var featherReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                EnchantmentHelper.updateEnchantments(featherBook, builder -> {
-                    builder.set(featherReg.getOrThrow(Enchantments.FEATHER_FALLING), 3);
-                });
-                featherBook.setCount(amount);
+                ItemStack featherBook = new ItemStack(Items.ENCHANTED_BOOK, amount);
+                EnchantedBookItem.addEnchantment(featherBook, new EnchantmentInstance(Enchantments.FALL_PROTECTION, 3));
                 return featherBook;
 
             case "sharpness_2_book":
-                ItemStack sharpBook = new ItemStack(Items.ENCHANTED_BOOK);
-                var sharpReg = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                EnchantmentHelper.updateEnchantments(sharpBook, builder -> {
-                    builder.set(sharpReg.getOrThrow(Enchantments.SHARPNESS), 2);
-                });
-                sharpBook.setCount(amount);
+                ItemStack sharpBook = new ItemStack(Items.ENCHANTED_BOOK, amount);
+                EnchantedBookItem.addEnchantment(sharpBook, new EnchantmentInstance(Enchantments.SHARPNESS, 2));
                 return sharpBook;
 
             case "firework_tier_3":
                 ItemStack rockets = new ItemStack(Items.FIREWORK_ROCKET, amount);
-                rockets.set(DataComponents.FIREWORKS, new Fireworks(3, List.of()));
+                CompoundTag tag = rockets.getOrCreateTagElement("Fireworks");
+                tag.putByte("Flight", (byte)3);
                 return rockets;
 
             case "healing_2_potion":
                 ItemStack healPot = new ItemStack(Items.POTION, amount);
-                healPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.STRONG_HEALING));
+                PotionUtils.setPotion(healPot, Potions.STRONG_HEALING);
                 return healPot;
 
             case "water_breathing_potion":
                 ItemStack waterPot = new ItemStack(Items.POTION, amount);
-                waterPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.WATER_BREATHING));
+                PotionUtils.setPotion(waterPot, Potions.WATER_BREATHING);
                 return waterPot;
 
             case "fire_resistance_potion":
                 ItemStack firePot = new ItemStack(Items.POTION, amount);
-                firePot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.FIRE_RESISTANCE));
+                PotionUtils.setPotion(firePot, Potions.FIRE_RESISTANCE);
                 return firePot;
 
             case "slow_falling_potion":
                 ItemStack slowPot = new ItemStack(Items.POTION, amount);
-                slowPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.SLOW_FALLING));
+                PotionUtils.setPotion(slowPot, Potions.SLOW_FALLING);
                 return slowPot;
 
             case "night_vision_potion":
                 ItemStack nightPot = new ItemStack(Items.POTION, amount);
-                nightPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.NIGHT_VISION));
+                PotionUtils.setPotion(nightPot, Potions.NIGHT_VISION);
                 return nightPot;
 
             case "regeneration_potion":
                 ItemStack regenPot = new ItemStack(Items.POTION, amount);
-                regenPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.REGENERATION));
+                PotionUtils.setPotion(regenPot, Potions.REGENERATION);
                 return regenPot;
 
             case "speed_potion":
                 ItemStack speedPot = new ItemStack(Items.POTION, amount);
-                speedPot.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.SWIFTNESS));
+                PotionUtils.setPotion(speedPot, Potions.SWIFTNESS);
                 return speedPot;
 
             default:
-                var item = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(rewardId)).orElse(Items.AIR);
+                var item = BuiltInRegistries.ITEM.getOptional(new ResourceLocation(rewardId)).orElse(Items.AIR);
                 return item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item, amount);
         }
     }
@@ -362,7 +336,8 @@ public class RewardManager {
             }
         }
 
-        Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        new OpenRewardsPayload(
                 data.rewardDay,
                 data.lastRewardDate,
                 visualStreak,
@@ -372,6 +347,8 @@ public class RewardManager {
                 data.claimedBonusRewards,
                 DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
                 DailyServerConfig.mechanics.technical.questRefreshHour
-        ));
+        ).write(buf);
+
+        Services.PLATFORM.sendToPlayer(player, OpenRewardsPayload.ID, buf);
     }
 }

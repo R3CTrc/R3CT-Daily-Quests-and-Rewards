@@ -7,11 +7,13 @@ import com.r3ct.daily.network.OpenRewardsPayload;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.data.PlayerData;
 import com.r3ct.daily.network.RequestLeaderboardPayload;
+import io.netty.buffer.Unpooled;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
@@ -444,7 +446,9 @@ public class RewardScreen extends Screen {
             if (mX >= trophyX && mX <= trophyX + 16 && mY >= trophyY && mY <= trophyY + 16) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                    Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(1));
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    new RequestLeaderboardPayload(1).write(buf);
+                    Services.PLATFORM.sendToServer(RequestLeaderboardPayload.ID, buf);
                     return true;
                 }
             }

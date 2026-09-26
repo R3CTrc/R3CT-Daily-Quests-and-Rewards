@@ -3,6 +3,7 @@ package com.r3ct.daily.mixin;
 import com.r3ct.daily.logic.QuestManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -17,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ComposterBlock.class)
 public abstract class ComposterBlockMixin {
 
-    @Inject(method = "useWithoutItem", at = @At("HEAD"))
-    private void r3ct_daily$onEmptyComposter(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
+    @Inject(method = "use", at = @At("HEAD"))
+    private void r3ct_daily$onEmptyComposter(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
         if (player instanceof ServerPlayer serverPlayer) {
             if (state.getValue(ComposterBlock.LEVEL) == 8) {
                 QuestManager.handleAction(serverPlayer, "EMPTY_COMPOSTER", "any", 1);

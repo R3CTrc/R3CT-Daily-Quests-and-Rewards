@@ -2,8 +2,6 @@ package com.r3ct.daily.network;
 
 import com.r3ct.daily.Constants;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -21,15 +19,9 @@ public record SyncQuestsPayload(
         int availableRewardFreezes,
         List<Boolean> questRewardsClaimed,
         List<Integer> claimedPointRewards
-) implements CustomPacketPayload {
+) {
 
-    public static final CustomPacketPayload.Type<SyncQuestsPayload> ID =
-            new CustomPacketPayload.Type<>(ResourceLocation.parse(Constants.MOD_ID + ":sync_quests"));
-
-    public static final StreamCodec<FriendlyByteBuf, SyncQuestsPayload> CODEC = CustomPacketPayload.codec(
-            SyncQuestsPayload::write,
-            SyncQuestsPayload::new
-    );
+    public static final ResourceLocation ID = new ResourceLocation(Constants.MOD_ID, "sync_quests");
 
     public SyncQuestsPayload(FriendlyByteBuf buf) {
         this(
@@ -48,21 +40,16 @@ public record SyncQuestsPayload(
     }
 
     public void write(FriendlyByteBuf buf) {
-        buf.writeInt(questStreak);
-        buf.writeInt(totalQuestPoints);
-        buf.writeInt(dailyQuestsCompletedToday);
-        buf.writeCollection(activeQuests, FriendlyByteBuf::writeUtf);
-        buf.writeCollection(questProgress, FriendlyByteBuf::writeInt);
-        buf.writeInt(streak);
-        buf.writeInt(perfectDaysCount);
-        buf.writeInt(availableFreezes);
-        buf.writeInt(availableRewardFreezes);
-        buf.writeCollection(questRewardsClaimed, FriendlyByteBuf::writeBoolean);
-        buf.writeCollection(claimedPointRewards, FriendlyByteBuf::writeInt);
-    }
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return ID;
+        buf.writeInt(this.questStreak);
+        buf.writeInt(this.totalQuestPoints);
+        buf.writeInt(this.dailyQuestsCompletedToday);
+        buf.writeCollection(this.activeQuests, FriendlyByteBuf::writeUtf);
+        buf.writeCollection(this.questProgress, FriendlyByteBuf::writeInt);
+        buf.writeInt(this.streak);
+        buf.writeInt(this.perfectDaysCount);
+        buf.writeInt(this.availableFreezes);
+        buf.writeInt(this.availableRewardFreezes);
+        buf.writeCollection(this.questRewardsClaimed, FriendlyByteBuf::writeBoolean);
+        buf.writeCollection(this.claimedPointRewards, FriendlyByteBuf::writeInt);
     }
 }

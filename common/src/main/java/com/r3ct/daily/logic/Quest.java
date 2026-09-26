@@ -1,6 +1,5 @@
 package com.r3ct.daily.logic;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -53,7 +52,7 @@ public class Quest {
         if (this.rawRewardId.startsWith("r3ct_daily:")) {
             item = Items.NETHER_STAR;
         } else {
-            ResourceLocation itemId = ResourceLocation.parse(
+            ResourceLocation itemId = new ResourceLocation(
                     (this.rawRewardId.contains(":") ? this.rawRewardId : "minecraft:" + this.rawRewardId).toLowerCase(Locale.ROOT)
             );
 
@@ -68,9 +67,9 @@ public class Quest {
         ItemStack rewardStack = new ItemStack(item, this.rewardAmount);
 
         if (isFallback) {
-            rewardStack.set(DataComponents.CUSTOM_NAME, Component.literal("Report this to admin!"));
+            rewardStack.setHoverName(Component.literal("Report this to admin!"));
         } else if (this.rawRewardId.startsWith("r3ct_daily:")) {
-            rewardStack.set(DataComponents.CUSTOM_NAME, Component.translatable("r3ct_daily.item.special_reward"));
+            rewardStack.setHoverName(Component.translatable("r3ct_daily.item.special_reward"));
         }
 
         return rewardStack;

@@ -1,13 +1,14 @@
 package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,11 +31,11 @@ public abstract class BrewedPotionMixin {
                     QuestManager.handleAction(serverPlayer, "BREW_LINGERING_POTION", "any", stack.getCount());
                 }
 
-                PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                Potion potion = PotionUtils.getPotion(stack);
+                var keyOpt = BuiltInRegistries.POTION.getResourceKey(potion);
 
-                contents.potion().flatMap(holder -> holder.unwrapKey()).ifPresent(key -> {
-
-                    String potId = key.location().toString();
+                if (keyOpt.isPresent()) {
+                    String potId = keyOpt.get().location().toString();
 
                     if (!potId.contains("water") && !potId.contains("mundane") && !potId.contains("thick") && !potId.contains("awkward")) {
                         QuestManager.handleAction(serverPlayer, "BREW_POTION", potId, stack.getCount());
@@ -45,7 +46,7 @@ public abstract class BrewedPotionMixin {
                     } else if (potId.contains("long_")) {
                         QuestManager.handleAction(serverPlayer, "BREW_POTION_EXTENDED", potId, stack.getCount());
                     }
-                });
+                }
             }
         }
     }

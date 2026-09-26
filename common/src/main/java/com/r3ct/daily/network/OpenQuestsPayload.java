@@ -2,8 +2,6 @@ package com.r3ct.daily.network;
 
 import com.r3ct.daily.Constants;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +28,9 @@ public record OpenQuestsPayload(
         int perfectDaysForShield,
         int maxStoredQuestShields,
         float questStreakXpMultiplier
-) implements CustomPacketPayload {
+) {
 
-    public static final CustomPacketPayload.Type<OpenQuestsPayload> ID =
-            new CustomPacketPayload.Type<>(ResourceLocation.parse(Constants.MOD_ID + ":open_quests"));
-
-    public static final StreamCodec<FriendlyByteBuf, OpenQuestsPayload> CODEC = CustomPacketPayload.codec(
-            OpenQuestsPayload::write,
-            OpenQuestsPayload::new
-    );
+    public static final ResourceLocation ID = new ResourceLocation(Constants.MOD_ID, "open_quests");
 
     public OpenQuestsPayload(FriendlyByteBuf buf) {
         this(
@@ -67,29 +59,26 @@ public record OpenQuestsPayload(
     }
 
     public void write(FriendlyByteBuf buf) {
-        buf.writeInt(questStreak);
-        buf.writeInt(totalQuestPoints);
-        buf.writeInt(dailyQuestsCompletedToday);
-        buf.writeCollection(activeQuests, FriendlyByteBuf::writeUtf);
-        buf.writeCollection(questProgress, FriendlyByteBuf::writeInt);
-        buf.writeInt(streak);
-        buf.writeInt(perfectDaysCount);
-        buf.writeInt(availableFreezes);
-        buf.writeCollection(questRewardsClaimed, FriendlyByteBuf::writeBoolean);
-        buf.writeCollection(claimedPointRewards, FriendlyByteBuf::writeInt);
-        buf.writeBoolean(enableQuestRerolling);
-        buf.writeInt(rerollCostEasy);
-        buf.writeInt(rerollCostMedium);
-        buf.writeInt(rerollCostHard);
-        buf.writeInt(xpDailyReward);
-        buf.writeInt(xpPerQuestEasy);
-        buf.writeInt(xpPerQuestMedium);
-        buf.writeInt(xpPerQuestHard);
-        buf.writeInt(perfectDaysForShield);
-        buf.writeInt(maxStoredQuestShields);
-        buf.writeFloat(questStreakXpMultiplier);
+        buf.writeInt(this.questStreak);
+        buf.writeInt(this.totalQuestPoints);
+        buf.writeInt(this.dailyQuestsCompletedToday);
+        buf.writeCollection(this.activeQuests, FriendlyByteBuf::writeUtf);
+        buf.writeCollection(this.questProgress, FriendlyByteBuf::writeInt);
+        buf.writeInt(this.streak);
+        buf.writeInt(this.perfectDaysCount);
+        buf.writeInt(this.availableFreezes);
+        buf.writeCollection(this.questRewardsClaimed, FriendlyByteBuf::writeBoolean);
+        buf.writeCollection(this.claimedPointRewards, FriendlyByteBuf::writeInt);
+        buf.writeBoolean(this.enableQuestRerolling);
+        buf.writeInt(this.rerollCostEasy);
+        buf.writeInt(this.rerollCostMedium);
+        buf.writeInt(this.rerollCostHard);
+        buf.writeInt(this.xpDailyReward);
+        buf.writeInt(this.xpPerQuestEasy);
+        buf.writeInt(this.xpPerQuestMedium);
+        buf.writeInt(this.xpPerQuestHard);
+        buf.writeInt(this.perfectDaysForShield);
+        buf.writeInt(this.maxStoredQuestShields);
+        buf.writeFloat(this.questStreakXpMultiplier);
     }
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() { return ID; }
 }

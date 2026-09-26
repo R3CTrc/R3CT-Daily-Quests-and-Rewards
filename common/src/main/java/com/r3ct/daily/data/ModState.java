@@ -2,9 +2,7 @@ package com.r3ct.daily.data;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.core.HolderLookup;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,14 +11,8 @@ import java.util.UUID;
 public class ModState extends SavedData {
     public final Map<UUID, PlayerData> players = new HashMap<>();
 
-    public static final SavedData.Factory<ModState> FACTORY = new SavedData.Factory<>(
-            ModState::new,
-            ModState::load,
-            DataFixTypes.LEVEL
-    );
-
     public static ModState get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(FACTORY, "r3ct_data");
+        return server.overworld().getDataStorage().computeIfAbsent(ModState::load, ModState::new, "r3ct_data");
     }
 
     public static PlayerData getPlayerData(MinecraftServer server, UUID uuid) {
@@ -28,7 +20,7 @@ public class ModState extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
+    public CompoundTag save(CompoundTag nbt) {
         CompoundTag playersNbt = new CompoundTag();
         players.forEach((uuid, data) -> {
             playersNbt.put(uuid.toString(), data.toNbt());
@@ -37,7 +29,7 @@ public class ModState extends SavedData {
         return nbt;
     }
 
-    public static ModState load(CompoundTag nbt, HolderLookup.Provider registries) {
+    public static ModState load(CompoundTag nbt) {
         ModState state = new ModState();
 
         if (nbt.contains("players", 10)) {

@@ -4,10 +4,12 @@ import com.r3ct.daily.logic.Quest;
 import com.r3ct.daily.logic.QuestManager;
 import com.r3ct.daily.network.SubmitQuestItemPayload;
 import com.r3ct.daily.platform.Services;
+import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,7 +37,11 @@ public class ConfirmSubmitScreen extends Screen {
         int centerY = this.height / 2;
 
         this.addRenderableWidget(Button.builder(Component.translatable("r3ct_daily.gui.yes"), b -> {
-            Services.PLATFORM.sendToServer(new SubmitQuestItemPayload(questIndex, slotIndex));
+            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            SubmitQuestItemPayload payload = new SubmitQuestItemPayload(questIndex, slotIndex);
+            payload.write(buf);
+            Services.PLATFORM.sendToServer(SubmitQuestItemPayload.TYPE, buf);
+
             this.minecraft.setScreen(parent);
         }).bounds(centerX - 105, centerY + 30, 100, 20).build());
 
