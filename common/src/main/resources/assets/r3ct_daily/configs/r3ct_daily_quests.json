@@ -6,18 +6,6 @@
 
   "overworld_quests": [
     {
-      "id": "kruszaca_sila",
-      "name": "r3ct_daily.quest.kruszaca_sila.name",
-      "description": "r3ct_daily.quest.kruszaca_sila.desc",
-      "difficulty": 2,
-      "action_type": "MACE_SMASH",
-      "target": "any",
-      "amount": 3,
-      "required_location": "any",
-      "reward_item": "minecraft:wind_charge",
-      "reward_amount": 4
-    },
-    {
       "id": "niedzielny_wedkarz",
       "name": "r3ct_daily.quest.niedzielny_wedkarz.name",
       "description": "r3ct_daily.quest.niedzielny_wedkarz.desc",
@@ -498,16 +486,16 @@
       "reward_amount": 4
     },
     {
-      "id": "pancerna_straz",
-      "name": "r3ct_daily.quest.pancerna_straz.name",
-      "description": "r3ct_daily.quest.pancerna_straz.desc",
-      "difficulty": 1,
-      "action_type": "BRUSH_ARMADILLO",
-      "target": "any",
-      "amount": 5,
+      "id": "pustynne_przygody",
+      "name": "r3ct_daily.quest.pustynne_przygody.name",
+      "description": "r3ct_daily.quest.pustynne_przygody.desc",
+      "difficulty": 2,
+      "action_type": "BREED_ANIMAL",
+      "target": "minecraft:camel",
+      "amount": 1,
       "required_location": "any",
-      "reward_item": "minecraft:bone",
-      "reward_amount": 4
+      "reward_item": "minecraft:saddle",
+      "reward_amount": 1
     },
     {
       "id": "archeologia_w_terenie",
@@ -1686,18 +1674,6 @@
       "reward_amount": 4
     },
     {
-      "id": "pancerny_spacer",
-      "name": "r3ct_daily.quest.pancerny_spacer.name",
-      "description": "r3ct_daily.quest.pancerny_spacer.desc",
-      "difficulty": 1,
-      "action_type": "SUBMIT_ITEMS",
-      "target": "minecraft:armadillo_scute",
-      "amount": 6,
-      "required_location": "any",
-      "reward_item": "minecraft:bone",
-      "reward_amount": 16
-    },
-    {
       "id": "zabi_spiew",
       "name": "r3ct_daily.quest.zabi_spiew.name",
       "description": "r3ct_daily.quest.zabi_spiew.desc",
@@ -2080,18 +2056,6 @@
       "required_location": "any",
       "reward_item": "minecraft:powered_rail",
       "reward_amount": 8
-    },
-    {
-      "id": "lowca_skarbcow",
-      "name": "r3ct_daily.quest.lowca_skarbcow.name",
-      "description": "r3ct_daily.quest.lowca_skarbcow.desc",
-      "difficulty": 2,
-      "action_type": "OPEN_VAULT",
-      "target": "any",
-      "amount": 1,
-      "required_location": "any",
-      "reward_item": "minecraft:ominous_bottle",
-      "reward_amount": 1
     },
     {
       "id": "wyscigi_swin",
@@ -3006,18 +2970,6 @@
       "required_location": "any",
       "reward_item": "minecraft:clock",
       "reward_amount": 1
-    },
-    {
-      "id": "mam_pomysl",
-      "name": "r3ct_daily.quest.mam_pomysl.name",
-      "description": "r3ct_daily.quest.mam_pomysl.desc",
-      "difficulty": 0,
-      "action_type": "CRAFT_ITEM",
-      "target": "minecraft:copper_bulb",
-      "amount": 4,
-      "required_location": "any",
-      "reward_item": "minecraft:redstone_torch",
-      "reward_amount": 2
     },
     {
       "id": "piasek_dusz",

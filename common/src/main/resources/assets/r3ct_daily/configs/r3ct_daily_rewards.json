@@ -81,13 +81,13 @@
   "_comment_streak_days_5_to_6": "Bonus 4th reward for players with a 7+ day streak logging in on days 5-6.",
   "streak_days_5_to_6": [
     { "item": "r3ct_daily:random_pottery_sherd", "min_amount": 1, "max_amount": 2, "chance": 70 },
-    { "item": "minecraft:trial_key", "min_amount": 1, "max_amount": 1, "chance": 30 }
+    { "item": "r3ct_daily:random_trim_template", "min_amount": 1, "max_amount": 1, "chance": 30 }
   ],
 
   "_comment_streak_day_7": "Bonus 4th reward for players with a 7+ day streak logging in on day 7.",
   "streak_day_7": [
-    { "item": "minecraft:ominous_bottle", "min_amount": 1, "max_amount": 1, "chance": 70 },
-    { "item": "minecraft:ominous_trial_key", "min_amount": 1, "max_amount": 1, "chance": 30 }
+    { "item": "minecraft:enchanted_golden_apple", "min_amount": 1, "max_amount": 1, "chance": 70 },
+    { "item": "r3ct_daily:random_spawn_egg", "min_amount": 1, "max_amount": 1, "chance": 30 }
   ],
 
   "_comment_quest_completion": "Loot pool from which ONE item is drawn for completing 3 daily quests.",
@@ -105,7 +105,7 @@
   "milestones": {
     "point_50":  { "item": "minecraft:experience_bottle", "amount": 16, "color": "&a" },
     "point_100": { "item": "minecraft:ender_pearl", "amount": 4, "color": "&3" },
-    "point_150": { "item": "minecraft:ominous_trial_key", "amount": 1, "color": "&c" },
+    "point_150": { "item": "minecraft:enchanted_golden_apple", "amount": 2, "color": "&6" },
     "point_200": { "item": "minecraft:totem_of_undying", "amount": 1, "color": "&e" }
   },
 
