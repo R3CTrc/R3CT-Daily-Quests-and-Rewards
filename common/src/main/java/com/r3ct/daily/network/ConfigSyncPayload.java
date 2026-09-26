@@ -4,10 +4,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public record ConfigSyncPayload(String questsJson, String rewardsJson, String serverJson) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ConfigSyncPayload> TYPE = new CustomPacketPayload.Type<>(Identifier.parse("r3ct_daily:config_sync"));
+    public static final CustomPacketPayload.Type<ConfigSyncPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.parse("r3ct_daily:config_sync"));
 
     public static final StreamCodec<FriendlyByteBuf, ConfigSyncPayload> CODEC = StreamCodec.composite(
             ByteBufCodecs.stringUtf8(262144), ConfigSyncPayload::questsJson,

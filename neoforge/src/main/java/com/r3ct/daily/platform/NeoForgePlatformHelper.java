@@ -2,13 +2,11 @@ package com.r3ct.daily.platform;
 
 import com.r3ct.daily.DailyNeoForgeClient;
 import com.r3ct.daily.platform.services.IPlatformHelper;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
@@ -25,7 +23,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public boolean isDevelopmentEnvironment() {
-        return !FMLLoader.getCurrent().isProduction();
+        return !FMLLoader.isProduction();
     }
 
     @Override
@@ -40,23 +38,23 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public <T extends CustomPacketPayload> void sendToServer(T payload) {
-        ClientPacketDistributor.sendToServer(payload);
+        PacketDistributor.sendToServer(payload);
     }
 
     @Override
     public boolean isQuestKey(Object event) {
-        if (event instanceof KeyEvent keyEvent) {
+        if (event instanceof Integer keyCode) {
             return DailyNeoForgeClient.ClientModEvents.openQuestsKey != null &&
-                    DailyNeoForgeClient.ClientModEvents.openQuestsKey.matches(keyEvent);
+                    DailyNeoForgeClient.ClientModEvents.openQuestsKey.matches(keyCode, -1);
         }
         return false;
     }
 
     @Override
     public boolean isRewardKey(Object event) {
-        if (event instanceof KeyEvent keyEvent) {
+        if (event instanceof Integer keyCode) {
             return DailyNeoForgeClient.ClientModEvents.openRewardsKey != null &&
-                    DailyNeoForgeClient.ClientModEvents.openRewardsKey.matches(keyEvent);
+                    DailyNeoForgeClient.ClientModEvents.openRewardsKey.matches(keyCode, -1);
         }
         return false;
     }

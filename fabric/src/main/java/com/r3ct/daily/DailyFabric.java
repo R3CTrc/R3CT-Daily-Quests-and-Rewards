@@ -26,13 +26,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,7 @@ public class DailyFabric implements ModInitializer {
 
 		ResourceKey<CreativeModeTab> R3CT_TAB_KEY = ResourceKey.create(
 				Registries.CREATIVE_MODE_TAB,
-				Identifier.parse("r3ct_daily:main_tab")
+				ResourceLocation.parse("r3ct_daily:main_tab")
 		);
 		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, R3CT_TAB_KEY, FabricItemGroup.builder()
 				.title(Component.translatable("itemGroup.r3ct_daily.main_tab"))
@@ -112,7 +111,8 @@ public class DailyFabric implements ModInitializer {
 
 			LocalDate today = QuestManager.getCurrentQuestDate();
 			PlayerData data = ModState.getPlayerData(server, player.getUUID());
-			data.lastKnownName = player.getGameProfile().name();
+
+			data.lastKnownName = player.getGameProfile().getName();
 
 			final boolean hasRewards = !today.toString().equals(data.lastRewardDate);
 			final boolean isFirstLoginToday = !today.toString().equals(data.lastQuestDate);
@@ -186,7 +186,7 @@ public class DailyFabric implements ModInitializer {
 						data.questRewardsClaimed.add(false);
 					}
 				}
-				server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+				ModState.get(server).setDirty();
 			}
 
 			final int remainingQuests = 5 - data.dailyQuestsCompletedToday;
@@ -206,8 +206,8 @@ public class DailyFabric implements ModInitializer {
 							.withStyle(Style.EMPTY
 									.withColor(ChatFormatting.YELLOW)
 									.withBold(true)
-									.withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
-									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.rewards.open_menu")))
+									.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/daily rewards"))
+									.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("r3ct_daily.message.rewards.open_menu")))
 							)
 					);
 					player.sendSystemMessage(rewardMsg);
@@ -220,8 +220,8 @@ public class DailyFabric implements ModInitializer {
 							.withStyle(Style.EMPTY
 									.withColor(ChatFormatting.YELLOW)
 									.withBold(true)
-									.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
+									.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/daily quests"))
+									.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("r3ct_daily.message.quests.open_menu")))
 							)
 					);
 					player.sendSystemMessage(questMsg);
@@ -237,8 +237,8 @@ public class DailyFabric implements ModInitializer {
 							.withStyle(Style.EMPTY
 									.withColor(ChatFormatting.YELLOW)
 									.withBold(true)
-									.withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-									.withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
+									.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/daily quests"))
+									.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("r3ct_daily.message.quests.open_menu")))
 							)
 					);
 					player.sendSystemMessage(reminderMsg);
@@ -265,8 +265,8 @@ public class DailyFabric implements ModInitializer {
 		});
 
 		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
-			String rawDimString = destination.dimension().toString();
-			String dimId = rawDimString.substring(rawDimString.lastIndexOf("/") + 1, rawDimString.length() - 1).trim();
+			String rawDimString = destination.dimension().location().toString();
+			String dimId = rawDimString;
 			QuestEventHandlers.onDimensionChange((ServerPlayer) player, dimId);
 		});
 

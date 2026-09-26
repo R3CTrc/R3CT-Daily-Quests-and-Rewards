@@ -15,12 +15,11 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 public class DailyFabricClient implements ClientModInitializer {
@@ -28,7 +27,7 @@ public class DailyFabricClient implements ClientModInitializer {
 	public static KeyMapping openQuestsKey;
 	private static KeyMapping toggleHudKey;
 
-	private static final KeyMapping.Category R3CT_CATEGORY = KeyMapping.Category.register(Identifier.parse(DailyFabric.MOD_ID + ":main"));
+	private static final String R3CT_CATEGORY = "key.category." + DailyFabric.MOD_ID + ".main";
 
 	public static PlayerData clientQuestData = null;
 	private static boolean minimizedHud = false;
@@ -158,7 +157,7 @@ public class DailyFabricClient implements ClientModInitializer {
 			});
 		});
 
-		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(DailyFabric.MOD_ID, "quest_hud"), (guiGraphics, deltaTracker) -> {
+		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
 			Minecraft client = Minecraft.getInstance();
 
 			if (client.options.hideGui || client.getDebugOverlay().showDebugScreen() || client.player == null) return;
@@ -167,7 +166,7 @@ public class DailyFabricClient implements ClientModInitializer {
 
 			if (!DailyClientConfig.getInstance().enableHud) return;
 
-			int screenWidth = guiGraphics.guiWidth();
+			int screenWidth = client.getWindow().getGuiScaledWidth();
 			int rawXOffset = DailyClientConfig.getInstance().hudXOffset;
 			int rawYOffset = DailyClientConfig.getInstance().hudYOffset;
 			boolean isRight = DailyClientConfig.getInstance().hudAlignment.equals("right");
@@ -186,8 +185,8 @@ public class DailyFabricClient implements ClientModInitializer {
 
 			int baseColor = (alpha << 24) | 0xFFFFFF;
 
-			guiGraphics.pose().pushMatrix();
-			guiGraphics.pose().scale(scale, scale);
+			guiGraphics.pose().pushPose();
+			guiGraphics.pose().scale(scale, scale, 1.0f);
 
 			int virtualWidth = (int) (screenWidth / scale);
 			int xOffset = (int) (rawXOffset / scale);
@@ -197,9 +196,9 @@ public class DailyFabricClient implements ClientModInitializer {
 				if (!minimizedHud) {
 					String loadingMsg = "§e" + Component.translatable("r3ct_daily.hud.loading").getString();
 					int xPos = isRight ? virtualWidth - client.font.width(loadingMsg) - xOffset : xOffset;
-					guiGraphics.drawString(client.font, loadingMsg, xPos, currentY, baseColor, true);
+					guiGraphics.drawString(client.font, loadingMsg, xPos, currentY, baseColor, true); // Ostatni parametr to dropShadow w 1.21.1
 				}
-				guiGraphics.pose().popMatrix();
+				guiGraphics.pose().popPose();
 				return;
 			}
 
@@ -257,7 +256,7 @@ public class DailyFabricClient implements ClientModInitializer {
 				currentY += 10;
 			}
 
-			guiGraphics.pose().popMatrix();
+			guiGraphics.pose().popPose();
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(LeaderboardResponsePayload.ID, (payload, context) -> {

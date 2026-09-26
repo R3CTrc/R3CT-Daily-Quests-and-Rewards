@@ -1,10 +1,10 @@
 package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
-import net.minecraft.advancements.criterion.CuredZombieVillagerTrigger;
+import net.minecraft.advancements.critereon.CuredZombieVillagerTrigger;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.monster.zombie.Zombie;
-import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.npc.Villager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

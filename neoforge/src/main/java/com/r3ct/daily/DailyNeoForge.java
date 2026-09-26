@@ -14,19 +14,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -53,7 +52,7 @@ public class DailyNeoForge {
         modEventBus.addListener(this::onRegister);
         NeoForge.EVENT_BUS.register(this);
 
-        if (FMLEnvironment.getDist() == Dist.CLIENT) {
+        if (FMLLoader.getDist() == Dist.CLIENT) {
             DailyNeoForgeClient.init(modContainer);
         }
     }
@@ -115,7 +114,7 @@ public class DailyNeoForge {
         }
 
         event.register(Registries.CREATIVE_MODE_TAB, helper -> {
-            helper.register(Identifier.parse("r3ct_daily:main_tab"),
+            helper.register(ResourceLocation.parse("r3ct_daily:main_tab"),
                     CreativeModeTab.builder()
                             .title(Component.translatable("itemGroup.r3ct_daily.main_tab"))
                             .icon(() -> new ItemStack(ModItems.QUEST_SHIELD))
@@ -141,7 +140,7 @@ public class DailyNeoForge {
 
         LocalDate today = QuestManager.getCurrentQuestDate();
         PlayerData data = ModState.getPlayerData(server, player.getUUID());
-        data.lastKnownName = player.getGameProfile().name();
+        data.lastKnownName = player.getGameProfile().getName();
 
         final boolean hasRewards = !today.toString().equals(data.lastRewardDate);
         final boolean isFirstLoginToday = !today.toString().equals(data.lastQuestDate);
@@ -215,7 +214,7 @@ public class DailyNeoForge {
                     data.questRewardsClaimed.add(false);
                 }
             }
-            server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
+            ModState.get(server).setDirty();
         }
 
         final int remainingQuests = 5 - data.dailyQuestsCompletedToday;
@@ -235,8 +234,8 @@ public class DailyNeoForge {
                         .withStyle(Style.EMPTY
                                 .withColor(ChatFormatting.YELLOW)
                                 .withBold(true)
-                                .withClickEvent(new ClickEvent.RunCommand("/daily rewards"))
-                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.rewards.open_menu")))
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/daily rewards"))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("r3ct_daily.message.rewards.open_menu")))
                         )
                 );
                 player.sendSystemMessage(rewardMsg);
@@ -249,8 +248,8 @@ public class DailyNeoForge {
                         .withStyle(Style.EMPTY
                                 .withColor(ChatFormatting.YELLOW)
                                 .withBold(true)
-                                .withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/daily quests"))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("r3ct_daily.message.quests.open_menu")))
                         )
                 );
                 player.sendSystemMessage(questMsg);
@@ -266,8 +265,8 @@ public class DailyNeoForge {
                         .withStyle(Style.EMPTY
                                 .withColor(ChatFormatting.YELLOW)
                                 .withBold(true)
-                                .withClickEvent(new ClickEvent.RunCommand("/daily quests"))
-                                .withHoverEvent(new HoverEvent.ShowText(Component.translatable("r3ct_daily.message.quests.open_menu")))
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/daily quests"))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("r3ct_daily.message.quests.open_menu")))
                         )
                 );
                 player.sendSystemMessage(reminderMsg);
@@ -294,7 +293,7 @@ public class DailyNeoForge {
     @SubscribeEvent
     public void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            String dimId = event.getTo().identifier().toString();
+            String dimId = event.getTo().location().toString();
             QuestEventHandlers.onDimensionChange(player, dimId);
         }
     }

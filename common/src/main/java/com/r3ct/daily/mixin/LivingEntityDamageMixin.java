@@ -2,7 +2,6 @@ package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -11,11 +10,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
-import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
-import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownLingeringPotion;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownSplashPotion;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.entity.projectile.LargeFireball;
+import net.minecraft.world.entity.projectile.ThrownPotion;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,8 +26,8 @@ public abstract class LivingEntityDamageMixin {
     @Unique private float r3ct_daily$dailyDamageTakenBuffer = 0.0f;
     @Unique private float r3ct_daily$dailyDamageDealtBuffer = 0.0f;
 
-    @Inject(method = "hurtServer", at = @At("HEAD"))
-    private void r3ct_daily$onHurtHead(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "hurt", at = @At("HEAD"))
+    private void r3ct_daily$onHurtHead(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof ServerPlayer player && player.connection != null && amount > 0.0F) {
             if (player.isBlocking() && !source.is(DamageTypeTags.BYPASSES_SHIELD)) {
                 if (source.is(DamageTypeTags.IS_EXPLOSION) && source.getEntity() instanceof Creeper creeper) {
@@ -49,8 +47,8 @@ public abstract class LivingEntityDamageMixin {
         }
     }
 
-    @Inject(method = "hurtServer", at = @At("RETURN"))
-    private void r3ct_daily$onHurt(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "hurt", at = @At("RETURN"))
+    private void r3ct_daily$onHurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue() || amount <= 0.0F) return;
 
         LivingEntity victim = (LivingEntity) (Object) this;
@@ -82,8 +80,7 @@ public abstract class LivingEntityDamageMixin {
                 QuestManager.handleAction(attackerPlayer, "DEAL_DAMAGE", victimId, pointsToGive);
 
                 if (directEntity != null) {
-                    if (directEntity instanceof ThrownSplashPotion ||
-                            directEntity instanceof ThrownLingeringPotion) {
+                    if (directEntity instanceof ThrownPotion) {
                         QuestManager.handleAction(attackerPlayer, "POTION_DAMAGE", victimId, pointsToGive);
                     }
                     else if (directEntity instanceof AbstractArrow && !(directEntity instanceof ThrownTrident)) {
@@ -140,7 +137,8 @@ public abstract class LivingEntityDamageMixin {
                 int pointsToGive = (int) victimMixin.r3ct_daily$dailyDamageTakenBuffer;
 
                 QuestManager.handleAction(serverVictim, "TAKE_DAMAGE", attackerId, pointsToGive);
-                long timeOfDay = level.getDayTime() % 24000L;
+
+                long timeOfDay = victim.level().getDayTime() % 24000L;
                 if (timeOfDay >= 0 && timeOfDay < 12000) {
                     QuestManager.handleAction(serverVictim, "TAKE_DAMAGE_DAY", attackerId, pointsToGive);
                 }

@@ -4,12 +4,12 @@ import com.r3ct.daily.data.TopEntry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import java.util.ArrayList;
 import java.util.List;
 
 public record LeaderboardResponsePayload(int boardType, List<TopEntry> leftList, List<TopEntry> rightList) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<LeaderboardResponsePayload> ID = new CustomPacketPayload.Type<>(Identifier.parse("r3ct_daily:leaderboard_res"));
+    public static final CustomPacketPayload.Type<LeaderboardResponsePayload> ID = new CustomPacketPayload.Type<>(ResourceLocation.parse("r3ct_daily:leaderboard_res"));
 
     public static final StreamCodec<FriendlyByteBuf, LeaderboardResponsePayload> CODEC = CustomPacketPayload.codec(
             LeaderboardResponsePayload::write,

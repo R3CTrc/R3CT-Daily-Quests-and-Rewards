@@ -1,10 +1,8 @@
 package com.r3ct.daily.mixin;
 
 import com.r3ct.daily.logic.QuestManager;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BrushableBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BrushableBlockEntityMixin {
 
     @Inject(method = "dropContent", at = @At("HEAD"))
-    private void r3ct_daily$onDropContent(ServerLevel level, LivingEntity user, ItemStack brush, CallbackInfo ci) {
-        if (user instanceof ServerPlayer serverPlayer) {
+    private void r3ct_daily$onDropContent(Player player, CallbackInfo ci) {
+        if (player instanceof ServerPlayer serverPlayer) {
             QuestManager.handleAction(serverPlayer, "BRUSH_BLOCK", "any", 1);
         }
     }

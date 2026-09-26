@@ -218,8 +218,8 @@
       "target": "r3ct_daily:copper_ores",
       "amount": 32,
       "required_location": "any",
-      "reward_item": "minecraft:lightning_rod",
-      "reward_amount": 1
+      "reward_item": "minecraft:honeycomb",
+      "reward_amount": 2
     },
     {
       "id": "wielka_plyta",
@@ -366,18 +366,6 @@
       "reward_amount": 1
     },
     {
-      "id": "blade_jak_sciana",
-      "name": "r3ct_daily.quest.blade_jak_sciana.name",
-      "description": "r3ct_daily.quest.blade_jak_sciana.desc",
-      "difficulty": 1,
-      "action_type": "BREAK_BLOCK",
-      "target": "r3ct_daily:pale_oak_logs",
-      "amount": 32,
-      "required_location": "biome:minecraft:pale_garden",
-      "reward_item": "minecraft:pale_oak_sapling",
-      "reward_amount": 2
-    },
-    {
       "id": "skacz_jak_malpa",
       "name": "r3ct_daily.quest.skacz_jak_malpa.name",
       "description": "r3ct_daily.quest.skacz_jak_malpa.desc",
@@ -498,18 +486,6 @@
       "reward_amount": 1
     },
     {
-      "id": "pustynne_przygody",
-      "name": "r3ct_daily.quest.pustynne_przygody.name",
-      "description": "r3ct_daily.quest.pustynne_przygody.desc",
-      "difficulty": 2,
-      "action_type": "BREED_ANIMAL",
-      "target": "minecraft:camel",
-      "amount": 1,
-      "required_location": "any",
-      "reward_item": "minecraft:saddle",
-      "reward_amount": 1
-    },
-    {
       "id": "osiol_czy_kon",
       "name": "r3ct_daily.quest.osiol_czy_kon.name",
       "description": "r3ct_daily.quest.osiol_czy_kon.desc",
@@ -544,18 +520,6 @@
       "required_location": "any",
       "reward_item": "minecraft:emerald",
       "reward_amount": 3
-    },
-    {
-      "id": "wreszcie_porzadek",
-      "name": "r3ct_daily.quest.wreszcie_porzadek.name",
-      "description": "r3ct_daily.quest.wreszcie_porzadek.desc",
-      "difficulty": 1,
-      "action_type": "BUILD_GOLEM",
-      "target": "copper",
-      "amount": 1,
-      "required_location": "any",
-      "reward_item": "minecraft:copper_block",
-      "reward_amount": 1
     },
     {
       "id": "zelazna_protekcja",
@@ -758,7 +722,7 @@
       "target": "minecraft:shield",
       "amount": 1,
       "required_location": "any",
-      "reward_item": "minecraft:iron_spear",
+      "reward_item": "minecraft:iron_sword",
       "reward_amount": 1
     },
     {
@@ -796,18 +760,6 @@
       "required_location": "any",
       "reward_item": "minecraft:gunpowder",
       "reward_amount": 8
-    },
-    {
-      "id": "bursztynowo",
-      "name": "r3ct_daily.quest.bursztynowo.name",
-      "description": "r3ct_daily.quest.bursztynowo.desc",
-      "difficulty": 1,
-      "action_type": "CRAFT_ITEM",
-      "target": "minecraft:resin_block",
-      "amount": 1,
-      "required_location": "any",
-      "reward_item": "minecraft:honeycomb",
-      "reward_amount": 2
     },
     {
       "id": "do_nasladowania",
@@ -856,18 +808,6 @@
       "required_location": "any",
       "reward_item": "minecraft:iron_leggings",
       "reward_amount": 1
-    },
-    {
-      "id": "a_to_cos_nowego",
-      "name": "r3ct_daily.quest.a_to_cos_nowego.name",
-      "description": "r3ct_daily.quest.a_to_cos_nowego.desc",
-      "difficulty": 1,
-      "action_type": "CRAFT_ITEM",
-      "target": "r3ct_daily:harnesses",
-      "amount": 1,
-      "required_location": "any",
-      "reward_item": "minecraft:slime_ball",
-      "reward_amount": 4
     },
     {
       "id": "czas_to_pieniadz",
@@ -2178,18 +2118,6 @@
       "reward_amount": 8
     },
     {
-      "id": "prawie_jak_thor",
-      "name": "r3ct_daily.quest.prawie_jak_thor.name",
-      "description": "r3ct_daily.quest.prawie_jak_thor.desc",
-      "difficulty": 0,
-      "action_type": "PLACE_BLOCK",
-      "target": "minecraft:lightning_rod",
-      "amount": 1,
-      "required_location": "any",
-      "reward_item": "minecraft:copper_ingot",
-      "reward_amount": 8
-    },
-    {
       "id": "plantacja_czekolady",
       "name": "r3ct_daily.quest.plantacja_czekolady.name",
       "description": "r3ct_daily.quest.plantacja_czekolady.desc",
@@ -2931,18 +2859,6 @@
       "amount": 1,
       "required_location": "any",
       "reward_item": "minecraft:blue_ice",
-      "reward_amount": 4
-    },
-    {
-      "id": "blado_to_widze",
-      "name": "r3ct_daily.quest.blado_to_widze.name",
-      "description": "r3ct_daily.quest.blado_to_widze.desc",
-      "difficulty": 1,
-      "action_type": "VISIT_BIOME",
-      "target": "pale_garden",
-      "amount": 1,
-      "required_location": "any",
-      "reward_item": "minecraft:resin_clump",
       "reward_amount": 4
     },
     {

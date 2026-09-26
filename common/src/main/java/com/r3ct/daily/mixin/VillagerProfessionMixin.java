@@ -3,9 +3,9 @@ package com.r3ct.daily.mixin;
 import com.r3ct.daily.logic.QuestManager;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.entity.npc.villager.VillagerData;
-import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerData;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,8 +24,8 @@ public abstract class VillagerProfessionMixin {
         if (villager.tickCount < 20) return;
 
         VillagerData oldData = villager.getVillagerData();
-        VillagerProfession oldProfession = oldData.profession().value();
-        VillagerProfession newProfession = newData.profession().value();
+        VillagerProfession oldProfession = oldData.getProfession();
+        VillagerProfession newProfession = newData.getProfession();
 
         String oldProfId = BuiltInRegistries.VILLAGER_PROFESSION.getKey(oldProfession).toString();
         String newProfId = BuiltInRegistries.VILLAGER_PROFESSION.getKey(newProfession).toString();

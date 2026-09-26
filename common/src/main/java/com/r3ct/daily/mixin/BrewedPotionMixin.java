@@ -34,7 +34,7 @@ public abstract class BrewedPotionMixin {
 
                 contents.potion().flatMap(holder -> holder.unwrapKey()).ifPresent(key -> {
 
-                    String potId = key.identifier().toString();
+                    String potId = key.location().toString();
 
                     if (!potId.contains("water") && !potId.contains("mundane") && !potId.contains("thick") && !potId.contains("awkward")) {
                         QuestManager.handleAction(serverPlayer, "BREW_POTION", potId, stack.getCount());

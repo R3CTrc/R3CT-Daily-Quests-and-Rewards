@@ -58,7 +58,6 @@ public abstract class PlacedBlockMixin {
             else if (state.is(BlockTags.DARK_OAK_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:dark_oak_logs", 1);
             else if (state.is(BlockTags.MANGROVE_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:mangrove_logs", 1);
             else if (state.is(BlockTags.CHERRY_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:cherry_logs", 1);
-            else if (state.is(BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(player, "PLACE_BLOCK", "r3ct_daily:pale_oak_logs", 1);
 
         }
     }

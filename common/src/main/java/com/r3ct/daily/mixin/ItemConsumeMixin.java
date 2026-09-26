@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 public abstract class ItemConsumeMixin {
 
-    @Shadow public abstract ItemStack getActiveItem();
+    @Shadow public abstract ItemStack getUseItem();
 
     @Inject(method = "completeUsingItem", at = @At("HEAD"))
     private void r3ct_daily$onCompleteUsingItem(CallbackInfo ci) {
         if ((Object) this instanceof ServerPlayer player) {
-            ItemStack stack = this.getActiveItem();
+            ItemStack stack = this.getUseItem();
             if (!stack.isEmpty()) {
                 String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
                 QuestManager.handleAction(player, "CONSUME_ITEM", itemId, 1);

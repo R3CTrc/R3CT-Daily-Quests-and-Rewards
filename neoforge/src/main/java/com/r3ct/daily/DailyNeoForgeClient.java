@@ -1,6 +1,5 @@
 package com.r3ct.daily;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.r3ct.daily.client.screen.ConfigMainScreen;
 import com.r3ct.daily.client.screen.LeaderboardScreen;
 import com.r3ct.daily.client.screen.QuestScreen;
@@ -15,7 +14,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -35,13 +33,13 @@ public class DailyNeoForgeClient {
                 (client, parent) -> new ConfigMainScreen(parent));
     }
 
-    @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     public static class ClientModEvents {
         public static KeyMapping openRewardsKey;
         public static KeyMapping openQuestsKey;
         private static KeyMapping toggleHudKey;
 
-        private static final KeyMapping.Category R3CT_CATEGORY = KeyMapping.Category.register(Identifier.parse(Constants.MOD_ID + ":main"));
+        private static final String R3CT_CATEGORY = "key.category." + Constants.MOD_ID + ".main";
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
@@ -51,9 +49,9 @@ public class DailyNeoForgeClient {
 
         @SubscribeEvent
         public static void onKeyRegister(RegisterKeyMappingsEvent event) {
-            openRewardsKey = new KeyMapping("key.r3ct_daily.open_rewards", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, R3CT_CATEGORY);
-            openQuestsKey = new KeyMapping("key.r3ct_daily.open_quests", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, R3CT_CATEGORY);
-            toggleHudKey = new KeyMapping("key.r3ct_daily.toggle_hud", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_PERIOD, R3CT_CATEGORY);
+            openRewardsKey = new KeyMapping("key.r3ct_daily.open_rewards", GLFW.GLFW_KEY_H, R3CT_CATEGORY);
+            openQuestsKey = new KeyMapping("key.r3ct_daily.open_quests", GLFW.GLFW_KEY_G, R3CT_CATEGORY);
+            toggleHudKey = new KeyMapping("key.r3ct_daily.toggle_hud", GLFW.GLFW_KEY_PERIOD, R3CT_CATEGORY);
 
             event.register(openRewardsKey);
             event.register(openQuestsKey);
@@ -61,7 +59,7 @@ public class DailyNeoForgeClient {
         }
     }
 
-    @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
     public static class ClientGameEvents {
         private static boolean minimizedHud = false;
         public static PlayerData clientQuestData = null;
@@ -95,7 +93,7 @@ public class DailyNeoForgeClient {
             if (client.screen != null && !(client.screen instanceof ChatScreen)) return;
             if (!DailyClientConfig.getInstance().enableHud) return;
 
-            int screenWidth = event.getGuiGraphics().guiWidth();
+            int screenWidth = client.getWindow().getGuiScaledWidth();
             int rawXOffset = DailyClientConfig.getInstance().hudXOffset;
             int rawYOffset = DailyClientConfig.getInstance().hudYOffset;
             boolean isRight = DailyClientConfig.getInstance().hudAlignment.equals("right");
@@ -114,8 +112,8 @@ public class DailyNeoForgeClient {
 
             int baseColor = (alpha << 24) | 0xFFFFFF;
 
-            event.getGuiGraphics().pose().pushMatrix();
-            event.getGuiGraphics().pose().scale(scale, scale);
+            event.getGuiGraphics().pose().pushPose();
+            event.getGuiGraphics().pose().scale(scale, scale, 1.0f);
 
             int virtualWidth = (int) (screenWidth / scale);
             int xOffset = (int) (rawXOffset / scale);
@@ -127,7 +125,7 @@ public class DailyNeoForgeClient {
                     int xPos = isRight ? virtualWidth - client.font.width(loadingMsg) - xOffset : xOffset;
                     event.getGuiGraphics().drawString(client.font, loadingMsg, xPos, currentY, baseColor, true);
                 }
-                event.getGuiGraphics().pose().popMatrix();
+                event.getGuiGraphics().pose().popPose();
                 return;
             }
 
@@ -179,7 +177,7 @@ public class DailyNeoForgeClient {
                 }
                 currentY += 10;
             }
-            event.getGuiGraphics().pose().popMatrix();
+            event.getGuiGraphics().pose().popPose();
         }
     }
 

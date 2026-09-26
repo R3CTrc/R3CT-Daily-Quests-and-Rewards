@@ -4,8 +4,8 @@ import com.r3ct.daily.logic.QuestManager;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MerchantContainer;
 import net.minecraft.world.inventory.MerchantResultSlot;
@@ -39,7 +39,7 @@ public abstract class TradeMixin {
             if (this.merchant instanceof WanderingTrader) {
                 QuestManager.handleAction(serverPlayer, "TRADE_WANDERING", "any", 1);
             } else if (this.merchant instanceof Villager villager) {
-                if (villager.getVillagerData().level() >= 5) {
+                if (villager.getVillagerData().getLevel() >= 5) {
                     QuestManager.handleAction(serverPlayer, "TRADE_MASTER", "any", 1);
                 }
             }

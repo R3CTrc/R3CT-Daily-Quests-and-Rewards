@@ -16,8 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PiglinBarterMixin {
 
     @Inject(method = "pickUpItem", at = @At("HEAD"))
-    private static void r3ct_daily$onPickUpGold(ServerLevel level, Piglin piglin, ItemEntity itemEntity, CallbackInfo ci) {
+    private static void r3ct_daily$onPickUpGold(Piglin piglin, ItemEntity itemEntity, CallbackInfo ci) {
         if (itemEntity.getItem().is(Items.GOLD_INGOT)) {
+            ServerLevel level = (ServerLevel) piglin.level();
             java.util.UUID ownerUUID = itemEntity.getOwner() != null ? itemEntity.getOwner().getUUID() : null;
             if (ownerUUID != null) {
                 ServerPlayer player = (ServerPlayer) level.getPlayerByUUID(ownerUUID);

@@ -4,10 +4,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public record RequestLeaderboardPayload(int boardType) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<RequestLeaderboardPayload> ID = new CustomPacketPayload.Type<>(Identifier.parse("r3ct_daily:req_leaderboard"));
+    public static final CustomPacketPayload.Type<RequestLeaderboardPayload> ID = new CustomPacketPayload.Type<>(ResourceLocation.parse("r3ct_daily:req_leaderboard"));
 
     public static final StreamCodec<FriendlyByteBuf, RequestLeaderboardPayload> CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, RequestLeaderboardPayload::boardType,

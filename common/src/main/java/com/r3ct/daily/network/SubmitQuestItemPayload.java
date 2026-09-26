@@ -3,10 +3,10 @@ package com.r3ct.daily.network;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public record SubmitQuestItemPayload(int questIndex, int slotIndex) implements CustomPacketPayload {
-    public static final Type<SubmitQuestItemPayload> TYPE = new Type<>(Identifier.parse("r3ct_daily:submit_quest_item"));
+    public static final Type<SubmitQuestItemPayload> TYPE = new Type<>(ResourceLocation.parse("r3ct_daily:submit_quest_item"));
 
     public static final StreamCodec<FriendlyByteBuf, SubmitQuestItemPayload> STREAM_CODEC = StreamCodec.ofMember(
             SubmitQuestItemPayload::write,

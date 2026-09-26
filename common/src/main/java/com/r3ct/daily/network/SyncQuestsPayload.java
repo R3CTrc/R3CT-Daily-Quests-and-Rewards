@@ -4,7 +4,7 @@ import com.r3ct.daily.Constants;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public record SyncQuestsPayload(
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<SyncQuestsPayload> ID =
-            new CustomPacketPayload.Type<>(Identifier.parse(Constants.MOD_ID + ":sync_quests"));
+            new CustomPacketPayload.Type<>(ResourceLocation.parse(Constants.MOD_ID + ":sync_quests"));
 
     public static final StreamCodec<FriendlyByteBuf, SyncQuestsPayload> CODEC = CustomPacketPayload.codec(
             SyncQuestsPayload::write,
