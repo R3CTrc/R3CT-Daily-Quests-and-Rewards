@@ -498,6 +498,18 @@
       "reward_amount": 4
     },
     {
+      "id": "pustynne_przygody",
+      "name": "r3ct_daily.quest.pustynne_przygody.name",
+      "description": "r3ct_daily.quest.pustynne_przygody.desc",
+      "difficulty": 2,
+      "action_type": "BREED_ANIMAL",
+      "target": "minecraft:camel",
+      "amount": 1,
+      "required_location": "any",
+      "reward_item": "minecraft:saddle",
+      "reward_amount": 1
+    },
+    {
       "id": "pancerna_straz",
       "name": "r3ct_daily.quest.pancerna_straz.name",
       "description": "r3ct_daily.quest.pancerna_straz.desc",
