@@ -34,6 +34,8 @@ public class DailyFabricClient implements ClientModInitializer {
 	private static final long[] flashTimestamps = new long[10];
 	private static final boolean[] flashIsGreen = new boolean[10];
 
+	private static float animatedYOffset = -1;
+
 	@Override
 	public void onInitializeClient() {
 		QuestManager.init();
@@ -168,8 +170,68 @@ public class DailyFabricClient implements ClientModInitializer {
 
 			int screenWidth = client.getWindow().getGuiScaledWidth();
 			int rawXOffset = DailyClientConfig.getInstance().hudXOffset;
-			int rawYOffset = DailyClientConfig.getInstance().hudYOffset;
+			int baseConfigY = DailyClientConfig.getInstance().hudYOffset;
 			boolean isRight = DailyClientConfig.getInstance().hudAlignment.equals("right");
+
+			int dynamicPushDown = 0;
+
+			if (isRight) {
+				int activeToastsHeight = 0;
+				int activeEffectsHeight = 0;
+				int toastWidth = 160;
+				int effectsWidth = 0;
+
+				if (client.player != null && !client.player.getActiveEffects().isEmpty()) {
+					int beneficial = 0;
+					int harmful = 0;
+
+					for (var instance : client.player.getActiveEffects()) {
+						try {
+							String cat = instance.getEffect().value().getCategory().name();
+							if (cat.equals("BENEFICIAL")) beneficial++;
+							else harmful++;
+						} catch (Exception e) {
+							beneficial++;
+						}
+					}
+
+					effectsWidth = Math.max(beneficial, harmful) * 25;
+
+					if (harmful > 0) {
+						activeEffectsHeight = 52;
+					} else if (beneficial > 0) {
+						activeEffectsHeight = 26;
+					}
+				}
+
+				if (rawXOffset < toastWidth) {
+					try {
+						java.util.BitSet occupiedSlots = ((com.r3ct.daily.mixin.ToastManagerAccessorMixin) client.getToastManager()).getOccupiedSlots();
+						if (occupiedSlots != null && !occupiedSlots.isEmpty()) {
+							activeToastsHeight = occupiedSlots.length() * 32;
+						}
+					} catch (Exception ignored) {}
+				}
+
+				if (rawXOffset >= effectsWidth) {
+					activeEffectsHeight = 0;
+				}
+
+				int maxOccupiedY = Math.max(activeToastsHeight, activeEffectsHeight);
+
+				if (maxOccupiedY > baseConfigY - 5) {
+					dynamicPushDown = maxOccupiedY - baseConfigY + 5;
+				}
+			}
+
+			float targetY = baseConfigY + dynamicPushDown;
+
+			if (animatedYOffset == -1) {
+				animatedYOffset = targetY;
+			}
+
+			animatedYOffset += (targetY - animatedYOffset) * 0.15f;
+			int currentAnimatedY = (int) animatedYOffset;
 
 			double currentGuiScale = Math.max(1.0, client.getWindow().getGuiScale());
 			float targetGuiScale = 2.0f;
@@ -190,13 +252,13 @@ public class DailyFabricClient implements ClientModInitializer {
 
 			int virtualWidth = (int) (screenWidth / scale);
 			int xOffset = (int) (rawXOffset / scale);
-			int currentY = (int) (rawYOffset / scale);
+			int currentY = (int) (currentAnimatedY / scale);
 
 			if (clientQuestData == null || clientQuestData.activeQuests.isEmpty()) {
 				if (!minimizedHud) {
 					String loadingMsg = "§e" + Component.translatable("r3ct_daily.hud.loading").getString();
 					int xPos = isRight ? virtualWidth - client.font.width(loadingMsg) - xOffset : xOffset;
-					guiGraphics.drawString(client.font, loadingMsg, xPos, currentY, baseColor, true); // Ostatni parametr to dropShadow w 1.21.1
+					guiGraphics.drawString(client.font, loadingMsg, xPos, currentY, baseColor, true);
 				}
 				guiGraphics.pose().popPose();
 				return;
