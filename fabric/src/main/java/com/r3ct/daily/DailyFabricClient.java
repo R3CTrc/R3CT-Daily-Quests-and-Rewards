@@ -206,7 +206,7 @@ public class DailyFabricClient implements ClientModInitializer {
 
 				if (rawXOffset < toastWidth) {
 					try {
-						java.util.BitSet occupiedSlots = ((com.r3ct.daily.mixin.ToastManagerAccessorMixin) client.getToastManager()).getOccupiedSlots();
+						java.util.BitSet occupiedSlots = ((com.r3ct.daily.mixin.ToastManagerAccessorMixin) client.getToasts()).getOccupiedSlots();
 						if (occupiedSlots != null && !occupiedSlots.isEmpty()) {
 							activeToastsHeight = occupiedSlots.length() * 32;
 						}
