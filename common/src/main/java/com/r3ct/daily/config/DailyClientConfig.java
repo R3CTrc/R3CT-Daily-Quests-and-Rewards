@@ -21,14 +21,14 @@ public class DailyClientConfig {
     private static final Path CONFIG_PATH = Services.PLATFORM.getConfigDir().resolve("r3ct_daily/r3ct_daily_client.json");
     private static final File CONFIG_FILE = CONFIG_PATH.toFile();
 
-    private static final int CONFIG_VERSION = 2;
+    private static final int CONFIG_VERSION = 3;
 
     public int version = CONFIG_VERSION;
 
     public boolean enableHud = true;
     public String hudAlignment = "right";
     public int hudXOffset = 10;
-    public int hudYOffset = 70;
+    public int hudYOffset = 10;
     public float hudScale = 1.0f;
     public float questScreenScale = 1.0f;
     public float rewardScreenScale = 1.0f;
