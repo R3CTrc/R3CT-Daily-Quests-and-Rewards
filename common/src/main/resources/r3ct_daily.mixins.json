@@ -35,6 +35,7 @@
     "SummonedEntityMixin",
     "TamableAnimalMixin",
     "TntBlockMixin",
+    "ToastManagerAccessorMixin",
     "TradeMixin",
     "VillagerProfessionMixin"
   ],
