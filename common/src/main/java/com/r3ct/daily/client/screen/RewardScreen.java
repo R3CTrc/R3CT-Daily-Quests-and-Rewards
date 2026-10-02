@@ -139,11 +139,15 @@ public class RewardScreen extends Screen {
         int sColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
 
         String lblStreak = Component.translatable("r3ct_daily.rewards.bar.streak").getString();
-        String valStreak = streakColorCode + data.streak + "§0/7";
+        String valStreak = streakColorCode + data.absoluteRewardStreak + "§0/7";
         GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar1X, barY, animatedStreak, 7, lblStreak, valStreak, sColor, bWidth, 1, new int[]{});
 
-        String multiText = data.streak >= 7 ? "§6§l" + Component.translatable("r3ct_daily.rewards.bonus.active").getString() : "§8" + Component.translatable("r3ct_daily.rewards.bonus.inactive").getString();
-        guiGraphics.text(this.font, multiText, bar1X, barY + 12, 0xFFFFFFFF, data.streak >= 7);
+        String multiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.streak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : Component.translatable("r3ct_daily.gui.inactive").getString());
+        guiGraphics.text(this.font, multiText, bar1X, barY + 14, 0xFFFFFFFF, false);
+
+        int maxRewardShields = payload.maxRewardShields();
+        String shieldsText = "§8" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableRewardFreezes + "§8/" + maxRewardShields;
+        guiGraphics.text(this.font, shieldsText, bar1X, barY + 26, 0xFFFFFFFF, false);
 
         int displayCollected = data.totalCollected % 21;
         if (displayCollected == 0 && data.totalCollected > 0) {
@@ -366,22 +370,19 @@ public class RewardScreen extends Screen {
         List<ClientTooltipComponent> tooltip = new ArrayList<>();
         tooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.rewards.tooltip.streak.title").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-        if (data.streak >= 7) {
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§6" + Component.translatable("r3ct_daily.rewards.tooltip.streak.bonus_active").getString()).getVisualOrderText()));
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§7" + Component.translatable("r3ct_daily.rewards.tooltip.streak.bonus_desc").getString()).getVisualOrderText()));
-        } else {
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req1").getString()).getVisualOrderText()));
-            tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req2").getString()).getVisualOrderText()));
-        }
+
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req1").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.req2").getString()).getVisualOrderText()));
 
         tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_title").getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§b" + Component.translatable("r3ct_daily.gui.streak_freeze_title").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.freeze_desc1").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.streak.freeze_desc2").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
+
         int maxRewardShields = payload.maxRewardShields();
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freezes").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
 
         guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
