@@ -367,6 +367,7 @@ public class RewardManager {
                 data.rewardDay,
                 data.lastRewardDate,
                 visualStreak,
+                data.absoluteRewardStreak,
                 data.totalCollected,
                 data.claimedRewardHistory,
                 data.availableRewardFreezes,
