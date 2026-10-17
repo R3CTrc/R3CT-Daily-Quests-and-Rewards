@@ -202,9 +202,12 @@ public class QuestScreen extends Screen {
         int streakBarColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
         GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barW, 1, new int[]{});
 
-        String multiVal = String.valueOf(payload.questStreakXpMultiplier()).replace(".0", "");
-        String qMultiText = data.questStreak >= 7 ? "§6§l" + Component.translatable("r3ct_daily.quests.multiplier.active", multiVal).getString() : "§0" + Component.translatable("r3ct_daily.quests.multiplier.inactive").getString();
+        String qMultiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.questStreak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : Component.translatable("r3ct_daily.gui.inactive").getString());
         guiGraphics.drawString(this.font, qMultiText, rightTextX, streakY + 14, 0xFF000000, false);
+
+        int maxQuestShields = payload.maxStoredQuestShields();
+        String shieldsText = "§8" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableFreezes + "§8/" + maxQuestShields;
+        guiGraphics.drawString(this.font, shieldsText, rightTextX, streakY + 26, 0xFF000000, false);
 
         int lifeY = topPos + 245;
         int targetPoints = Math.min(data.totalQuestPoints, 200);
@@ -509,16 +512,11 @@ public class QuestScreen extends Screen {
         tooltip.add(Component.literal("§8----------------"));
 
         String multiVal = String.valueOf(payload.questStreakXpMultiplier()).replace(".0", "");
-        if (data.questStreak >= 7) {
-            tooltip.add(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.streak.multi_active", multiVal).getString()));
-            tooltip.add(Component.literal("§7" + Component.translatable("r3ct_daily.quests.tooltip.streak.multi_desc", multiVal).getString()));
-        } else {
-            tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req1").getString()));
-            tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req2", multiVal).getString()));
-        }
+        tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req1").getString()));
+        tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.req2", multiVal).getString()));
 
         tooltip.add(Component.literal(""));
-        tooltip.add(Component.literal("§b" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_title").getString()));
+        tooltip.add(Component.literal("§b" + Component.translatable("r3ct_daily.gui.streak_freeze_title").getString()));
         tooltip.add(Component.literal(""));
         int reqDays = payload.perfectDaysForShield();
         tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freeze_desc1", reqDays).getString()));
@@ -526,7 +524,7 @@ public class QuestScreen extends Screen {
         tooltip.add(Component.literal(""));
 
         int maxQuestShields = payload.maxStoredQuestShields();
-        tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.freezes").getString() + " §b" + data.availableFreezes + "§f/" + maxQuestShields));
+        tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableFreezes + "§f/" + maxQuestShields));
 
         tooltip.add(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.progress").getString() + " §b" + data.perfectDaysCount + "§f/" + reqDays));
 

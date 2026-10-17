@@ -13,6 +13,7 @@ public record OpenRewardsPayload(
         int rewardDay,
         String lastRewardDate,
         int streak,
+        int absoluteRewardStreak,
         int totalCollected,
         List<String> claimedRewardHistory,
         int availableRewardFreezes,
@@ -35,6 +36,7 @@ public record OpenRewardsPayload(
                 buf.readUtf(),
                 buf.readInt(),
                 buf.readInt(),
+                buf.readInt(),
                 buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf),
                 buf.readInt(),
                 buf.readCollection(ArrayList::new, FriendlyByteBuf::readInt),
@@ -47,6 +49,7 @@ public record OpenRewardsPayload(
         buf.writeInt(rewardDay);
         buf.writeUtf(lastRewardDate);
         buf.writeInt(streak);
+        buf.writeInt(absoluteRewardStreak);
         buf.writeInt(totalCollected);
         buf.writeCollection(claimedRewardHistory, FriendlyByteBuf::writeUtf);
         buf.writeInt(availableRewardFreezes);

@@ -108,6 +108,7 @@ public class DailyCommands {
                     }
                     Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
                             data.rewardDay, data.lastRewardDate, visualStreak,
+                            data.absoluteRewardStreak,
                             data.totalCollected, data.claimedRewardHistory,
                             data.availableRewardFreezes, data.claimedBonusRewards,
                             DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
@@ -199,6 +200,7 @@ public class DailyCommands {
 
                     Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
                             data.rewardDay, data.lastRewardDate, data.streak,
+                            data.absoluteRewardStreak,
                             data.totalCollected, data.claimedRewardHistory,
                             data.availableRewardFreezes, data.claimedBonusRewards,
                             DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
