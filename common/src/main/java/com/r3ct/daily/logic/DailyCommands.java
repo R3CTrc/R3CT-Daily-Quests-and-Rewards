@@ -118,6 +118,7 @@ public class DailyCommands {
                     FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
                     new OpenRewardsPayload(
                             data.rewardDay, data.lastRewardDate, visualStreak,
+                            data.absoluteRewardStreak,
                             data.totalCollected, data.claimedRewardHistory,
                             data.availableRewardFreezes, data.claimedBonusRewards,
                             DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
@@ -212,6 +213,7 @@ public class DailyCommands {
                     FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
                     new OpenRewardsPayload(
                             data.rewardDay, data.lastRewardDate, data.streak,
+                            data.absoluteRewardStreak,
                             data.totalCollected, data.claimedRewardHistory,
                             data.availableRewardFreezes, data.claimedBonusRewards,
                             DailyServerConfig.mechanics.streaks.maxStoredRewardShields,

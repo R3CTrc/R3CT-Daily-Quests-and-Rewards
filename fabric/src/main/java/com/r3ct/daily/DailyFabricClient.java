@@ -98,6 +98,7 @@ public class DailyFabricClient implements ClientModInitializer {
 				data.rewardDay = payload.rewardDay();
 				data.lastRewardDate = payload.lastRewardDate();
 				data.streak = payload.streak();
+				data.absoluteRewardStreak = payload.absoluteRewardStreak();
 				data.totalCollected = payload.totalCollected();
 				data.claimedRewardHistory = payload.claimedRewardHistory();
 				data.availableRewardFreezes = payload.availableRewardFreezes();
