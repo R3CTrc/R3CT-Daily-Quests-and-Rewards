@@ -208,7 +208,7 @@ public class QuestScreen extends Screen {
         int streakBarColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
         GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barWidth, 1, new int[]{});
 
-        String qMultiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.questStreak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : "§7" + Component.translatable("r3ct_daily.gui.inactive").getString());
+        String qMultiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.questStreak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : "§8" + Component.translatable("r3ct_daily.gui.inactive").getString());
         guiGraphics.text(this.font, qMultiText, rightTextX, streakY + 14, 0xFF000000, false);
 
         int maxQuestShields = payload.maxStoredQuestShields();

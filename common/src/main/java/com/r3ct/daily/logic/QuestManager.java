@@ -531,8 +531,10 @@ public class QuestManager {
             ));
         }
 
-        if (threshold == 200) {
-            data.totalQuestPoints -= 200;
+        if (data.claimedPointRewards.contains(50) && data.claimedPointRewards.contains(100) &&
+                data.claimedPointRewards.contains(150) && data.claimedPointRewards.contains(200)) {
+
+            data.totalQuestPoints = Math.max(0, data.totalQuestPoints - 200);
             data.claimedPointRewards.clear();
             player.sendSystemMessage(Component.empty().append(getPrefix()).append(
                     Component.translatable("r3ct_daily.message.points.reset").withStyle(ChatFormatting.GRAY)

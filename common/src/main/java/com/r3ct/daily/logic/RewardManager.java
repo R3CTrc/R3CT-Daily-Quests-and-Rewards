@@ -40,6 +40,16 @@ public class RewardManager {
         return Component.literal("[Daily] ").withStyle(ChatFormatting.AQUA);
     }
 
+    public static int getActiveBonusCycle(PlayerData data) {
+        int cycle = 0;
+        while (data.claimedBonusRewards.contains(cycle * 21 + 7) &&
+                data.claimedBonusRewards.contains(cycle * 21 + 14) &&
+                data.claimedBonusRewards.contains(cycle * 21 + 21)) {
+            cycle++;
+        }
+        return cycle;
+    }
+
     public static List<ItemStack> getTier1Rewards(MinecraftServer server) {
         return processBuckets(DailyServerConfig.rewardsTier1, server);
     }
@@ -306,8 +316,8 @@ public class RewardManager {
 
         if (data.totalCollected == 0) return;
 
-        int cycle = (data.totalCollected - 1) / 21;
-        int absoluteTarget = cycle * 21 + bonusDay;
+        int activeCycle = getActiveBonusCycle(data);
+        int absoluteTarget = activeCycle * 21 + bonusDay;
 
         if (data.totalCollected < absoluteTarget) return;
         if (data.claimedBonusRewards.contains(absoluteTarget)) return;

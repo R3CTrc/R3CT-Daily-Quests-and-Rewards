@@ -3,6 +3,7 @@ package com.r3ct.daily.client.screen;
 import com.r3ct.daily.config.DailyClientConfig;
 import com.r3ct.daily.config.DailyServerConfig;
 import com.r3ct.daily.logic.QuestManager;
+import com.r3ct.daily.logic.RewardManager;
 import com.r3ct.daily.network.OpenRewardsPayload;
 import com.r3ct.daily.platform.Services;
 import com.r3ct.daily.data.PlayerData;
@@ -149,10 +150,8 @@ public class RewardScreen extends Screen {
         String shieldsText = "§8" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableRewardShields + "§8/" + maxRewardShields;
         guiGraphics.text(this.font, shieldsText, bar1X, barY + 26, 0xFFFFFFFF, false);
 
-        int displayCollected = data.totalCollected % 21;
-        if (displayCollected == 0 && data.totalCollected > 0) {
-            displayCollected = alreadyClaimedToday ? 21 : 0;
-        }
+        int activeCycle = RewardManager.getActiveBonusCycle(data);
+        int displayCollected = Math.min(21, Math.max(0, data.totalCollected - (activeCycle * 21)));
 
         animatedCollected += (displayCollected - animatedCollected) * 0.1f;
         if (Math.abs(displayCollected - animatedCollected) < 0.05f) animatedCollected = displayCollected;
@@ -168,7 +167,6 @@ public class RewardScreen extends Screen {
         String arrowText = Component.translatable("r3ct_daily.leaderboard.button.quests_prev").getString();
         int textWidth = this.font.width(arrowText);
         int arrowX = leftPos - 15 - textWidth;
-
         int arrowY = (this.height / 2) - 4;
 
         boolean isHovered = mouseX >= arrowX && mouseX <= arrowX + textWidth && mouseY >= arrowY - 2 && mouseY <= arrowY + 10;
@@ -267,8 +265,7 @@ public class RewardScreen extends Screen {
         }
 
         long time = System.currentTimeMillis();
-
-        int cycle = (data.totalCollected == 0) ? 0 : (data.totalCollected - 1) / 21;
+        int cycle = RewardManager.getActiveBonusCycle(data);
 
         for (int i = 0; i < 3; i++) {
             int threshold = thresholds[i];
@@ -412,14 +409,14 @@ public class RewardScreen extends Screen {
     }
 
     private Component getBonusLine(int absoluteCollected, int targetDay, String reward, String color) {
-        int cycle = (absoluteCollected == 0) ? 0 : (absoluteCollected - 1) / 21;
+        int cycle = RewardManager.getActiveBonusCycle(data);
         int absTarget = cycle * 21 + targetDay;
         boolean claimed = data.claimedBonusRewards.contains(absTarget);
         boolean canClaim = absoluteCollected >= absTarget && !claimed;
 
         String prefix = claimed ? "§a[ ✔ ] §a" : (canClaim ? "§e[ ! ] §e" : "§7[ ] §f");
 
-        int visualCurrent = absoluteCollected - (cycle * 21);
+        int visualCurrent = Math.max(0, absoluteCollected - (cycle * 21));
         if (visualCurrent > targetDay) visualCurrent = targetDay;
 
         return Component.literal(prefix + Math.min(visualCurrent, targetDay) + "/" + targetDay + " " + Component.translatable("r3ct_daily.leaderboard.tooltip.days").getString() + " §8- " + color + reward);
@@ -462,7 +459,6 @@ public class RewardScreen extends Screen {
             String arrowText = Component.translatable("r3ct_daily.leaderboard.button.quests_prev").getString();
             int textWidth = this.font.width(arrowText);
             int arrowX = leftPos - 15 - textWidth;
-
             int arrowY = (this.height / 2) - 4;
 
             if (mX >= arrowX && mX <= arrowX + textWidth && mY >= arrowY - 2 && mY <= arrowY + 10) {
@@ -498,7 +494,9 @@ public class RewardScreen extends Screen {
                     DailyServerConfig.bonuses.bonus_14,
                     DailyServerConfig.bonuses.bonus_21
             };
-            int cycle = (data.totalCollected == 0) ? 0 : (data.totalCollected - 1) / 21;
+
+            int cycle = RewardManager.getActiveBonusCycle(data);
+
             for (int i = 0; i < 3; i++) {
                 int threshold = thresholds[i];
                 String amountsStr = milestoneRewards[i].getFormattedColor() + "x" + milestoneRewards[i].amount;

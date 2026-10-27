@@ -254,28 +254,10 @@ public class DailyCommands {
                                 }))
                         ))
 
-                        .then(Commands.literal("reset_progress").then(Commands.argument("target", EntityArgument.player()).executes(context -> {
-                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                            PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-
-                            data.lastRewardDate = "1970-01-01";
-                            data.dailyQuestsCompletedToday = 0;
-
-                            for(int i = 0; i < data.questProgress.size(); i++) {
-                                data.questProgress.set(i, 0);
-                                data.questRewardsClaimed.set(i, false);
-                            }
-
-                            syncPlayerData(target, data);
-                            context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.test.reset_progress", Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GREEN), true);
-                            return 1;
-                        })))
-
                         .then(Commands.literal("new_quests").then(Commands.argument("target", EntityArgument.player()).executes(context -> {
                             ServerPlayer target = EntityArgument.getPlayer(context, "target");
                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 
-                            data.lastRewardDate = "1970-01-01";
                             data.dailyQuestsCompletedToday = 0;
 
                             LocalDate today = getCurrentQuestDate();
@@ -349,7 +331,19 @@ public class DailyCommands {
                                             ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                             int amount = IntegerArgumentType.getInteger(context, "amount");
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
+
                                             data.questStreak = amount;
+                                            if (amount > data.maxQuestStreak) {
+                                                data.maxQuestStreak = amount;
+                                            }
+
+                                            LocalDate today = getCurrentQuestDate();
+                                            if (today.toString().equals(data.lastQuestDate)) {
+                                                data.lastQuestStreakDate = today.toString();
+                                            } else {
+                                                data.lastQuestStreakDate = today.minusDays(1).toString();
+                                            }
+
                                             syncPlayerData(target, data);
 
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW);
@@ -362,7 +356,20 @@ public class DailyCommands {
                                             ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                             int amount = IntegerArgumentType.getInteger(context, "amount");
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                            data.rewardStreak = amount;
+
+                                            data.rewardStreak = Math.min(amount, 7);
+                                            data.absoluteRewardStreak = amount;
+                                            if (amount > data.maxRewardStreak) {
+                                                data.maxRewardStreak = amount;
+                                            }
+
+                                            LocalDate today = getCurrentQuestDate();
+                                            if (today.toString().equals(data.lastRewardDate)) {
+                                                data.lastRewardStreakDate = today.toString();
+                                            } else {
+                                                data.lastRewardStreakDate = today.minusDays(1).toString();
+                                            }
+
                                             syncPlayerData(target, data);
 
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW);
