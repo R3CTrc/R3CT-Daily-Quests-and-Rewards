@@ -15,10 +15,10 @@ public record SyncQuestsPayload(
         int dailyQuestsCompletedToday,
         List<String> activeQuests,
         List<Integer> questProgress,
-        int streak,
+        int rewardStreak,
         int perfectDaysCount,
-        int availableFreezes,
-        int availableRewardFreezes,
+        int availableQuestShields,
+        int availableRewardShields,
         List<Boolean> questRewardsClaimed,
         List<Integer> claimedPointRewards
 ) implements CustomPacketPayload {
@@ -32,10 +32,10 @@ public record SyncQuestsPayload(
             ByteBufCodecs.INT, SyncQuestsPayload::dailyQuestsCompletedToday,
             ByteBufCodecs.stringUtf8(32767).apply(ByteBufCodecs.list()), SyncQuestsPayload::activeQuests,
             ByteBufCodecs.INT.apply(ByteBufCodecs.list()), SyncQuestsPayload::questProgress,
-            ByteBufCodecs.INT, SyncQuestsPayload::streak,
+            ByteBufCodecs.INT, SyncQuestsPayload::rewardStreak,
             ByteBufCodecs.INT, SyncQuestsPayload::perfectDaysCount,
-            ByteBufCodecs.INT, SyncQuestsPayload::availableFreezes,
-            ByteBufCodecs.INT, SyncQuestsPayload::availableRewardFreezes,
+            ByteBufCodecs.INT, SyncQuestsPayload::availableQuestShields,
+            ByteBufCodecs.INT, SyncQuestsPayload::availableRewardShields,
             ByteBufCodecs.BOOL.apply(ByteBufCodecs.list()), SyncQuestsPayload::questRewardsClaimed,
             ByteBufCodecs.INT.apply(ByteBufCodecs.list()), SyncQuestsPayload::claimedPointRewards,
             SyncQuestsPayload::new

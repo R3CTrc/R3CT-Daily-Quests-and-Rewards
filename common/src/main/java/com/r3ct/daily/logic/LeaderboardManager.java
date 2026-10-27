@@ -20,36 +20,36 @@ public class LeaderboardManager {
         ModState state = ModState.get(server);
         List<Map.Entry<UUID, PlayerData>> allPlayers = new ArrayList<>(state.players.entrySet());
 
-        List<TopEntry> leftQ = new ArrayList<>();
-        List<TopEntry> rightQ = new ArrayList<>();
+        List<TopEntry> questCompletionList = new ArrayList<>();
+        List<TopEntry> questStreakList = new ArrayList<>();
 
-        allPlayers.sort((a, b) -> Integer.compare(b.getValue().totalQuestsCompleted, a.getValue().totalQuestsCompleted));
-        for (int i = 0; i < allPlayers.size() && leftQ.size() < 10; i++) {
-            PlayerData p = allPlayers.get(i).getValue();
-            if (p.totalQuestsCompleted > 0) leftQ.add(new TopEntry(p.lastKnownName, p.totalQuestsCompleted, p.maxQuestStreak, p.totalCollected, p.maxRewardStreak));
+        allPlayers.sort((playerA, playerB) -> Integer.compare(playerB.getValue().totalQuestsCompleted, playerA.getValue().totalQuestsCompleted));
+        for (int i = 0; i < allPlayers.size() && questCompletionList.size() < 10; i++) {
+            PlayerData player = allPlayers.get(i).getValue();
+            if (player.totalQuestsCompleted > 0) questCompletionList.add(new TopEntry(player.lastKnownName, player.totalQuestsCompleted, player.maxQuestStreak, player.totalCollected, player.maxRewardStreak));
         }
 
-        allPlayers.sort((a, b) -> Integer.compare(b.getValue().maxQuestStreak, a.getValue().maxQuestStreak));
-        for (int i = 0; i < allPlayers.size() && rightQ.size() < 10; i++) {
-            PlayerData p = allPlayers.get(i).getValue();
-            if (p.maxQuestStreak > 0) rightQ.add(new TopEntry(p.lastKnownName, p.totalQuestsCompleted, p.maxQuestStreak, p.totalCollected, p.maxRewardStreak));
+        allPlayers.sort((playerA, playerB) -> Integer.compare(playerB.getValue().maxQuestStreak, playerA.getValue().maxQuestStreak));
+        for (int i = 0; i < allPlayers.size() && questStreakList.size() < 10; i++) {
+            PlayerData player = allPlayers.get(i).getValue();
+            if (player.maxQuestStreak > 0) questStreakList.add(new TopEntry(player.lastKnownName, player.totalQuestsCompleted, player.maxQuestStreak, player.totalCollected, player.maxRewardStreak));
         }
-        cachedQuestsBoard = new LeaderboardResponsePayload(0, leftQ, rightQ);
+        cachedQuestsBoard = new LeaderboardResponsePayload(0, questCompletionList, questStreakList);
 
-        List<TopEntry> leftR = new ArrayList<>();
-        List<TopEntry> rightR = new ArrayList<>();
+        List<TopEntry> rewardCollectionList = new ArrayList<>();
+        List<TopEntry> rewardStreakList = new ArrayList<>();
 
-        allPlayers.sort((a, b) -> Integer.compare(b.getValue().totalCollected, a.getValue().totalCollected));
-        for (int i = 0; i < allPlayers.size() && leftR.size() < 10; i++) {
-            PlayerData p = allPlayers.get(i).getValue();
-            if (p.totalCollected > 0) leftR.add(new TopEntry(p.lastKnownName, p.totalQuestsCompleted, p.maxQuestStreak, p.totalCollected, p.maxRewardStreak));
+        allPlayers.sort((playerA, playerB) -> Integer.compare(playerB.getValue().totalCollected, playerA.getValue().totalCollected));
+        for (int i = 0; i < allPlayers.size() && rewardCollectionList.size() < 10; i++) {
+            PlayerData player = allPlayers.get(i).getValue();
+            if (player.totalCollected > 0) rewardCollectionList.add(new TopEntry(player.lastKnownName, player.totalQuestsCompleted, player.maxQuestStreak, player.totalCollected, player.maxRewardStreak));
         }
 
-        allPlayers.sort((a, b) -> Integer.compare(b.getValue().maxRewardStreak, a.getValue().maxRewardStreak));
-        for (int i = 0; i < allPlayers.size() && rightR.size() < 10; i++) {
-            PlayerData p = allPlayers.get(i).getValue();
-            if (p.maxRewardStreak > 0) rightR.add(new TopEntry(p.lastKnownName, p.totalQuestsCompleted, p.maxQuestStreak, p.totalCollected, p.maxRewardStreak));
+        allPlayers.sort((playerA, playerB) -> Integer.compare(playerB.getValue().maxRewardStreak, playerA.getValue().maxRewardStreak));
+        for (int i = 0; i < allPlayers.size() && rewardStreakList.size() < 10; i++) {
+            PlayerData player = allPlayers.get(i).getValue();
+            if (player.maxRewardStreak > 0) rewardStreakList.add(new TopEntry(player.lastKnownName, player.totalQuestsCompleted, player.maxQuestStreak, player.totalCollected, player.maxRewardStreak));
         }
-        cachedRewardsBoard = new LeaderboardResponsePayload(1, leftR, rightR);
+        cachedRewardsBoard = new LeaderboardResponsePayload(1, rewardCollectionList, rewardStreakList);
     }
 }

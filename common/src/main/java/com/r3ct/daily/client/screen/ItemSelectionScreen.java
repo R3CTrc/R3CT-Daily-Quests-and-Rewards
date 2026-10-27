@@ -17,15 +17,15 @@ public class ItemSelectionScreen extends Screen {
     private final Quest quest;
     private final int questIndex;
     private final List<Integer> slots;
-    private final int amountToTake;
+    private final int amountToSubmit;
 
-    public ItemSelectionScreen(Screen parent, Quest quest, int questIndex, List<Integer> slots, int amountToTake) {
+    public ItemSelectionScreen(Screen parent, Quest quest, int questIndex, List<Integer> slots, int amountToSubmit) {
         super(Component.translatable("r3ct_daily.gui.select_item"));
         this.parent = parent;
         this.quest = quest;
         this.questIndex = questIndex;
         this.slots = slots;
-        this.amountToTake = amountToTake;
+        this.amountToSubmit = amountToSubmit;
     }
 
     @Override
@@ -97,8 +97,8 @@ public class ItemSelectionScreen extends Screen {
                 if (player != null) {
                     int slot = slots.get(i);
                     ItemStack stack = player.getInventory().getItem(slot);
-                    int actualTake = Math.min(amountToTake, stack.getCount());
-                    this.minecraft.gui.setScreen(new ConfirmSubmitScreen(this.parent, quest, questIndex, slot, actualTake));
+                    int actualAmountToSubmit = Math.min(amountToSubmit, stack.getCount());
+                    this.minecraft.gui.setScreen(new ConfirmSubmitScreen(this.parent, quest, questIndex, slot, actualAmountToSubmit));
                 }
                 return true;
             }

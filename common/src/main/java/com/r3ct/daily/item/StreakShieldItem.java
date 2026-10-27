@@ -37,20 +37,20 @@ public class StreakShieldItem extends Item {
             if (this.isQuestShield) {
                 int maxQuestShields = DailyServerConfig.mechanics.streaks.maxStoredQuestShields;
 
-                if (data.availableFreezes < maxQuestShields) {
-                    data.availableFreezes++;
+                if (data.availableQuestShields < maxQuestShields) {
+                    data.availableQuestShields++;
                     stack.shrink(1);
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.0F);
 
-                    Component curComp = Component.literal(String.valueOf(data.availableFreezes)).withStyle(ChatFormatting.AQUA);
+                    Component curComp = Component.literal(String.valueOf(data.availableQuestShields)).withStyle(ChatFormatting.AQUA);
                     Component maxComp = Component.literal(String.valueOf(maxQuestShields)).withStyle(ChatFormatting.AQUA);
 
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
                             Component.translatable("r3ct_daily.message.shield.quest.used", curComp, maxComp).withStyle(ChatFormatting.GREEN)
                     ));
 
-                    if (data.availableFreezes == maxQuestShields) {
+                    if (data.availableQuestShields == maxQuestShields) {
                         QuestManager.grantAdvancement(serverPlayer, "r3ct_daily:quests/hamster");
                     }
                 } else {
@@ -67,20 +67,20 @@ public class StreakShieldItem extends Item {
             } else {
                 int maxRewardShields = DailyServerConfig.mechanics.streaks.maxStoredRewardShields;
 
-                if (data.availableRewardFreezes < maxRewardShields) {
-                    data.availableRewardFreezes++;
+                if (data.availableRewardShields < maxRewardShields) {
+                    data.availableRewardShields++;
                     stack.shrink(1);
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.0F);
 
-                    Component curComp = Component.literal(String.valueOf(data.availableRewardFreezes)).withStyle(ChatFormatting.AQUA);
+                    Component curComp = Component.literal(String.valueOf(data.availableRewardShields)).withStyle(ChatFormatting.AQUA);
                     Component maxComp = Component.literal(String.valueOf(maxRewardShields)).withStyle(ChatFormatting.AQUA);
 
                     serverPlayer.sendSystemMessage(Component.empty().append(QuestManager.getPrefix()).append(
                             Component.translatable("r3ct_daily.message.shield.reward.used", curComp, maxComp).withStyle(ChatFormatting.GREEN)
                     ));
 
-                    if (data.availableRewardFreezes == maxRewardShields) {
+                    if (data.availableRewardShields == maxRewardShields) {
                         QuestManager.grantAdvancement(serverPlayer, "r3ct_daily:rewards/shield_collector");
                     }
                 } else {
@@ -100,8 +100,8 @@ public class StreakShieldItem extends Item {
 
             Services.PLATFORM.sendToPlayer(serverPlayer, new SyncQuestsPayload(
                     data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                    data.activeQuests, data.questProgress, data.streak,
-                    data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
+                    data.activeQuests, data.questProgress, data.rewardStreak,
+                    data.perfectDaysCount, data.availableQuestShields, data.availableRewardShields,
                     data.questRewardsClaimed, data.claimedPointRewards
             ));
 

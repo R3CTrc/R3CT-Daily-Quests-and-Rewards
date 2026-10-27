@@ -15,11 +15,11 @@ public record TopEntry(String name, int totalQuests, int maxQuestStreak, int tot
             TopEntry::new
     ).cast();
 
-    public static void write(FriendlyByteBuf buf, TopEntry entry) {
-        STREAM_CODEC.encode(buf, entry);
+    public static void write(FriendlyByteBuf buffer, TopEntry leaderboardEntry) {
+        STREAM_CODEC.encode(buffer, leaderboardEntry);
     }
 
-    public static TopEntry read(FriendlyByteBuf buf) {
-        return STREAM_CODEC.decode(buf);
+    public static TopEntry read(FriendlyByteBuf buffer) {
+        return STREAM_CODEC.decode(buffer);
     }
 }

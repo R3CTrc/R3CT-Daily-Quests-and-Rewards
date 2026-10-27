@@ -45,9 +45,9 @@ public class DailyClientConfig {
             if (!Files.exists(CONFIG_PATH.getParent())) {
                 Files.createDirectories(CONFIG_PATH.getParent());
             }
-            try (InputStream is = DailyClientConfig.class.getResourceAsStream("/assets/r3ct_daily/configs/r3ct_daily_client.json")) {
-                if (is != null) {
-                    Files.copy(is, CONFIG_PATH, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream inputStream = DailyClientConfig.class.getResourceAsStream("/assets/r3ct_daily/configs/r3ct_daily_client.json")) {
+                if (inputStream != null) {
+                    Files.copy(inputStream, CONFIG_PATH, StandardCopyOption.REPLACE_EXISTING);
                 } else {
                     save();
                 }
@@ -66,8 +66,8 @@ public class DailyClientConfig {
         boolean needsUpdate = false;
         try (FileReader reader = new FileReader(CONFIG_FILE)) {
             JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
-            int version = json.has("version") ? json.get("version").getAsInt() : 0;
-            if (version < CONFIG_VERSION) {
+            int currentVersion = json.has("version") ? json.get("version").getAsInt() : 0;
+            if (currentVersion < CONFIG_VERSION) {
                 needsUpdate = true;
             }
         } catch (Exception e) {
@@ -92,9 +92,9 @@ public class DailyClientConfig {
 
         if (CONFIG_FILE.exists()) {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
-                DailyClientConfig loaded = GSON.fromJson(reader, DailyClientConfig.class);
-                if (loaded != null) {
-                    instance = loaded;
+                DailyClientConfig loadedConfig = GSON.fromJson(reader, DailyClientConfig.class);
+                if (loadedConfig != null) {
+                    instance = loadedConfig;
                 }
             } catch (Exception e) {
                 Constants.LOG.error("Error loading r3ct_daily_client.json!", e);

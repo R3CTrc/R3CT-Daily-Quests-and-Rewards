@@ -291,6 +291,7 @@ public class QuestManager {
         if (currentProg >= q.requiredAmount) return;
 
         int needed = q.requiredAmount - currentProg;
+
         int taken = 0;
         Inventory inv = player.getInventory();
 
@@ -399,7 +400,7 @@ public class QuestManager {
 
         int baseXp = (q.difficulty == 0) ? DailyServerConfig.mechanics.quests.xpPerQuestEasy :
                 (q.difficulty == 1) ? DailyServerConfig.mechanics.quests.xpPerQuestMedium :
-                DailyServerConfig.mechanics.quests.xpPerQuestHard;
+                        DailyServerConfig.mechanics.quests.xpPerQuestHard;
 
         int xpReward = (int)(baseXp * xpMulti);
         player.giveExperiencePoints(xpReward);
@@ -560,6 +561,7 @@ public class QuestManager {
         ));
 
         int xp = (int)(DailyServerConfig.mechanics.quests.xpDailyReward * xpMulti);
+
         player.giveExperiencePoints(xp);
 
         Component bulletComp2 = Component.literal("- ").withStyle(ChatFormatting.GREEN);
@@ -687,7 +689,7 @@ public class QuestManager {
 
         int cost = (oldQuest.difficulty == 0) ? DailyServerConfig.mechanics.quests.rerollCostEasy :
                 (oldQuest.difficulty == 1) ? DailyServerConfig.mechanics.quests.rerollCostMedium :
-                DailyServerConfig.mechanics.quests.rerollCostHard;
+                        DailyServerConfig.mechanics.quests.rerollCostHard;
 
         Component costComp = Component.literal(String.valueOf(cost)).withStyle(ChatFormatting.RED);
         Component pointsComp = Component.literal(String.valueOf(data.totalQuestPoints)).withStyle(ChatFormatting.LIGHT_PURPLE);
@@ -775,22 +777,22 @@ public class QuestManager {
         List<Component> freezeMessages = new ArrayList<>();
 
         if (!todayStr.equals(data.lastRewardDate)) {
-            if (!data.lastStreakDate.equals(yesterday.toString()) && !data.lastStreakDate.equals(todayStr)) {
-                if (data.lastStreakDate != null && !data.lastStreakDate.isEmpty()) {
-                    long days = ChronoUnit.DAYS.between(LocalDate.parse(data.lastStreakDate), today);
+            if (!data.lastRewardStreakDate.equals(yesterday.toString()) && !data.lastRewardStreakDate.equals(todayStr)) {
+                if (data.lastRewardStreakDate != null && !data.lastRewardStreakDate.isEmpty()) {
+                    long days = ChronoUnit.DAYS.between(LocalDate.parse(data.lastRewardStreakDate), today);
                     long missed = days - 1;
 
-                    if (data.availableRewardFreezes >= missed) {
-                        data.availableRewardFreezes -= (int) missed;
-                        data.lastStreakDate = yesterday.toString();
+                    if (data.availableRewardShields >= missed) {
+                        data.availableRewardShields -= (int) missed;
+                        data.lastRewardStreakDate = yesterday.toString();
                         Component missedRewardComp = Component.literal(String.valueOf(missed)).withStyle(ChatFormatting.AQUA);
                         freezeMessages.add(Component.empty().append(getPrefix()).append(
                                 Component.translatable("r3ct_daily.message.rewards.freeze_used", missedRewardComp).withStyle(ChatFormatting.GREEN)
                         ));
                         QuestManager.grantAdvancement(player, "r3ct_daily:rewards/safe_player");
                     } else {
-                        data.streak = 0;
-                        data.availableRewardFreezes = 0;
+                        data.rewardStreak = 0;
+                        data.availableRewardShields = 0;
                         data.absoluteRewardStreak = 0;
                         freezeMessages.add(Component.empty().append(getPrefix()).append(
                                 Component.translatable("r3ct_daily.message.rewards.streak_reset").withStyle(ChatFormatting.RED)
@@ -805,8 +807,8 @@ public class QuestManager {
             long daysBetween = ChronoUnit.DAYS.between(lastStreak, today);
             long missedDays = daysBetween - 1;
 
-            if (data.availableFreezes >= missedDays) {
-                data.availableFreezes -= (int) missedDays;
+            if (data.availableQuestShields >= missedDays) {
+                data.availableQuestShields -= (int) missedDays;
                 data.lastQuestStreakDate = yesterday.toString();
                 Component missedComp = Component.literal(String.valueOf(missedDays)).withStyle(ChatFormatting.AQUA);
                 freezeMessages.add(Component.empty().append(getPrefix()).append(
@@ -815,7 +817,7 @@ public class QuestManager {
                 QuestManager.grantAdvancement(player, "r3ct_daily:quests/time_lord");
             } else {
                 data.questStreak = 0;
-                data.availableFreezes = 0;
+                data.availableQuestShields = 0;
                 freezeMessages.add(Component.empty().append(getPrefix()).append(
                         Component.translatable("r3ct_daily.message.quests.streak_reset").withStyle(ChatFormatting.RED)
                 ));
@@ -908,8 +910,8 @@ public class QuestManager {
         }
         Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
                 data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                data.activeQuests, data.questProgress, data.streak,
-                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
+                data.activeQuests, data.questProgress, data.rewardStreak,
+                data.perfectDaysCount, data.availableQuestShields, data.availableRewardShields,
                 data.questRewardsClaimed, data.claimedPointRewards
         ));
     }

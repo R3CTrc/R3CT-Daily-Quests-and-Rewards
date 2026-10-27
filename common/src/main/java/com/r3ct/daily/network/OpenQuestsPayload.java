@@ -15,9 +15,9 @@ public record OpenQuestsPayload(
         int dailyQuestsCompletedToday,
         List<String> activeQuests,
         List<Integer> questProgress,
-        int streak,
+        int rewardStreak,
         int perfectDaysCount,
-        int availableFreezes,
+        int availableQuestShields,
         List<Boolean> questRewardsClaimed,
         List<Integer> claimedPointRewards,
         boolean enableQuestRerolling,
@@ -99,9 +99,9 @@ public record OpenQuestsPayload(
         buf.writeVarInt(questProgress.size());
         for (int i : questProgress) buf.writeInt(i);
 
-        buf.writeInt(streak);
+        buf.writeInt(rewardStreak);
         buf.writeInt(perfectDaysCount);
-        buf.writeInt(availableFreezes);
+        buf.writeInt(availableQuestShields);
 
         buf.writeVarInt(questRewardsClaimed.size());
         for (boolean b : questRewardsClaimed) buf.writeBoolean(b);

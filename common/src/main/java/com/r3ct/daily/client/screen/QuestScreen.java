@@ -82,95 +82,95 @@ public class QuestScreen extends Screen {
         long time = System.currentTimeMillis();
 
         for (int i = 0; i < data.activeQuests.size(); i++) {
-            Quest q = QuestManager.getQuestById(data.activeQuests.get(i));
-            if (q == null) continue;
+            Quest quest = QuestManager.getQuestById(data.activeQuests.get(i));
+            if (quest == null) continue;
 
             int progress = data.questProgress.get(i);
-            boolean done = progress >= q.requiredAmount;
+            boolean done = progress >= quest.requiredAmount;
             boolean claimed = data.questRewardsClaimed.size() > i && data.questRewardsClaimed.get(i);
-            boolean canSubmit = !done && q.actionType.equals("SUBMIT_ITEMS") && QuestSubmitHelper.countItems(q.target) > 0;
+            boolean canSubmit = !done && quest.actionType.equals("SUBMIT_ITEMS") && QuestSubmitHelper.countItems(quest.target) > 0;
 
-            String locName = I18n.get(q.name);
-            String locDesc = I18n.get(q.description);
+            String localizedName = I18n.get(quest.name);
+            String localizedDesc = I18n.get(quest.description);
 
-            String name = (locName != null && !locName.isEmpty()) ? locName.toUpperCase() : locDesc.split(" ")[0].toUpperCase();
-            int qY = topPos + 45 + (i * 55);
+            String name = (localizedName != null && !localizedName.isEmpty()) ? localizedName.toUpperCase() : localizedDesc.split(" ")[0].toUpperCase();
+            int questY = topPos + 45 + (i * 55);
 
             if ((done && !claimed) || canSubmit) {
                 int alpha = (int) (127 + 60 * Math.sin(time / 150.0));
                 int rgb = (done && !claimed) ? 0x00AA00 : 0x00AAFF;
                 int glowColor = (alpha << 24) | rgb;
-                guiGraphics.fill(leftTextX - 2, qY - 3, midX - 12, qY + 45, glowColor);
+                guiGraphics.fill(leftTextX - 2, questY - 3, midX - 12, questY + 45, glowColor);
             }
 
-            int btnSize = 14;
-            int btnX = midX - 30;
-            int btnY = qY + 22;
+            int buttonSize = 14;
+            int buttonX = midX - 30;
+            int buttonY = questY + 22;
             boolean isBtnHovered = false;
 
             if (!done && payload.enableQuestRerolling()) {
-                isBtnHovered = mouseX >= btnX && mouseX <= btnX + btnSize && mouseY >= btnY && mouseY <= btnY + btnSize;
+                isBtnHovered = mouseX >= buttonX && mouseX <= buttonX + buttonSize && mouseY >= buttonY && mouseY <= buttonY + buttonSize;
                 if (isBtnHovered) hoveredRerollIndex = i;
 
                 int btnBorder = isBtnHovered ? 0xFFFFFFFF : 0xFF555555;
                 int btnFill = isBtnHovered ? 0xFF555555 : 0xFF333333;
 
-                guiGraphics.fill(btnX, btnY, btnX + btnSize, btnY + btnSize, btnBorder);
-                guiGraphics.fill(btnX + 1, btnY + 1, btnX + btnSize - 1, btnY + btnSize - 1, btnFill);
+                guiGraphics.fill(buttonX, buttonY, buttonX + buttonSize, buttonY + buttonSize, btnBorder);
+                guiGraphics.fill(buttonX + 1, buttonY + 1, buttonX + buttonSize - 1, buttonY + buttonSize - 1, btnFill);
 
                 String arrow = "⇄";
                 int arrowColor = isBtnHovered ? 0xFFFFFFFF : 0xFFAAAAAA;
-                guiGraphics.centeredText(this.font, arrow, btnX + btnSize / 2, btnY + 4, arrowColor);
+                guiGraphics.centeredText(this.font, arrow, buttonX + buttonSize / 2, buttonY + 4, arrowColor);
             }
 
-            if (mouseX >= leftTextX && mouseX <= midX - 10 && mouseY >= qY - 2 && mouseY <= qY + 45) {
+            if (mouseX >= leftTextX && mouseX <= midX - 10 && mouseY >= questY - 2 && mouseY <= questY + 45) {
                 if (!isBtnHovered) {
                     hoveredQuestIndex = i;
-                    guiGraphics.fill(leftTextX - 2, qY - 3, midX - 12, qY + 45, 0x20000000);
+                    guiGraphics.fill(leftTextX - 2, questY - 3, midX - 12, questY + 45, 0x20000000);
                 }
             }
 
-            String diffIndicator = (q.difficulty == 0) ? "§2★" : (q.difficulty == 1 ? "§6★" : "§4★");
+            String diffIndicator = (quest.difficulty == 0) ? "§2★" : (quest.difficulty == 1 ? "§6★" : "§4★");
             int titleColor = (done && !claimed) ? 0xFF005500 : (canSubmit ? 0xFF0044AA : 0xFF000000);
 
-            String mark;
+            String statusMark;
             if (!done) {
                 if (canSubmit) {
-                    mark = (time % 1000 < 500) ? "§f" + Component.translatable("r3ct_daily.gui.submit_items").getString() : "§b" + Component.translatable("r3ct_daily.gui.submit_items").getString();
+                    statusMark = (time % 1000 < 500) ? "§f" + Component.translatable("r3ct_daily.gui.submit_items").getString() : "§b" + Component.translatable("r3ct_daily.gui.submit_items").getString();
                 } else {
-                    mark = "§c" + Component.translatable("r3ct_daily.quests.status.incomplete").getString();
+                    statusMark = "§c" + Component.translatable("r3ct_daily.quests.status.incomplete").getString();
                 }
             }
-            else if (claimed) mark = "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString();
-            else mark = (time % 1000 < 500) ? "§e" + Component.translatable("r3ct_daily.quests.status.claim").getString() : "§6" + Component.translatable("r3ct_daily.quests.status.claim").getString();
+            else if (claimed) statusMark = "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString();
+            else statusMark = (time % 1000 < 500) ? "§e" + Component.translatable("r3ct_daily.quests.status.claim").getString() : "§6" + Component.translatable("r3ct_daily.quests.status.claim").getString();
 
-            int markWidth = this.font.width(mark);
-            int markX = midX - markWidth - 15;
+            int markWidth = this.font.width(statusMark);
+            int statusMarkX = midX - markWidth - 15;
 
             int titleStartX = leftTextX + STAR_COLUMN_WIDTH;
-            int maxTitleWidth = markX - titleStartX - 5;
+            int maxTitleWidth = statusMarkX - titleStartX - 5;
 
             String displayName = name;
             if (this.font.width(displayName) > maxTitleWidth) {
                 displayName = this.font.plainSubstrByWidth(displayName, maxTitleWidth - this.font.width("...")) + "...";
             }
 
-            guiGraphics.text(this.font, diffIndicator, leftTextX, qY, titleColor, false);
-            guiGraphics.text(this.font, "§0" + displayName, titleStartX, qY, titleColor, false);
-            guiGraphics.text(this.font, mark, markX, qY, 0xFF000000, false);
+            guiGraphics.text(this.font, diffIndicator, leftTextX, questY, titleColor, false);
+            guiGraphics.text(this.font, "§0" + displayName, titleStartX, questY, titleColor, false);
+            guiGraphics.text(this.font, statusMark, statusMarkX, questY, 0xFF000000, false);
 
-            int color = done ? 0xFF555555 : (q.difficulty == 0 ? 0xFF00AA00 : (q.difficulty == 1 ? 0xFFFFAA00 : 0xFFAA0000));
-            String progressText = " (" + progress + "/" + q.requiredAmount + ")";
+            int color = done ? 0xFF555555 : (quest.difficulty == 0 ? 0xFF00AA00 : (quest.difficulty == 1 ? 0xFFFFAA00 : 0xFFAA0000));
+            String progressText = " (" + progress + "/" + quest.requiredAmount + ")";
             int maxTextWidth = (midX - 45) - (leftTextX + STAR_COLUMN_WIDTH);
 
-            String displayDesc = locDesc;
+            String displayDesc = localizedDesc;
             List<FormattedCharSequence> lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
 
             if (lines.size() > 3) {
-                int charsToKeep = (int)((double)locDesc.length() * ((double)(maxTextWidth * 3 - this.font.width("..." + progressText)) / Math.max(1, this.font.width(locDesc))));
-                charsToKeep = Math.max(0, Math.min(charsToKeep, locDesc.length()));
+                int charsToKeep = (int)((double)localizedDesc.length() * ((double)(maxTextWidth * 3 - this.font.width("..." + progressText)) / Math.max(1, this.font.width(localizedDesc))));
+                charsToKeep = Math.max(0, Math.min(charsToKeep, localizedDesc.length()));
 
-                displayDesc = locDesc.substring(0, charsToKeep) + "...";
+                displayDesc = localizedDesc.substring(0, charsToKeep) + "...";
                 lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
 
                 while (lines.size() > 3 && displayDesc.length() > 4) {
@@ -180,12 +180,12 @@ public class QuestScreen extends Screen {
             }
 
             for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-                guiGraphics.text(this.font, lines.get(lineIdx), leftTextX + STAR_COLUMN_WIDTH, qY + 11 + (lineIdx * 10), color, false);
+                guiGraphics.text(this.font, lines.get(lineIdx), leftTextX + STAR_COLUMN_WIDTH, questY + 11 + (lineIdx * 10), color, false);
             }
         }
 
         int rightTextX = midX + 25;
-        int barW = 160;
+        int barWidth = 160;
 
         guiGraphics.text(this.font, "§0§l" + Component.translatable("r3ct_daily.quests.header.progress").getString(), rightTextX, topPos + 20, 0xFF000000, false);
         guiGraphics.fill(rightTextX, topPos + 33, leftPos + bookWidth - 25, topPos + 34, 0xFF8D6E63);
@@ -196,7 +196,7 @@ public class QuestScreen extends Screen {
         if (Math.abs(targetDaily - animatedDaily) < 0.05f) animatedDaily = targetDaily;
 
         String dailyText = "§2" + targetDaily + "§0/3";
-        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, dailyY, animatedDaily, 3, Component.translatable("r3ct_daily.quests.bar.daily").getString(), dailyText, 0xFF55FF55, barW, 1, new int[]{});
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, dailyY, animatedDaily, 3, Component.translatable("r3ct_daily.quests.bar.daily").getString(), dailyText, 0xFF55FF55, barWidth, 1, new int[]{});
 
         int streakY = topPos + 155;
         int targetStreak = Math.min(data.questStreak, 7);
@@ -206,13 +206,13 @@ public class QuestScreen extends Screen {
         String streakColor = (targetStreak < 3) ? "§2" : (targetStreak < 7 ? "§6" : "§c");
         String streakText = streakColor + data.questStreak + "§0/7";
         int streakBarColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
-        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barW, 1, new int[]{});
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barWidth, 1, new int[]{});
 
-        String qMultiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.questStreak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : Component.translatable("r3ct_daily.gui.inactive").getString());
+        String qMultiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.questStreak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : "§7" + Component.translatable("r3ct_daily.gui.inactive").getString());
         guiGraphics.text(this.font, qMultiText, rightTextX, streakY + 14, 0xFF000000, false);
 
         int maxQuestShields = payload.maxStoredQuestShields();
-        String shieldsText = "§8" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableFreezes + "§8/" + maxQuestShields;
+        String shieldsText = "§8" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableQuestShields + "§8/" + maxQuestShields;
         guiGraphics.text(this.font, shieldsText, rightTextX, streakY + 26, 0xFF000000, false);
 
         int lifeY = topPos + 245;
@@ -221,9 +221,9 @@ public class QuestScreen extends Screen {
         if (Math.abs(targetPoints - animatedPoints) < 0.05f) animatedPoints = targetPoints;
 
         String ptsText = "§d" + targetPoints + "§0/200";
-        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, lifeY, animatedPoints, 200, Component.translatable("r3ct_daily.quests.bar.points").getString(), ptsText, 0xFFFF55FF, barW, 10, new int[]{50, 100, 150, 200});
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, lifeY, animatedPoints, 200, Component.translatable("r3ct_daily.quests.bar.points").getString(), ptsText, 0xFFFF55FF, barWidth, 10, new int[]{50, 100, 150, 200});
 
-        renderPointMilestones(guiGraphics, rightTextX, lifeY, barW, mouseX, mouseY);
+        renderPointMilestones(guiGraphics, rightTextX, lifeY, barWidth, mouseX, mouseY);
 
         String arrowText = Component.translatable("r3ct_daily.quests.button.rewards_next").getString();
         int textWidth = this.font.width(arrowText);
@@ -275,18 +275,18 @@ public class QuestScreen extends Screen {
             }
         }
 
-        if (mouseX >= rightTextX && mouseX <= rightTextX + barW && mouseY >= dailyY && mouseY <= dailyY + 8) {
+        if (mouseX >= rightTextX && mouseX <= rightTextX + barWidth && mouseY >= dailyY && mouseY <= dailyY + 8) {
             renderDailyTooltip(guiGraphics, mouseX, mouseY);
         }
 
-        if (mouseX >= rightTextX && mouseX <= rightTextX + barW && mouseY >= streakY && mouseY <= streakY + 8) {
+        if (mouseX >= rightTextX && mouseX <= rightTextX + barWidth && mouseY >= streakY && mouseY <= streakY + 8) {
             renderQuestStreakTooltip(guiGraphics, mouseX, mouseY);
         }
 
         int[] thresholds = {50, 100, 150, 200};
         String rewLabel = Component.translatable("r3ct_daily.quests.tooltip.reward").getString();
 
-        DailyServerConfig.MilestoneReward[] mr = {
+        DailyServerConfig.MilestoneReward[] milestoneRewards = {
                 DailyServerConfig.milestones.point_50,
                 DailyServerConfig.milestones.point_100,
                 DailyServerConfig.milestones.point_150,
@@ -298,17 +298,17 @@ public class QuestScreen extends Screen {
         String[] amountsStr = new String[4];
 
         for (int i = 0; i < 4; i++) {
-            String color = mr[i].getFormattedColor();
+            String color = milestoneRewards[i].getFormattedColor();
 
             tooltips[i] = color + "§l" + Component.translatable("r3ct_daily.quests.tooltip.points.threshold", thresholds[i]).getString();
 
-            ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
-            rewards[i] = "§f" + rewLabel + " " + color + mr[i].amount + "x " + stack.getHoverName().getString();
-            amountsStr[i] = color + "x" + mr[i].amount;
+            ItemStack stack = QuestManager.getMilestoneRewardStack(milestoneRewards[i]);
+            rewards[i] = "§f" + rewLabel + " " + color + milestoneRewards[i].amount + "x " + stack.getHoverName().getString();
+            amountsStr[i] = color + "x" + milestoneRewards[i].amount;
         }
 
         for (int i = 0; i < 4; i++) {
-            int mX = rightTextX + (int)(thresholds[i] / 200.0 * (barW - 2));
+            int mX = rightTextX + (int)(thresholds[i] / 200.0 * (barWidth - 2));
             int totalW = 18 + this.font.width(amountsStr[i]);
             int startX = mX - totalW / 2;
             int startY = lifeY + 28;
@@ -318,7 +318,7 @@ public class QuestScreen extends Screen {
             }
         }
 
-        if (mouseX >= rightTextX && mouseX <= rightTextX + barW && mouseY >= lifeY && mouseY <= lifeY + 8) {
+        if (mouseX >= rightTextX && mouseX <= rightTextX + barWidth && mouseY >= lifeY && mouseY <= lifeY + 8) {
             renderLifetimeTooltip(guiGraphics, mouseX, mouseY);
         }
 
@@ -412,37 +412,37 @@ public class QuestScreen extends Screen {
 
             int leftTextX = leftPos + 20;
             for (int i = 0; i < data.activeQuests.size(); i++) {
-                int qY = topPos + 45 + (i * 55);
-                Quest q = QuestManager.getQuestById(data.activeQuests.get(i));
-                if (q == null) continue;
+                int questY = topPos + 45 + (i * 55);
+                Quest quest = QuestManager.getQuestById(data.activeQuests.get(i));
+                if (quest == null) continue;
 
                 int currentProgress = data.questProgress.get(i);
-                boolean done = currentProgress >= q.requiredAmount;
+                boolean done = currentProgress >= quest.requiredAmount;
                 boolean claimed = data.questRewardsClaimed.size() > i && data.questRewardsClaimed.get(i);
 
-                int btnSize = 14;
-                int btnX = midX - 30;
-                int btnY = qY + 22;
+                int buttonSize = 14;
+                int buttonX = midX - 30;
+                int buttonY = questY + 22;
 
-                if (!done && payload.enableQuestRerolling() && mX >= btnX && mX <= btnX + btnSize && mY >= btnY && mY <= btnY + btnSize) {
+                if (!done && payload.enableQuestRerolling() && mX >= buttonX && mX <= buttonX + buttonSize && mY >= buttonY && mY <= buttonY + buttonSize) {
                     if (this.minecraft != null && this.minecraft.player != null) {
                         Services.PLATFORM.sendToServer(new RerollQuestPayload(i));
                         return true;
                     }
                 }
 
-                if (mX >= leftTextX && mX <= midX - 10 && mY >= qY - 2 && mY <= qY + 45) {
+                if (mX >= leftTextX && mX <= midX - 10 && mY >= questY - 2 && mY <= questY + 45) {
                     if (done && !claimed) {
                         if (this.minecraft != null && this.minecraft.player != null) {
                             this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                             this.minecraft.player.connection.sendCommand("daily claimquest " + i);
                             return true;
                         }
-                    } else if (!done && q.actionType.equals("SUBMIT_ITEMS")) {
+                    } else if (!done && quest.actionType.equals("SUBMIT_ITEMS")) {
                         if (this.minecraft != null && this.minecraft.player != null) {
-                            if (QuestSubmitHelper.countItems(q.target) > 0) {
+                            if (QuestSubmitHelper.countItems(quest.target) > 0) {
                                 this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                                QuestSubmitHelper.handleQuestSubmitClick(this, q, i, currentProgress);
+                                QuestSubmitHelper.handleQuestSubmitClick(this, quest, i, currentProgress);
                                 return true;
                             }
                         }
@@ -451,11 +451,11 @@ public class QuestScreen extends Screen {
             }
 
             int rightTextX = midX + 25;
-            int barW = 160;
+            int barWidth = 160;
             int lifeY = topPos + 245;
             int[] thresholds = {50, 100, 150, 200};
 
-            DailyServerConfig.MilestoneReward[] mr = {
+            DailyServerConfig.MilestoneReward[] milestoneRewards = {
                     DailyServerConfig.milestones.point_50,
                     DailyServerConfig.milestones.point_100,
                     DailyServerConfig.milestones.point_150,
@@ -464,9 +464,9 @@ public class QuestScreen extends Screen {
 
             for (int i = 0; i < 4; i++) {
                 int t = thresholds[i];
-                String amountsStr = mr[i].getFormattedColor() + "x" + mr[i].amount;
+                String amountsStr = milestoneRewards[i].getFormattedColor() + "x" + milestoneRewards[i].amount;
 
-                int iconX = rightTextX + (int)(t / 200.0 * (barW - 2));
+                int iconX = rightTextX + (int)(t / 200.0 * (barWidth - 2));
                 int totalW = 18 + this.font.width(amountsStr);
                 int startX = iconX - totalW / 2;
                 int startY = lifeY + 28;
@@ -530,7 +530,7 @@ public class QuestScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
         int maxQuestShields = payload.maxStoredQuestShields();
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableFreezes + "§f/" + maxQuestShields).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableQuestShields + "§f/" + maxQuestShields).getVisualOrderText()));
 
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.streak.progress").getString() + " §b" + data.perfectDaysCount + "§f/" + reqDays).getVisualOrderText()));
 
@@ -546,42 +546,42 @@ public class QuestScreen extends Screen {
     }
 
     private void renderQuestTooltip(GuiGraphicsExtractor guiGraphics, int index, int mouseX, int mouseY) {
-        Quest q = QuestManager.getQuestById(data.activeQuests.get(index));
-        if (q == null) return;
+        Quest quest = QuestManager.getQuestById(data.activeQuests.get(index));
+        if (quest == null) return;
 
         float xpMulti = (data.questStreak >= 7) ? payload.questStreakXpMultiplier() : 1.0f;
 
-        int baseXp = (q.difficulty == 0) ? payload.xpPerQuestEasy() :
-                (q.difficulty == 1) ? payload.xpPerQuestMedium() :
+        int baseXp = (quest.difficulty == 0) ? payload.xpPerQuestEasy() :
+                (quest.difficulty == 1) ? payload.xpPerQuestMedium() :
                         payload.xpPerQuestHard();
 
         int xpReward = (int)(baseXp * xpMulti);
 
-        int itemAmount = q.rewardAmount;
+        int itemAmount = quest.rewardAmount;
 
         List<ClientTooltipComponent> tooltip = new ArrayList<>();
 
         String questTitle = Component.translatable("r3ct_daily.quests.tooltip.quest.title", (index + 1)).getString();
         tooltip.add(ClientTooltipComponent.create(Component.literal("§l" + questTitle).getVisualOrderText()));
 
-        String diffName = (q.difficulty == 0) ? "§2" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.0").getString() : ((q.difficulty == 1) ? "§6" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.1").getString() : "§4" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.2").getString());
+        String diffName = (quest.difficulty == 0) ? "§2" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.0").getString() : ((quest.difficulty == 1) ? "§6" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.1").getString() : "§4" + Component.translatable("r3ct_daily.quests.tooltip.quest.diff.2").getString());
         tooltip.add(ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.quests.tooltip.quest.diff_label").getString() + " " + diffName).getVisualOrderText()));
 
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
-        String locDesc = I18n.get(q.description);
+        String localizedDesc = I18n.get(quest.description);
 
-        String descColor = (q.difficulty == 0) ? "§2" : (q.difficulty == 1 ? "§6" : "§4");
+        String descColor = (quest.difficulty == 0) ? "§2" : (quest.difficulty == 1 ? "§6" : "§4");
         String descPrefix = "§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.desc").getString() + " " + descColor;
 
-        List<FormattedCharSequence> descLines = this.font.split(Component.literal(descPrefix + locDesc), 200);
+        List<FormattedCharSequence> descLines = this.font.split(Component.literal(descPrefix + localizedDesc), 200);
         for (FormattedCharSequence seq : descLines) {
             tooltip.add(ClientTooltipComponent.create(seq));
         }
 
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.points").getString() + " §d+" + q.points).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.points").getString() + " §d+" + quest.points).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.quest.xp").getString() + " §e+" + xpReward + " §e" + Component.translatable("r3ct_daily.unit.xp").getString()).getVisualOrderText()));
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reward").getString() + " §b" + itemAmount + "§bx §b" + q.getItemReward().getHoverName().getString()).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.reward").getString() + " §b" + itemAmount + "§bx §b" + quest.getItemReward().getHoverName().getString()).getVisualOrderText()));
 
         guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
@@ -630,7 +630,7 @@ public class QuestScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct_daily.quests.tooltip.lifetime.title").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
-        DailyServerConfig.MilestoneReward[] mr = {
+        DailyServerConfig.MilestoneReward[] milestoneRewards = {
                 DailyServerConfig.milestones.point_50,
                 DailyServerConfig.milestones.point_100,
                 DailyServerConfig.milestones.point_150,
@@ -639,11 +639,11 @@ public class QuestScreen extends Screen {
         int[] thresholds = {50, 100, 150, 200};
 
         for (int i = 0; i < 4; i++) {
-            ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
-            String label = mr[i].amount + "x " + stack.getHoverName().getString();
+            ItemStack stack = QuestManager.getMilestoneRewardStack(milestoneRewards[i]);
+            String label = milestoneRewards[i].amount + "x " + stack.getHoverName().getString();
 
             tooltip.add(ClientTooltipComponent.create(
-                    getLifetimeTooltipLine(data.totalQuestPoints, thresholds[i], label, mr[i].getFormattedColor()).getVisualOrderText()
+                    getLifetimeTooltipLine(data.totalQuestPoints, thresholds[i], label, milestoneRewards[i].getFormattedColor()).getVisualOrderText()
             ));
         }
 

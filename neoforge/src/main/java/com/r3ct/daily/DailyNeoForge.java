@@ -151,15 +151,15 @@ public class DailyNeoForge {
         if (isFirstLoginToday) {
             LocalDate yesterday = today.minusDays(1);
 
-            if (data.lastStreakDate != null && !data.lastStreakDate.isEmpty()) {
-                if (!data.lastStreakDate.equals(yesterday.toString()) && !data.lastStreakDate.equals(today.toString())) {
-                    LocalDate lastStreakRewards = LocalDate.parse(data.lastStreakDate);
+            if (data.lastRewardStreakDate != null && !data.lastRewardStreakDate.isEmpty()) {
+                if (!data.lastRewardStreakDate.equals(yesterday.toString()) && !data.lastRewardStreakDate.equals(today.toString())) {
+                    LocalDate lastStreakRewards = LocalDate.parse(data.lastRewardStreakDate);
                     long daysBetweenRewards = ChronoUnit.DAYS.between(lastStreakRewards, today);
                     long missedRewards = daysBetweenRewards - 1;
 
-                    if (data.availableRewardFreezes >= missedRewards) {
-                        data.availableRewardFreezes -= (int) missedRewards;
-                        data.lastStreakDate = yesterday.toString();
+                    if (data.availableRewardShields >= missedRewards) {
+                        data.availableRewardShields -= (int) missedRewards;
+                        data.lastRewardStreakDate = yesterday.toString();
 
                         Component missedComp = Component.literal(String.valueOf(missedRewards)).withStyle(ChatFormatting.AQUA);
                         freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
@@ -167,8 +167,8 @@ public class DailyNeoForge {
                         ));
                         QuestManager.grantAdvancement(player, "r3ct_daily:rewards/safe_player");
                     } else {
-                        data.streak = 0;
-                        data.availableRewardFreezes = 0;
+                        data.rewardStreak = 0;
+                        data.availableRewardShields = 0;
                         data.absoluteRewardStreak = 0;
                         freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
                                 Component.translatable("r3ct_daily.message.rewards.streak_reset").withStyle(ChatFormatting.RED)
@@ -182,8 +182,8 @@ public class DailyNeoForge {
                 long daysBetweenQuests = ChronoUnit.DAYS.between(lastStreakQuests, today);
                 long missedQuests = daysBetweenQuests - 1;
 
-                if (data.availableFreezes >= missedQuests) {
-                    data.availableFreezes -= (int) missedQuests;
+                if (data.availableQuestShields >= missedQuests) {
+                    data.availableQuestShields -= (int) missedQuests;
                     data.lastQuestStreakDate = yesterday.toString();
 
                     Component missedComp = Component.literal(String.valueOf(missedQuests)).withStyle(ChatFormatting.AQUA);
@@ -193,7 +193,7 @@ public class DailyNeoForge {
                     QuestManager.grantAdvancement(player, "r3ct_daily:quests/time_lord");
                 } else {
                     data.questStreak = 0;
-                    data.availableFreezes = 0;
+                    data.availableQuestShields = 0;
                     freezeMessages.add(Component.empty().append(QuestManager.getPrefix()).append(
                             Component.translatable("r3ct_daily.message.quests.streak_reset").withStyle(ChatFormatting.RED)
                     ));
@@ -222,8 +222,8 @@ public class DailyNeoForge {
 
         Services.PLATFORM.sendToPlayer(player, new SyncQuestsPayload(
                 data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                data.activeQuests, data.questProgress, data.streak,
-                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
+                data.activeQuests, data.questProgress, data.rewardStreak,
+                data.perfectDaysCount, data.availableQuestShields, data.availableRewardShields,
                 data.questRewardsClaimed, data.claimedPointRewards
         ));
 

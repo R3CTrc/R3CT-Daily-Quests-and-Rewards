@@ -355,10 +355,10 @@ public class RewardManager {
 
         server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
 
-        int visualStreak = data.streak;
+        int visualStreak = data.rewardStreak;
         LocalDate today = LocalDateTime.now().minusHours(DailyServerConfig.mechanics.technical.questRefreshHour).toLocalDate();
-        if (data.lastStreakDate != null && !data.lastStreakDate.isEmpty()) {
-            if (!data.lastStreakDate.equals(today.toString()) && !data.lastStreakDate.equals(today.minusDays(1).toString())) {
+        if (data.lastRewardStreakDate != null && !data.lastRewardStreakDate.isEmpty()) {
+            if (!data.lastRewardStreakDate.equals(today.toString()) && !data.lastRewardStreakDate.equals(today.minusDays(1).toString())) {
                 visualStreak = 0;
             }
         }
@@ -370,7 +370,7 @@ public class RewardManager {
                 data.absoluteRewardStreak,
                 data.totalCollected,
                 data.claimedRewardHistory,
-                data.availableRewardFreezes,
+                data.availableRewardShields,
                 data.claimedBonusRewards,
                 DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
                 DailyServerConfig.mechanics.technical.questRefreshHour

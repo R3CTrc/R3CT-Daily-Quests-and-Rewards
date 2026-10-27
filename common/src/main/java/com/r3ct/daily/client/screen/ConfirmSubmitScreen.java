@@ -19,15 +19,15 @@ public class ConfirmSubmitScreen extends Screen {
     private final Quest quest;
     private final int questIndex;
     private final int slotIndex;
-    private final int amountToTake;
+    private final int amountToSubmit;
 
-    public ConfirmSubmitScreen(Screen parent, Quest quest, int questIndex, int slotIndex, int amountToTake) {
+    public ConfirmSubmitScreen(Screen parent, Quest quest, int questIndex, int slotIndex, int amountToSubmit) {
         super(Component.translatable("r3ct_daily.gui.confirm_submit"));
         this.parent = parent;
         this.quest = quest;
         this.questIndex = questIndex;
         this.slotIndex = slotIndex;
-        this.amountToTake = amountToTake;
+        this.amountToSubmit = amountToSubmit;
     }
 
     @Override
@@ -72,9 +72,9 @@ public class ConfirmSubmitScreen extends Screen {
             displayStack = new ItemStack(Items.PAPER);
         }
 
-        displayStack.setCount(amountToTake);
+        displayStack.setCount(amountToSubmit);
 
-        guiGraphics.centeredText(this.font, Component.translatable("r3ct_daily.gui.submit_question", amountToTake, displayStack.getHoverName()), this.width / 2, this.height / 2 - 40, 0xFFFFFFFF);
+        guiGraphics.centeredText(this.font, Component.translatable("r3ct_daily.gui.submit_question", amountToSubmit, displayStack.getHoverName()), this.width / 2, this.height / 2 - 40, 0xFFFFFFFF);
 
         guiGraphics.item(displayStack, this.width / 2 - 8, this.height / 2 - 15);
         guiGraphics.itemDecorations(this.font, displayStack, this.width / 2 - 8, this.height / 2 - 15);

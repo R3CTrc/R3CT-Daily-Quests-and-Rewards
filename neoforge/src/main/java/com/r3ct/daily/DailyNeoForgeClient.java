@@ -200,11 +200,11 @@ public class DailyNeoForgeClient {
             currentY += 12;
 
             for (int i = 0; i < clientQuestData.activeQuests.size(); i++) {
-                Quest q = QuestManager.getQuestById(clientQuestData.activeQuests.get(i));
-                if (q == null) continue;
+                Quest quest = QuestManager.getQuestById(clientQuestData.activeQuests.get(i));
+                if (quest == null) continue;
 
                 int progress = clientQuestData.questProgress.get(i);
-                boolean done = progress >= q.requiredAmount;
+                boolean done = progress >= quest.requiredAmount;
 
                 String mark = done ? "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString() : "§c" + Component.translatable("r3ct_daily.quests.status.incomplete").getString();
 
@@ -212,14 +212,14 @@ public class DailyNeoForgeClient {
                     int xPos = isRight ? virtualWidth - client.font.width(mark) - xOffset : xOffset;
                     event.getGuiGraphics().text(client.font, mark, xPos, currentY, baseColor, true);
                 } else {
-                    String questName = (q.name != null && !q.name.isEmpty()) ? Component.translatable(q.name).getString() : Component.translatable(q.description).getString().split(" ")[0];
+                    String questName = (quest.name != null && !quest.name.isEmpty()) ? Component.translatable(quest.name).getString() : Component.translatable(quest.description).getString().split(" ")[0];
 
                     int maxNameLength = 25;
                     if (questName.length() > maxNameLength) {
                         questName = questName.substring(0, maxNameLength) + "...";
                     }
 
-                    String diffIndicator = (q.difficulty == 0) ? "§2★ " : (q.difficulty == 1 ? "§6★ " : "§4★ ");
+                    String diffIndicator = (quest.difficulty == 0) ? "§2★ " : (quest.difficulty == 1 ? "§6★ " : "§4★ ");
                     String progressColor = "§f";
 
                     if (System.currentTimeMillis() - flashTimestamps[i] < 600) {
@@ -230,9 +230,9 @@ public class DailyNeoForgeClient {
 
                     String lineText;
                     if (isRight) {
-                        lineText = diffIndicator + progressColor + questName + " (" + progress + "/" + q.requiredAmount + ") " + mark;
+                        lineText = diffIndicator + progressColor + questName + " (" + progress + "/" + quest.requiredAmount + ") " + mark;
                     } else {
-                        lineText = mark + " " + diffIndicator + progressColor + questName + " (" + progress + "/" + q.requiredAmount + ")";
+                        lineText = mark + " " + diffIndicator + progressColor + questName + " (" + progress + "/" + quest.requiredAmount + ")";
                     }
 
                     int xPos = isRight ? virtualWidth - client.font.width(lineText) - xOffset : xOffset;
@@ -254,11 +254,11 @@ public class DailyNeoForgeClient {
             PlayerData data = new PlayerData();
             data.rewardDay = payload.rewardDay();
             data.lastRewardDate = payload.lastRewardDate();
-            data.streak = payload.streak();
+            data.rewardStreak = payload.rewardStreak();
             data.absoluteRewardStreak = payload.absoluteRewardStreak();
             data.totalCollected = payload.totalCollected();
             data.claimedRewardHistory = payload.claimedRewardHistory();
-            data.availableRewardFreezes = payload.availableRewardFreezes();
+            data.availableRewardShields = payload.availableRewardShields();
             data.claimedBonusRewards = payload.claimedBonusRewards();
             Minecraft.getInstance().gui.setScreen(new RewardScreen(data, payload));
         }
@@ -270,9 +270,9 @@ public class DailyNeoForgeClient {
             data.dailyQuestsCompletedToday = payload.dailyQuestsCompletedToday();
             data.activeQuests = payload.activeQuests();
             data.questProgress = payload.questProgress();
-            data.streak = payload.streak();
+            data.rewardStreak = payload.rewardStreak();
             data.perfectDaysCount = payload.perfectDaysCount();
-            data.availableFreezes = payload.availableFreezes();
+            data.availableQuestShields = payload.availableQuestShields();
             data.questRewardsClaimed = payload.questRewardsClaimed();
             data.claimedPointRewards = payload.claimedPointRewards();
 
@@ -301,10 +301,10 @@ public class DailyNeoForgeClient {
             ClientGameEvents.clientQuestData.dailyQuestsCompletedToday = payload.dailyQuestsCompletedToday();
             ClientGameEvents.clientQuestData.activeQuests = payload.activeQuests();
             ClientGameEvents.clientQuestData.questProgress = payload.questProgress();
-            ClientGameEvents.clientQuestData.streak = payload.streak();
+            ClientGameEvents.clientQuestData.rewardStreak = payload.rewardStreak();
             ClientGameEvents.clientQuestData.perfectDaysCount = payload.perfectDaysCount();
-            ClientGameEvents.clientQuestData.availableFreezes = payload.availableFreezes();
-            ClientGameEvents.clientQuestData.availableRewardFreezes = payload.availableRewardFreezes();
+            ClientGameEvents.clientQuestData.availableQuestShields = payload.availableQuestShields();
+            ClientGameEvents.clientQuestData.availableRewardShields = payload.availableRewardShields();
             ClientGameEvents.clientQuestData.questRewardsClaimed = payload.questRewardsClaimed();
             ClientGameEvents.clientQuestData.claimedPointRewards = payload.claimedPointRewards();
         }

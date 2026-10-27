@@ -39,12 +39,13 @@ public class QuestSubmitHelper {
             }
         }
 
-        int amountToTake = Math.min(q.requiredAmount - currentProgress, totalAvailable);
+        int amountToSubmit = Math.min(q.requiredAmount - currentProgress, totalAvailable);
+
 
         if (allSame) {
-            Minecraft.getInstance().gui.setScreen(new ConfirmSubmitScreen(parentScreen, q, questIndex, -1, amountToTake));
+            Minecraft.getInstance().gui.setScreen(new ConfirmSubmitScreen(parentScreen, q, questIndex, -1, amountToSubmit));
         } else {
-            Minecraft.getInstance().gui.setScreen(new ItemSelectionScreen(parentScreen, q, questIndex, matchingSlots, amountToTake));
+            Minecraft.getInstance().gui.setScreen(new ItemSelectionScreen(parentScreen, q, questIndex, matchingSlots, amountToSubmit));
         }
     }
 

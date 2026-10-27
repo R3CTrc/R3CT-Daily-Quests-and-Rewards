@@ -13,11 +13,11 @@ import java.util.List;
 public class PlayerData {
     public String lastRewardDate = "";
     public int rewardDay = 1;
-    public int streak = 0;
+    public int rewardStreak = 0;
     public int totalCollected = 0;
-    public String lastStreakDate = "";
+    public String lastRewardStreakDate = "";
     public List<String> claimedRewardHistory = new ArrayList<>();
-    public int availableRewardFreezes = 0;
+    public int availableRewardShields = 0;
 
     public int maxQuestStreak = 0;
     public int absoluteRewardStreak = 0;
@@ -43,16 +43,16 @@ public class PlayerData {
     public List<Integer> claimedBonusRewards = new ArrayList<>();
 
     public int perfectDaysCount = 0;
-    public int availableFreezes = 0;
+    public int availableQuestShields = 0;
 
     public static final Codec<PlayerData> CODEC = CompoundTag.CODEC.xmap(PlayerData::fromNbt, PlayerData::toNbt);
 
     public PlayerData() {
-        for(int i=0; i<7; i++) claimedRewardHistory.add("");
+        for(int i = 0; i < 7; i++) claimedRewardHistory.add("");
         activeQuests.clear();
         questProgress.clear();
         questRewardsClaimed.clear();
-        for(int i=0; i<5; i++) {
+        for(int i = 0; i < 5; i++) {
             activeQuests.add("");
             questProgress.add(0);
             questRewardsClaimed.add(false);
@@ -64,10 +64,10 @@ public class PlayerData {
         CompoundTag nbt = new CompoundTag();
         nbt.putString("lastRewardDate", lastRewardDate != null ? lastRewardDate : "");
         nbt.putInt("rewardDay", rewardDay);
-        nbt.putInt("streak", streak);
+        nbt.putInt("rewardStreak", rewardStreak);
         nbt.putInt("totalCollected", totalCollected);
-        nbt.putString("lastStreakDate", lastStreakDate != null ? lastStreakDate : "");
-        nbt.putInt("availableRewardFreezes", availableRewardFreezes);
+        nbt.putString("lastRewardStreakDate", lastRewardStreakDate != null ? lastRewardStreakDate : "");
+        nbt.putInt("availableRewardShields", availableRewardShields);
 
         nbt.putInt("maxQuestStreak", maxQuestStreak);
         nbt.putInt("absoluteRewardStreak", absoluteRewardStreak);
@@ -81,37 +81,37 @@ public class PlayerData {
         nbt.putInt("dailyQuestsCompletedToday", dailyQuestsCompletedToday);
 
         nbt.putInt("perfectDaysCount", perfectDaysCount);
-        nbt.putInt("availableFreezes", availableFreezes);
+        nbt.putInt("availableQuestShields", availableQuestShields);
 
         nbt.putInt("totalQuestsCompleted", totalQuestsCompleted);
 
-        ListTag quests = new ListTag();
-        for (String q : activeQuests) quests.add(StringTag.valueOf(q != null ? q : ""));
-        nbt.put("activeQuests", quests);
+        ListTag questsList = new ListTag();
+        for (String questId : activeQuests) questsList.add(StringTag.valueOf(questId != null ? questId : ""));
+        nbt.put("activeQuests", questsList);
 
-        ListTag progress = new ListTag();
-        for (Integer p : questProgress) progress.add(IntTag.valueOf(p));
-        nbt.put("questProgress", progress);
+        ListTag progressList = new ListTag();
+        for (Integer progress : questProgress) progressList.add(IntTag.valueOf(progress));
+        nbt.put("questProgress", progressList);
 
-        ListTag history = new ListTag();
-        for (String h : claimedRewardHistory) history.add(StringTag.valueOf(h != null ? h : ""));
-        nbt.put("claimedRewardHistory", history);
+        ListTag historyList = new ListTag();
+        for (String historyEntry : claimedRewardHistory) historyList.add(StringTag.valueOf(historyEntry != null ? historyEntry : ""));
+        nbt.put("claimedRewardHistory", historyList);
 
-        ListTag dims = new ListTag();
-        for (String d : unlockedDimensions) dims.add(StringTag.valueOf(d != null ? d : ""));
-        nbt.put("unlockedDimensions", dims);
+        ListTag dimensionList = new ListTag();
+        for (String dimensionId : unlockedDimensions) dimensionList.add(StringTag.valueOf(dimensionId != null ? dimensionId : ""));
+        nbt.put("unlockedDimensions", dimensionList);
 
-        ListTag questRewards = new ListTag();
-        for (Boolean claimed : questRewardsClaimed) questRewards.add(IntTag.valueOf(claimed ? 1 : 0));
-        nbt.put("questRewardsClaimed", questRewards);
+        ListTag questRewardsList = new ListTag();
+        for (Boolean isClaimed : questRewardsClaimed) questRewardsList.add(IntTag.valueOf(isClaimed ? 1 : 0));
+        nbt.put("questRewardsClaimed", questRewardsList);
 
-        ListTag pointRewards = new ListTag();
-        for (Integer pt : claimedPointRewards) pointRewards.add(IntTag.valueOf(pt));
-        nbt.put("claimedPointRewards", pointRewards);
+        ListTag pointRewardsList = new ListTag();
+        for (Integer pointReward : claimedPointRewards) pointRewardsList.add(IntTag.valueOf(pointReward));
+        nbt.put("claimedPointRewards", pointRewardsList);
 
-        ListTag bonusRewards = new ListTag();
-        for (Integer br : claimedBonusRewards) bonusRewards.add(IntTag.valueOf(br));
-        nbt.put("claimedBonusRewards", bonusRewards);
+        ListTag bonusRewardsList = new ListTag();
+        for (Integer bonusReward : claimedBonusRewards) bonusRewardsList.add(IntTag.valueOf(bonusReward));
+        nbt.put("claimedBonusRewards", bonusRewardsList);
 
         return nbt;
     }
@@ -120,9 +120,9 @@ public class PlayerData {
         PlayerData data = new PlayerData();
 
         data.rewardDay = nbt.getInt("rewardDay").orElse(1);
-        data.streak = nbt.getInt("streak").orElse(0);
+        data.rewardStreak = nbt.getInt("rewardStreak").orElse(0);
         data.totalCollected = nbt.getInt("totalCollected").orElse(0);
-        data.availableRewardFreezes = nbt.getInt("availableRewardFreezes").orElse(0);
+        data.availableRewardShields = nbt.getInt("availableRewardShields").orElse(0);
 
         data.questStreak = nbt.getInt("questStreak").orElse(0);
         data.totalQuestPoints = nbt.getInt("totalQuestPoints").orElse(0);
@@ -134,12 +134,12 @@ public class PlayerData {
         data.lastKnownName = nbt.getString("lastKnownName").orElse(Component.translatable("r3ct_daily.misc.none").getString());
 
         data.perfectDaysCount = nbt.getInt("perfectDaysCount").orElse(0);
-        data.availableFreezes = nbt.getInt("availableFreezes").orElse(0);
+        data.availableQuestShields = nbt.getInt("availableQuestShields").orElse(0);
 
         data.totalQuestsCompleted = nbt.getInt("totalQuestsCompleted").orElse(0);
 
         data.lastRewardDate = nbt.getString("lastRewardDate").orElse("");
-        data.lastStreakDate = nbt.getString("lastStreakDate").orElse("");
+        data.lastRewardStreakDate = nbt.getString("lastRewardStreakDate").orElse("");
         data.lastQuestDate = nbt.getString("lastQuestDate").orElse("");
         data.lastQuestStreakDate = nbt.getString("lastQuestStreakDate").orElse("");
 

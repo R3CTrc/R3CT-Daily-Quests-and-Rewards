@@ -77,6 +77,7 @@ public class LeaderboardScreen extends Screen {
         String switchText = Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.button.rewards_next" : "r3ct_daily.leaderboard.button.quests_prev").getString();
         int switchWidth = this.font.width(switchText);
         int switchX = (boardType == 0) ? leftPos + boardWidth + 15 : leftPos - 15 - switchWidth;
+
         int switchY = (this.height / 2) - 4;
 
         boolean switchHover = mouseX >= switchX && mouseX <= switchX + switchWidth && mouseY >= switchY - 2 && mouseY <= switchY + 10;
@@ -95,22 +96,22 @@ public class LeaderboardScreen extends Screen {
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
         if (hoveredEntry != null) {
-            java.util.List<ClientTooltipComponent> tt = new java.util.ArrayList<>();
+            java.util.List<ClientTooltipComponent> tooltipLines = new java.util.ArrayList<>();
 
-            String questsStr = Component.translatable("r3ct_daily.leaderboard.tooltip.quests_completed").getString();
-            String maxQStr = Component.translatable("r3ct_daily.leaderboard.tooltip.max_quest_streak").getString();
-            String rewardsStr = Component.translatable("r3ct_daily.leaderboard.tooltip.rewards_collected").getString();
-            String maxRStr = Component.translatable("r3ct_daily.leaderboard.tooltip.max_reward_streak").getString();
-            String daysStr = Component.translatable("r3ct_daily.leaderboard.tooltip.days").getString();
+            String questsLabel = Component.translatable("r3ct_daily.leaderboard.tooltip.quests_completed").getString();
+            String maxQuestLabel = Component.translatable("r3ct_daily.leaderboard.tooltip.max_quest_streak").getString();
+            String rewardsLabel = Component.translatable("r3ct_daily.leaderboard.tooltip.rewards_collected").getString();
+            String maxRewardLabel = Component.translatable("r3ct_daily.leaderboard.tooltip.max_reward_streak").getString();
+            String daysLabel = Component.translatable("r3ct_daily.leaderboard.tooltip.days").getString();
 
-            tt.add(ClientTooltipComponent.create(Component.literal("     §f§l" + hoveredEntry.name()).getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§f" + questsStr + ": §e" + hoveredEntry.totalQuests()).getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§f" + maxQStr + ": §e" + hoveredEntry.maxQuestStreak() + " " + daysStr).getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§f" + rewardsStr + ": §e" + hoveredEntry.totalRewards()).getVisualOrderText()));
-            tt.add(ClientTooltipComponent.create(Component.literal("§f" + maxRStr + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysStr).getVisualOrderText()));
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("     §f§l" + hoveredEntry.name()).getVisualOrderText()));
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("§f" + questsLabel + ": §e" + hoveredEntry.totalQuests()).getVisualOrderText()));
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("§f" + maxQuestLabel + ": §e" + hoveredEntry.maxQuestStreak() + " " + daysLabel).getVisualOrderText()));
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("§f" + rewardsLabel + ": §e" + hoveredEntry.totalRewards()).getVisualOrderText()));
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("§f" + maxRewardLabel + ": §e" + hoveredEntry.maxRewardStreak() + " " + daysLabel).getVisualOrderText()));
 
-            guiGraphics.tooltip(this.font, tt, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
+            guiGraphics.tooltip(this.font, tooltipLines, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
 
             ItemStack head = new ItemStack(Items.PLAYER_HEAD);
             head.set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(hoveredEntry.name()));
@@ -135,6 +136,7 @@ public class LeaderboardScreen extends Screen {
             String switchText = Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.button.rewards_next" : "r3ct_daily.leaderboard.button.quests_prev").getString();
             int switchWidth = this.font.width(switchText);
             int switchX = (boardType == 0) ? leftPos + boardWidth + 15 : leftPos - 15 - switchWidth;
+
             int switchY = (this.height / 2) - 4;
 
             if (mX >= switchX && mX <= switchX + switchWidth && mY >= switchY - 2 && mY <= switchY + 10) {

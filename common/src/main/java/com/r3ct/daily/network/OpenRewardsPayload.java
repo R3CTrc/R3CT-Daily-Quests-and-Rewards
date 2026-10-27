@@ -12,11 +12,11 @@ import java.util.List;
 public record OpenRewardsPayload(
         int rewardDay,
         String lastRewardDate,
-        int streak,
+        int rewardStreak,
         int absoluteRewardStreak,
         int totalCollected,
         List<String> claimedRewardHistory,
-        int availableRewardFreezes,
+        int availableRewardShields,
         List<Integer> claimedBonusRewards,
         int maxRewardShields,
         int questRefreshHour
@@ -28,11 +28,11 @@ public record OpenRewardsPayload(
     public static final StreamCodec<FriendlyByteBuf, OpenRewardsPayload> CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, OpenRewardsPayload::rewardDay,
             ByteBufCodecs.stringUtf8(32767), OpenRewardsPayload::lastRewardDate,
-            ByteBufCodecs.INT, OpenRewardsPayload::streak,
+            ByteBufCodecs.INT, OpenRewardsPayload::rewardStreak,
             ByteBufCodecs.INT, OpenRewardsPayload::absoluteRewardStreak,
             ByteBufCodecs.INT, OpenRewardsPayload::totalCollected,
             ByteBufCodecs.stringUtf8(32767).apply(ByteBufCodecs.list()), OpenRewardsPayload::claimedRewardHistory,
-            ByteBufCodecs.INT, OpenRewardsPayload::availableRewardFreezes,
+            ByteBufCodecs.INT, OpenRewardsPayload::availableRewardShields,
             ByteBufCodecs.INT.apply(ByteBufCodecs.list()), OpenRewardsPayload::claimedBonusRewards,
             ByteBufCodecs.INT, OpenRewardsPayload::maxRewardShields,
             ByteBufCodecs.INT, OpenRewardsPayload::questRefreshHour,

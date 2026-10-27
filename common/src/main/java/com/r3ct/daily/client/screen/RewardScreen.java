@@ -78,17 +78,17 @@ public class RewardScreen extends Screen {
         guiGraphics.fill(leftPos + 12, topPos + 30, leftPos + imageWidth - 12, topPos + 90, 0xFF8B8B8B);
 
         int hoveredDay = -1;
-        String dzisiajData = getCurrentQuestDateString();
-        boolean juzDzisiajOdebrane = dzisiajData.equals(data.lastRewardDate);
+        String todayDate = getCurrentQuestDateString();
+        boolean alreadyClaimedToday = todayDate.equals(data.lastRewardDate);
 
         for (int i = 1; i <= 7; i++) {
             int slotX = leftPos + 27 + (i - 1) * 43;
             int slotY = topPos + 43;
 
-            boolean czyOdebrane = juzDzisiajOdebrane ? ((data.rewardDay == 1) || (i < data.rewardDay)) : (i < data.rewardDay);
-            boolean czyMoznaOdebrac = (i == data.rewardDay) && !juzDzisiajOdebrane;
+            boolean isClaimed = alreadyClaimedToday ? ((data.rewardDay == 1) || (i < data.rewardDay)) : (i < data.rewardDay);
+            boolean canClaim = (i == data.rewardDay) && !alreadyClaimedToday;
 
-            guiGraphics.fill(slotX, slotY, slotX + 18, slotY + 18, czyMoznaOdebrac ? 0xFFFFAA00 : 0xFF8B8B8B);
+            guiGraphics.fill(slotX, slotY, slotX + 18, slotY + 18, canClaim ? 0xFFFFAA00 : 0xFF8B8B8B);
             guiGraphics.fill(slotX, slotY, slotX + 17, slotY + 1, 0xFF373737);
             guiGraphics.fill(slotX, slotY, slotX + 1, slotY + 17, 0xFF373737);
             guiGraphics.fill(slotX + 1, slotY + 17, slotX + 18, slotY + 18, 0xFFFFFFFF);
@@ -103,55 +103,55 @@ public class RewardScreen extends Screen {
             guiGraphics.item(icon, slotX + 1, slotY + 1);
             guiGraphics.itemDecorations(this.font, icon, slotX + 1, slotY + 1);
 
-            if (czyMoznaOdebrac && data.streak >= 7) {
+            if (canClaim && data.rewardStreak >= 7) {
                 guiGraphics.text(this.font, "§6§l+", slotX + 12, slotY + 12, 0xFFFFFFFF, true);
             }
 
-            int kolorTekstu;
-            if (czyOdebrane) {
-                kolorTekstu = 0xFF707070;
+            int textColor;
+            if (isClaimed) {
+                textColor = 0xFF707070;
             } else {
-                if (i <= 4) kolorTekstu = 0xFFFFFF55;
-                else if (i <= 6) kolorTekstu = 0xFF55FFFF;
-                else kolorTekstu = 0xFFFF55FF;
+                if (i <= 4) textColor = 0xFFFFFF55;
+                else if (i <= 6) textColor = 0xFF55FFFF;
+                else textColor = 0xFFFF55FF;
             }
 
             String dayTxt = Component.translatable("r3ct_daily.rewards.day", i).getString();
-            guiGraphics.text(this.font, dayTxt, (slotX + 9) - (this.font.width(dayTxt) / 2), slotY + 25, kolorTekstu, true);
+            guiGraphics.text(this.font, dayTxt, (slotX + 9) - (this.font.width(dayTxt) / 2), slotY + 25, textColor, true);
 
-            if (czyMoznaOdebrac) {
+            if (canClaim) {
                 String arrow = "▲";
                 guiGraphics.text(this.font, arrow, (slotX + 9) - (this.font.width(arrow) / 2), slotY + 37, 0xFF55FF55, true);
             }
 
-            if (czyOdebrane) guiGraphics.text(this.font, "§a✔", slotX + 11, slotY + 11, 0xFFFFFFFF, true);
+            if (isClaimed) guiGraphics.text(this.font, "§a✔", slotX + 11, slotY + 11, 0xFFFFFFFF, true);
         }
 
         int barY = topPos + 140;
         int bar1X = leftPos + 18;
-        int bWidth = 135;
+        int barWidth = 135;
 
-        int targetStreak = Math.min(data.streak, 7);
+        int targetStreak = Math.min(data.rewardStreak, 7);
         animatedStreak += (targetStreak - animatedStreak) * 0.1f;
         if (Math.abs(targetStreak - animatedStreak) < 0.05f) animatedStreak = targetStreak;
 
         String streakColorCode = (targetStreak < 3) ? "§2" : (targetStreak < 7 ? "§6" : "§c");
-        int sColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
+        int streakColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
 
         String lblStreak = Component.translatable("r3ct_daily.rewards.bar.streak").getString();
         String valStreak = streakColorCode + data.absoluteRewardStreak + "§0/7";
-        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar1X, barY, animatedStreak, 7, lblStreak, valStreak, sColor, bWidth, 1, new int[]{});
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar1X, barY, animatedStreak, 7, lblStreak, valStreak, streakColor, barWidth, 1, new int[]{});
 
-        String multiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.streak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : Component.translatable("r3ct_daily.gui.inactive").getString());
+        String multiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.rewardStreak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : Component.translatable("r3ct_daily.gui.inactive").getString());
         guiGraphics.text(this.font, multiText, bar1X, barY + 14, 0xFFFFFFFF, false);
 
         int maxRewardShields = payload.maxRewardShields();
-        String shieldsText = "§8" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableRewardFreezes + "§8/" + maxRewardShields;
+        String shieldsText = "§8" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableRewardShields + "§8/" + maxRewardShields;
         guiGraphics.text(this.font, shieldsText, bar1X, barY + 26, 0xFFFFFFFF, false);
 
         int displayCollected = data.totalCollected % 21;
         if (displayCollected == 0 && data.totalCollected > 0) {
-            displayCollected = juzDzisiajOdebrane ? 21 : 0;
+            displayCollected = alreadyClaimedToday ? 21 : 0;
         }
 
         animatedCollected += (displayCollected - animatedCollected) * 0.1f;
@@ -161,13 +161,14 @@ public class RewardScreen extends Screen {
 
         String lblBonus = Component.translatable("r3ct_daily.rewards.bar.bonus").getString();
         String valBonus = "§d" + displayCollected + "§0/21";
-        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar2X, barY, animatedCollected, 21, lblBonus, valBonus, 0xFFFF55FF, bWidth, 1, new int[]{});
+        GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar2X, barY, animatedCollected, 21, lblBonus, valBonus, 0xFFFF55FF, barWidth, 1, new int[]{});
 
-        renderBonusMilestones(guiGraphics, bar2X, barY, bWidth, mouseX, mouseY);
+        renderBonusMilestones(guiGraphics, bar2X, barY, barWidth, mouseX, mouseY);
 
         String arrowText = Component.translatable("r3ct_daily.leaderboard.button.quests_prev").getString();
         int textWidth = this.font.width(arrowText);
         int arrowX = leftPos - 15 - textWidth;
+
         int arrowY = (this.height / 2) - 4;
 
         boolean isHovered = mouseX >= arrowX && mouseX <= arrowX + textWidth && mouseY >= arrowY - 2 && mouseY <= arrowY + 10;
@@ -196,18 +197,18 @@ public class RewardScreen extends Screen {
             renderDayTooltip(guiGraphics, hoveredDay, getIconForDay(hoveredDay), mouseX, mouseY);
         }
 
-        if (mouseX >= bar1X && mouseX <= bar1X + bWidth && mouseY >= barY && mouseY <= barY + 10) {
+        if (mouseX >= bar1X && mouseX <= bar1X + barWidth && mouseY >= barY && mouseY <= barY + 10) {
             renderStreakTooltip(guiGraphics, mouseX, mouseY);
         }
 
-        if (mouseX >= bar2X && mouseX <= bar2X + bWidth && mouseY >= barY && mouseY <= barY + 10) {
+        if (mouseX >= bar2X && mouseX <= bar2X + barWidth && mouseY >= barY && mouseY <= barY + 10) {
             renderBonusTooltip(guiGraphics, data.totalCollected, mouseX, mouseY);
         }
 
         int[] thresholds = {7, 14, 21};
         String rewLabel = Component.translatable("r3ct_daily.quests.tooltip.reward").getString();
 
-        DailyServerConfig.MilestoneReward[] mr = {
+        DailyServerConfig.MilestoneReward[] milestoneRewards = {
                 DailyServerConfig.bonuses.bonus_7,
                 DailyServerConfig.bonuses.bonus_14,
                 DailyServerConfig.bonuses.bonus_21
@@ -218,17 +219,17 @@ public class RewardScreen extends Screen {
         String[] amountsStr = new String[3];
 
         for (int i = 0; i < 3; i++) {
-            String rewardColor = mr[i].getFormattedColor();
+            String rewardColor = milestoneRewards[i].getFormattedColor();
 
             titles[i] = rewardColor + "§l" + Component.translatable("r3ct_daily.rewards.tooltip.bonus.title", thresholds[i]).getString();
-            ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
-            rewards[i] = "§f" + rewLabel + " " + rewardColor + mr[i].amount + "x " + stack.getHoverName().getString();
-            amountsStr[i] = rewardColor + "x" + mr[i].amount;
+            ItemStack stack = QuestManager.getMilestoneRewardStack(milestoneRewards[i]);
+            rewards[i] = "§f" + rewLabel + " " + rewardColor + milestoneRewards[i].amount + "x " + stack.getHoverName().getString();
+            amountsStr[i] = rewardColor + "x" + milestoneRewards[i].amount;
         }
 
         for (int i = 0; i < 3; i++) {
-            int t = thresholds[i];
-            int mX = (t == 21) ? (bar2X + bWidth - 1) : (bar2X + (int)(t * (bWidth / 21.0)));
+            int threshold = thresholds[i];
+            int mX = (threshold == 21) ? (bar2X + barWidth - 1) : (bar2X + (int)(threshold * (barWidth / 21.0)));
             int totalW = 18 + this.font.width(amountsStr[i]);
             int startX = mX - totalW / 2;
             int startY = barY + 24;
@@ -239,19 +240,19 @@ public class RewardScreen extends Screen {
         }
 
         if (trophyHover) {
-            List<ClientTooltipComponent> tTooltip = new ArrayList<>();
-            tTooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
-            tTooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
-            tTooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
-            guiGraphics.tooltip(this.font, tTooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
+            List<ClientTooltipComponent> tooltipLines = new ArrayList<>();
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.title").getString()).getVisualOrderText()));
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
+            tooltipLines.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.quests.tooltip.leaderboard.desc").getString()).getVisualOrderText()));
+            guiGraphics.tooltip(this.font, tooltipLines, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
         }
 
         guiGraphics.pose().popMatrix();
     }
 
-    private void renderBonusMilestones(GuiGraphicsExtractor g, int x, int y, int bWidth, int mouseX, int mouseY) {
+    private void renderBonusMilestones(GuiGraphicsExtractor g, int x, int y, int barWidth, int mouseX, int mouseY) {
         int[] thresholds = {7, 14, 21};
-        DailyServerConfig.MilestoneReward[] mr = {
+        DailyServerConfig.MilestoneReward[] milestoneRewards = {
                 DailyServerConfig.bonuses.bonus_7,
                 DailyServerConfig.bonuses.bonus_14,
                 DailyServerConfig.bonuses.bonus_21
@@ -261,8 +262,8 @@ public class RewardScreen extends Screen {
         String[] amounts = new String[3];
 
         for (int i = 0; i < 3; i++) {
-            icons[i] = QuestManager.getMilestoneRewardStack(mr[i]);
-            amounts[i] = mr[i].getFormattedColor() + "x" + mr[i].amount;
+            icons[i] = QuestManager.getMilestoneRewardStack(milestoneRewards[i]);
+            amounts[i] = milestoneRewards[i].getFormattedColor() + "x" + milestoneRewards[i].amount;
         }
 
         long time = System.currentTimeMillis();
@@ -270,16 +271,16 @@ public class RewardScreen extends Screen {
         int cycle = (data.totalCollected == 0) ? 0 : (data.totalCollected - 1) / 21;
 
         for (int i = 0; i < 3; i++) {
-            int t = thresholds[i];
-            int absTarget = cycle * 21 + t;
+            int threshold = thresholds[i];
+            int absTarget = cycle * 21 + threshold;
             boolean canClaim = data.totalCollected >= absTarget && !data.claimedBonusRewards.contains(absTarget);
             boolean claimed = data.claimedBonusRewards.contains(absTarget);
 
-            int mX = (t == 21) ? (x + bWidth - 1) : (x + (int)(t * (bWidth / 21.0)));
+            int mX = (threshold == 21) ? (x + barWidth - 1) : (x + (int)(threshold * (barWidth / 21.0)));
 
             g.fill(mX, y - 2, mX + 1, y + 10, 0xFFFFFFFF);
-            String txtDay = "§8" + t;
-            g.text(this.font, txtDay, mX - (this.font.width(String.valueOf(t)) / 2), y + 12, 0xFFFFFFFF, false);
+            String txtDay = "§8" + threshold;
+            g.text(this.font, txtDay, mX - (this.font.width(String.valueOf(threshold)) / 2), y + 12, 0xFFFFFFFF, false);
 
             int totalW = 18 + this.font.width(amounts[i]);
             int startX = mX - totalW / 2;
@@ -316,25 +317,25 @@ public class RewardScreen extends Screen {
     }
 
     private void renderDayTooltip(GuiGraphicsExtractor guiGraphics, int day, ItemStack stack, int mouseX, int mouseY) {
-        String dzisiajData = getCurrentQuestDateString();
-        boolean juzDzisiajOdebrane = dzisiajData.equals(data.lastRewardDate);
-        boolean czyOdebrane = juzDzisiajOdebrane ? ((data.rewardDay == 1) || (day < data.rewardDay)) : (day < data.rewardDay);
-        boolean czyMoznaOdebrac = (day == data.rewardDay) && !juzDzisiajOdebrane;
+        String todayDate = getCurrentQuestDateString();
+        boolean alreadyClaimedToday = todayDate.equals(data.lastRewardDate);
+        boolean isClaimed = alreadyClaimedToday ? ((data.rewardDay == 1) || (day < data.rewardDay)) : (day < data.rewardDay);
+        boolean canClaim = (day == data.rewardDay) && !alreadyClaimedToday;
 
         List<ClientTooltipComponent> tooltip = new ArrayList<>();
         tooltip.add(ClientTooltipComponent.create(Component.literal("§6§l" + Component.translatable("r3ct_daily.rewards.tooltip.day.title", day).getString()).getVisualOrderText()));
 
-        String statusRaw = czyOdebrane ? "§a" + Component.translatable("r3ct_daily.rewards.status.claimed").getString() : (czyMoznaOdebrac ? "§e" + Component.translatable("r3ct_daily.rewards.status.claimable").getString() : "§c" + Component.translatable("r3ct_daily.rewards.status.locked").getString());
+        String statusRaw = isClaimed ? "§a" + Component.translatable("r3ct_daily.rewards.status.claimed").getString() : (canClaim ? "§e" + Component.translatable("r3ct_daily.rewards.status.claimable").getString() : "§c" + Component.translatable("r3ct_daily.rewards.status.locked").getString());
         tooltip.add(ClientTooltipComponent.create(Component.literal(Component.translatable("r3ct_daily.rewards.tooltip.status").getString() + " " + statusRaw).getVisualOrderText()));
 
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
-        if (czyOdebrane) {
-            String zHisto = (data.claimedRewardHistory != null && data.claimedRewardHistory.size() > day - 1) ? data.claimedRewardHistory.get(day - 1) : "";
-            if (zHisto != null && !zHisto.isEmpty()) {
+        if (isClaimed) {
+            String historyEntry = (data.claimedRewardHistory != null && data.claimedRewardHistory.size() > day - 1) ? data.claimedRewardHistory.get(day - 1) : "";
+            if (historyEntry != null && !historyEntry.isEmpty()) {
                 tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString()).getVisualOrderText()));
 
-                String[] items = zHisto.split(",");
+                String[] items = historyEntry.split(",");
                 for (String itemStr : items) {
                     itemStr = itemStr.trim();
 
@@ -359,7 +360,7 @@ public class RewardScreen extends Screen {
             tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.rewards.tooltip.content").getString() + " §7§k???").getVisualOrderText()));
         }
 
-        if (czyMoznaOdebrac && data.streak >= 7) {
+        if (canClaim && data.rewardStreak >= 7) {
             tooltip.add(ClientTooltipComponent.create(Component.literal("§6★ " + Component.translatable("r3ct_daily.rewards.tooltip.bonus_loot").getString()).getVisualOrderText()));
         }
 
@@ -382,7 +383,7 @@ public class RewardScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal("").getVisualOrderText()));
 
         int maxRewardShields = payload.maxRewardShields();
-        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableRewardFreezes + "§f/" + maxRewardShields).getVisualOrderText()));
+        tooltip.add(ClientTooltipComponent.create(Component.literal("§f" + Component.translatable("r3ct_daily.gui.available_shields").getString() + " §b" + data.availableRewardShields + "§f/" + maxRewardShields).getVisualOrderText()));
 
         guiGraphics.tooltip(this.font, tooltip, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, true);
     }
@@ -392,7 +393,7 @@ public class RewardScreen extends Screen {
         tooltip.add(ClientTooltipComponent.create(Component.literal("§d§l" + Component.translatable("r3ct_daily.rewards.tooltip.bonus_main.title").getString()).getVisualOrderText()));
         tooltip.add(ClientTooltipComponent.create(Component.literal("§8----------------").getVisualOrderText()));
 
-        DailyServerConfig.MilestoneReward[] mr = {
+        DailyServerConfig.MilestoneReward[] milestoneRewards = {
                 DailyServerConfig.bonuses.bonus_7,
                 DailyServerConfig.bonuses.bonus_14,
                 DailyServerConfig.bonuses.bonus_21
@@ -400,10 +401,10 @@ public class RewardScreen extends Screen {
         int[] thresholds = {7, 14, 21};
 
         for (int i = 0; i < 3; i++) {
-            ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
-            String label = mr[i].amount + "x " + stack.getHoverName().getString();
+            ItemStack stack = QuestManager.getMilestoneRewardStack(milestoneRewards[i]);
+            String label = milestoneRewards[i].amount + "x " + stack.getHoverName().getString();
             tooltip.add(ClientTooltipComponent.create(
-                    getBonusLine(absoluteCollected, thresholds[i], label, mr[i].getFormattedColor()).getVisualOrderText()
+                    getBonusLine(absoluteCollected, thresholds[i], label, milestoneRewards[i].getFormattedColor()).getVisualOrderText()
             ));
         }
 
@@ -461,6 +462,7 @@ public class RewardScreen extends Screen {
             String arrowText = Component.translatable("r3ct_daily.leaderboard.button.quests_prev").getString();
             int textWidth = this.font.width(arrowText);
             int arrowX = leftPos - 15 - textWidth;
+
             int arrowY = (this.height / 2) - 4;
 
             if (mX >= arrowX && mX <= arrowX + textWidth && mY >= arrowY - 2 && mY <= arrowY + 10) {
@@ -471,14 +473,14 @@ public class RewardScreen extends Screen {
                 }
             }
 
-            String dzisiajData = getCurrentQuestDateString();
-            boolean juzDzisiajOdebrane = dzisiajData.equals(data.lastRewardDate);
+            String todayDate = getCurrentQuestDateString();
+            boolean alreadyClaimedToday = todayDate.equals(data.lastRewardDate);
 
             for (int i = 1; i <= 7; i++) {
                 int slotX = leftPos + 27 + (i - 1) * 43;
                 int slotY = topPos + 43;
 
-                if (isMouseOverSlot(mX, mY, slotX, slotY) && i == data.rewardDay && !juzDzisiajOdebrane) {
+                if (isMouseOverSlot(mX, mY, slotX, slotY) && i == data.rewardDay && !alreadyClaimedToday) {
                     if (Minecraft.getInstance().player != null) {
                         Minecraft.getInstance().player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                         Minecraft.getInstance().player.connection.sendCommand("daily claimreward");
@@ -489,30 +491,30 @@ public class RewardScreen extends Screen {
 
             int barY = topPos + 140;
             int bar2X = leftPos + 173;
-            int bWidth = 135;
+            int barWidth = 135;
             int[] thresholds = {7, 14, 21};
-            DailyServerConfig.MilestoneReward[] mr = {
+            DailyServerConfig.MilestoneReward[] milestoneRewards = {
                     DailyServerConfig.bonuses.bonus_7,
                     DailyServerConfig.bonuses.bonus_14,
                     DailyServerConfig.bonuses.bonus_21
             };
             int cycle = (data.totalCollected == 0) ? 0 : (data.totalCollected - 1) / 21;
             for (int i = 0; i < 3; i++) {
-                int t = thresholds[i];
-                String amountsStr = mr[i].getFormattedColor() + "x" + mr[i].amount;
-                int mX_bonus = (t == 21) ? (bar2X + bWidth - 1) : (bar2X + (int)(t * (bWidth / 21.0)));
+                int threshold = thresholds[i];
+                String amountsStr = milestoneRewards[i].getFormattedColor() + "x" + milestoneRewards[i].amount;
+                int mX_bonus = (threshold == 21) ? (bar2X + barWidth - 1) : (bar2X + (int)(threshold * (barWidth / 21.0)));
                 int totalW = 18 + this.font.width(amountsStr);
                 int startX = mX_bonus - totalW / 2;
                 int startY = barY + 24;
 
                 if (mX >= startX - 2 && mX <= startX + totalW + 2 && mY >= startY - 2 && mY <= startY + 18) {
-                    int absTarget = cycle * 21 + t;
+                    int absTarget = cycle * 21 + threshold;
                     boolean canClaim = data.totalCollected >= absTarget && !data.claimedBonusRewards.contains(absTarget);
 
                     if (canClaim) {
                         if (this.minecraft != null && this.minecraft.player != null) {
                             this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                            this.minecraft.player.connection.sendCommand("daily claimbonus " + t);
+                            this.minecraft.player.connection.sendCommand("daily claimbonus " + threshold);
                             return true;
                         }
                     }

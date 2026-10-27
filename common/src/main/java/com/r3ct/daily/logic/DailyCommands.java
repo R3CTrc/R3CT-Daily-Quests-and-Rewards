@@ -44,8 +44,8 @@ public class DailyCommands {
         }
         Services.PLATFORM.sendToPlayer(target, new SyncQuestsPayload(
                 data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                data.activeQuests, data.questProgress, data.streak,
-                data.perfectDaysCount, data.availableFreezes, data.availableRewardFreezes,
+                data.activeQuests, data.questProgress, data.rewardStreak,
+                data.perfectDaysCount, data.availableQuestShields, data.availableRewardShields,
                 data.questRewardsClaimed, data.claimedPointRewards
         ));
     }
@@ -68,8 +68,8 @@ public class DailyCommands {
                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), player.getUUID());
                     Services.PLATFORM.sendToPlayer(player, new OpenQuestsPayload(
                             data.questStreak, data.totalQuestPoints, data.dailyQuestsCompletedToday,
-                            data.activeQuests, data.questProgress, data.streak,
-                            data.perfectDaysCount, data.availableFreezes,
+                            data.activeQuests, data.questProgress, data.rewardStreak,
+                            data.perfectDaysCount, data.availableQuestShields,
                             data.questRewardsClaimed, data.claimedPointRewards,
                             DailyServerConfig.mechanics.quests.enableQuestRerolling,
                             DailyServerConfig.mechanics.quests.rerollCostEasy,
@@ -108,9 +108,9 @@ public class DailyCommands {
                     LocalDate today = getCurrentQuestDate();
                     LocalDate yesterday = today.minusDays(1);
 
-                    int visualStreak = data.streak;
-                    if (data.lastStreakDate != null && !data.lastStreakDate.isEmpty()) {
-                        if (!data.lastStreakDate.equals(today.toString()) && !data.lastStreakDate.equals(yesterday.toString())) {
+                    int visualStreak = data.rewardStreak;
+                    if (data.lastRewardStreakDate != null && !data.lastRewardStreakDate.isEmpty()) {
+                        if (!data.lastRewardStreakDate.equals(today.toString()) && !data.lastRewardStreakDate.equals(yesterday.toString())) {
                             visualStreak = 0;
                         }
                     }
@@ -118,7 +118,7 @@ public class DailyCommands {
                             data.rewardDay, data.lastRewardDate, visualStreak,
                             data.absoluteRewardStreak,
                             data.totalCollected, data.claimedRewardHistory,
-                            data.availableRewardFreezes, data.claimedBonusRewards,
+                            data.availableRewardShields, data.claimedBonusRewards,
                             DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
                             DailyServerConfig.mechanics.technical.questRefreshHour
                     ));
@@ -132,23 +132,23 @@ public class DailyCommands {
                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), player.getUUID());
                     if (today.toString().equals(data.lastRewardDate)) return 1;
 
-                    if (data.lastStreakDate != null && data.lastStreakDate.equals(today.minusDays(1).toString())) {
-                        data.streak = Math.min(data.streak + 1, 7);
+                    if (data.lastRewardStreakDate != null && data.lastRewardStreakDate.equals(today.minusDays(1).toString())) {
+                        data.rewardStreak = Math.min(data.rewardStreak + 1, 7);
                         data.absoluteRewardStreak++;
                     } else {
-                        data.streak = 1;
+                        data.rewardStreak = 1;
                         data.absoluteRewardStreak = 1;
                     }
                     if (data.absoluteRewardStreak > data.maxRewardStreak) data.maxRewardStreak = data.absoluteRewardStreak;
-                    if (data.streak == 7) QuestManager.grantAdvancement(player, "r3ct_daily:rewards/always_on_time");
-                    data.lastStreakDate = today.toString();
+                    if (data.rewardStreak == 7) QuestManager.grantAdvancement(player, "r3ct_daily:rewards/always_on_time");
+                    data.lastRewardStreakDate = today.toString();
 
                     List<ItemStack> rewards = new ArrayList<>();
                     if (data.rewardDay <= 4) rewards.addAll(RewardManager.getTier1Rewards(context.getSource().getServer()));
                     else if (data.rewardDay <= 6) rewards.addAll(RewardManager.getTier2Rewards(context.getSource().getServer()));
                     else rewards.addAll(RewardManager.getTier3Rewards(context.getSource().getServer()));
 
-                    boolean hasStreakBonus = data.streak >= 7;
+                    boolean hasStreakBonus = data.rewardStreak >= 7;
                     if (hasStreakBonus) {
                         ItemStack bonusItem = RewardManager.getStreakBonusReward(data.rewardDay, context.getSource().getServer());
                         if (!bonusItem.isEmpty()) {
@@ -206,10 +206,10 @@ public class DailyCommands {
                     context.getSource().getServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(ModState.TYPE).setDirty();
 
                     Services.PLATFORM.sendToPlayer(player, new OpenRewardsPayload(
-                            data.rewardDay, data.lastRewardDate, data.streak,
+                            data.rewardDay, data.lastRewardDate, data.rewardStreak,
                             data.absoluteRewardStreak,
                             data.totalCollected, data.claimedRewardHistory,
-                            data.availableRewardFreezes, data.claimedBonusRewards,
+                            data.availableRewardShields, data.claimedBonusRewards,
                             DailyServerConfig.mechanics.streaks.maxStoredRewardShields,
                             DailyServerConfig.mechanics.technical.questRefreshHour
                     ));
@@ -261,7 +261,7 @@ public class DailyCommands {
                             data.lastRewardDate = "1970-01-01";
                             data.dailyQuestsCompletedToday = 0;
 
-                            for(int i=0; i < data.questProgress.size(); i++) {
+                            for(int i = 0; i < data.questProgress.size(); i++) {
                                 data.questProgress.set(i, 0);
                                 data.questRewardsClaimed.set(i, false);
                             }
@@ -285,9 +285,9 @@ public class DailyCommands {
                             data.questProgress.clear();
                             data.questRewardsClaimed.clear();
 
-                            for (Quest q : newQuests) {
-                                if (q != null && q.id != null) {
-                                    data.activeQuests.add(q.id);
+                            for (Quest quest : newQuests) {
+                                if (quest != null && quest.id != null) {
+                                    data.activeQuests.add(quest.id);
                                     data.questProgress.add(0);
                                     data.questRewardsClaimed.add(false);
                                 }
@@ -331,6 +331,7 @@ public class DailyCommands {
                                     int amount = IntegerArgumentType.getInteger(context, "amount");
                                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
                                     data.totalQuestPoints = Math.max(0, data.totalQuestPoints - amount);
+
                                     syncPlayerData(target, data);
 
                                     Component targetName = Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW);
@@ -361,7 +362,7 @@ public class DailyCommands {
                                             ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                             int amount = IntegerArgumentType.getInteger(context, "amount");
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                            data.streak = amount;
+                                            data.rewardStreak = amount;
                                             syncPlayerData(target, data);
 
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW);
@@ -379,7 +380,7 @@ public class DailyCommands {
                                             ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                             int amount = IntegerArgumentType.getInteger(context, "amount");
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                            data.availableFreezes = amount;
+                                            data.availableQuestShields = amount;
                                             syncPlayerData(target, data);
 
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW);
@@ -392,7 +393,7 @@ public class DailyCommands {
                                             ServerPlayer target = EntityArgument.getPlayer(context, "target");
                                             int amount = IntegerArgumentType.getInteger(context, "amount");
                                             PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
-                                            data.availableRewardFreezes = amount;
+                                            data.availableRewardShields = amount;
                                             syncPlayerData(target, data);
 
                                             Component targetName = Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW);
@@ -407,14 +408,14 @@ public class DailyCommands {
                         .then(Commands.literal("dimensions")
                                 .then(Commands.literal("unlock").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("dim", StringArgumentType.word()).executes(context -> {
                                     ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                    String dim = StringArgumentType.getString(context, "dim");
+                                    String dimensionName = StringArgumentType.getString(context, "dim");
                                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 
-                                    Component dimComp = Component.literal(dim).withStyle(ChatFormatting.LIGHT_PURPLE);
+                                    Component dimComp = Component.literal(dimensionName).withStyle(ChatFormatting.LIGHT_PURPLE);
                                     Component targetName = Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW);
 
-                                    if (!data.unlockedDimensions.contains(dim)) {
-                                        data.unlockedDimensions.add(dim);
+                                    if (!data.unlockedDimensions.contains(dimensionName)) {
+                                        data.unlockedDimensions.add(dimensionName);
                                         syncPlayerData(target, data);
                                         context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.dimensions.unlock.success", dimComp, targetName).withStyle(ChatFormatting.GREEN), true);
                                     } else {
@@ -424,14 +425,14 @@ public class DailyCommands {
                                 }))))
                                 .then(Commands.literal("revoke").then(Commands.argument("target", EntityArgument.player()).then(Commands.argument("dim", StringArgumentType.word()).executes(context -> {
                                     ServerPlayer target = EntityArgument.getPlayer(context, "target");
-                                    String dim = StringArgumentType.getString(context, "dim");
+                                    String dimensionName = StringArgumentType.getString(context, "dim");
                                     PlayerData data = ModState.getPlayerData(context.getSource().getServer(), target.getUUID());
 
-                                    Component dimComp = Component.literal(dim).withStyle(ChatFormatting.LIGHT_PURPLE);
+                                    Component dimComp = Component.literal(dimensionName).withStyle(ChatFormatting.LIGHT_PURPLE);
                                     Component targetName = Component.literal(target.getName().getString()).withStyle(ChatFormatting.YELLOW);
 
-                                    if (data.unlockedDimensions.contains(dim)) {
-                                        data.unlockedDimensions.remove(dim);
+                                    if (data.unlockedDimensions.contains(dimensionName)) {
+                                        data.unlockedDimensions.remove(dimensionName);
                                         syncPlayerData(target, data);
                                         context.getSource().sendSuccess(() -> Component.translatable("r3ct_daily.command.admin.dimensions.revoke.success", dimComp, targetName).withStyle(ChatFormatting.GREEN), true);
                                     } else {
