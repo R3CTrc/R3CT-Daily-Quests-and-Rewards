@@ -327,13 +327,13 @@ public class LeaderboardScreen extends Screen {
         } else if (rank == 2) {
             rowBorder = isRowHovered ? 0xFFFFE57F : 0xFFA67C1E;
             rowBg = 0xFF2E2416;
-            nameColor = "§e§l";
-            valColor = "§e";
+            nameColor = "§d§l";
+            valColor = "§d";
         } else if (rank == 3) {
             rowBorder = isRowHovered ? 0xFFFF88FF : 0xFF8E3A9E;
             rowBg = 0xFF2D1934;
-            nameColor = "§d§l";
-            valColor = "§d";
+            nameColor = "§e§l";
+            valColor = "§e";
         } else {
             rowBorder = isRowHovered ? 0xFF8D6E63 : 0xFF332428;
             rowBg = (stripeIdx % 2 == 0) ? 0xFF251A1E : 0xFF20161A;

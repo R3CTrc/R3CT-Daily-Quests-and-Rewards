@@ -242,12 +242,12 @@ public class QuestScreen extends Screen {
         int arrColor = isHovered ? 0xFFFFFFFF : 0xFFAAAAAA;
         guiGraphics.text(this.font, arrowText, arrowX, arrowY, arrColor, true);
 
-        int signX = leftPos + bookWidth - 45;
-        int signY = topPos - 26;
-        int trophyX = signX + 5;
-        int trophyY = signY + 4;
+        int signX = leftPos + bookWidth - 42;
+        int signY = topPos - 20;
+        int trophyX = signX + 2;
+        int trophyY = signY + 2;
 
-        boolean trophyHover = mouseX >= signX && mouseX <= signX + 26 && mouseY >= signY && mouseY <= signY + 28;
+        boolean trophyHover = mouseX >= signX && mouseX <= signX + 20 && mouseY >= signY && mouseY <= signY + 20;
 
         drawLeaderboardSign(guiGraphics, signX, signY, trophyHover);
         guiGraphics.item(new ItemStack(Items.MOJANG_BANNER_PATTERN), trophyX, trophyY);
@@ -516,21 +516,16 @@ public class QuestScreen extends Screen {
     }
 
     private void drawLeaderboardSign(GuiGraphicsExtractor g, int x, int y, boolean isHovered) {
-        g.fill(x + 2, y + 2, x + 28, y + 30, 0x55000000);
-
-        g.fill(x, y, x + 26, y + 28, 0xFF1A0E07);
-        g.fill(x + 1, y + 1, x + 25, y + 27, 0xFF4A2B18);
-        g.fill(x + 2, y + 2, x + 24, y + 26, 0xFF633E24);
+        g.fill(x, y, x + 20, y + 20, 0xFF1A0E07);
+        g.fill(x + 1, y + 1, x + 19, y + 19, 0xFF4A2B18);
+        g.fill(x + 2, y + 2, x + 18, y + 18, 0xFF633E24);
 
         if (isHovered) {
-            g.fill(x + 2, y + 2, x + 24, y + 26, 0x22FFFFFF);
+            g.fill(x + 2, y + 2, x + 18, y + 18, 0x22FFFFFF);
         }
 
-        g.fill(x + 4, y + 22, x + 6, y + 24, 0xFF26292E);
-        g.fill(x + 5, y + 23, x + 7, y + 25, 0xFF6B7280);
-
-        g.fill(x + 20, y + 22, x + 22, y + 24, 0xFF26292E);
-        g.fill(x + 21, y + 23, x + 23, y + 25, 0xFF6B7280);
+        g.fill(x + 2, y + 16, x + 4, y + 18, 0xFF26292E);
+        g.fill(x + 16, y + 16, x + 18, y + 18, 0xFF26292E);
     }
 
     private void drawRightHangingScroll(GuiGraphicsExtractor g, int x1, int y1, int x2, int y2, int topPos) {
@@ -642,10 +637,10 @@ public class QuestScreen extends Screen {
             int topPos = (this.height - bookHeight) / 2;
             int midX = leftPos + (bookWidth / 2);
 
-            int signX = leftPos + bookWidth - 45;
-            int signY = topPos - 26;
+            int signX = leftPos + bookWidth - 42;
+            int signY = topPos - 20;
 
-            if (mX >= signX && mX <= signX + 26 && mY >= signY && mY <= signY + 28) {
+            if (mX >= signX && mX <= signX + 20 && mY >= signY && mY <= signY + 20) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(0));
