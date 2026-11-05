@@ -126,13 +126,7 @@ public class QuestScreen extends Screen {
 
             drawQuestNoteCard(guiGraphics, cardLeft, cardTop, cardRight, cardBottom, i, quest.difficulty, done, claimed, canSubmit, isCardHovered, time);
 
-            if (!done && payload.enableQuestRerolling()) {
-                int rerollCost = (quest.difficulty == 0) ? payload.rerollCostEasy() :
-                        (quest.difficulty == 1) ? payload.rerollCostMedium() :
-                                payload.rerollCostHard();
-                boolean canAffordReroll = data.totalQuestPoints >= rerollCost;
-                drawRerollSealButton(guiGraphics, buttonX, buttonY, buttonSize, isBtnHovered, canAffordReroll);
-            }
+            if (!done && payload.enableQuestRerolling()) drawRerollSealButton(guiGraphics, buttonX, buttonY, buttonSize, isBtnHovered);
 
             String diffIndicator = (quest.difficulty == 0) ? "§2★" : (quest.difficulty == 1 ? "§6★" : "§4★");
             int titleColor = (done && !claimed) ? 0xFF005500 : (canSubmit ? 0xFF0044AA : 0xFF000000);
@@ -350,19 +344,19 @@ public class QuestScreen extends Screen {
         guiGraphics.pose().popMatrix();
     }
 
-    private void drawRerollSealButton(GuiGraphicsExtractor g, int x, int y, int size, boolean isHovered, boolean canAfford) {
-        int ribbonColor = canAfford ? (isHovered ? 0xFFB71C1C : 0xFF8E1B1B) : 0xFF6D5D4B;
+    private void drawRerollSealButton(GuiGraphicsExtractor g, int x, int y, int size, boolean isHovered) {
+        int ribbonColor = isHovered ? 0xFFB71C1C : 0xFF8E1B1B;
         g.fill(x + 3, y + size - 1, x + 5, y + size + 2, ribbonColor);
         g.fill(x + size - 5, y + size - 1, x + size - 3, y + size + 2, ribbonColor);
 
         g.fill(x + 2, y + 2, x + size - 1, y + size, 0x3A000000);
         g.fill(x + 1, y + 3, x + size, y + size - 1, 0x3A000000);
 
-        int outerRim = isHovered ? 0xFF7A5216 : (canAfford ? 0xFF5C3D18 : 0xFF6B5B4B);
-        int ringHighlight = isHovered ? 0xFFFFE57F : (canAfford ? 0xFFD4A349 : 0xFF9C8B7A);
-        int innerRecess = isHovered ? 0xFFC68A2E : (canAfford ? 0xFF966827 : 0xFF7D6D5D);
-        int innerShadow = isHovered ? 0xFF8C5B14 : (canAfford ? 0xFF6B4716 : 0xFF5E5043);
-        int iconColor = isHovered ? 0xFFFFFFFF : (canAfford ? 0xFFFFF3D1 : 0xFFC7B8A8);
+        int outerRim = isHovered ? 0xFF7A5216 : 0xFF5C3D18;
+        int ringHighlight = isHovered ? 0xFFFFE57F : 0xFFD4A349;
+        int innerRecess = isHovered ? 0xFFC68A2E : 0xFF966827;
+        int innerShadow = isHovered ? 0xFF8C5B14 : 0xFF6B4716;
+        int iconColor = isHovered ? 0xFFFFFFFF : 0xFFFFF3D1;
 
         g.fill(x + 2, y, x + size - 2, y + size, outerRim);
         g.fill(x, y + 2, x + size, y + size - 2, outerRim);
