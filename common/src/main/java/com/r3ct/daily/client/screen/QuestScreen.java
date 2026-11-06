@@ -126,7 +126,9 @@ public class QuestScreen extends Screen {
 
             drawQuestNoteCard(guiGraphics, cardLeft, cardTop, cardRight, cardBottom, i, quest.difficulty, done, claimed, canSubmit, isCardHovered, time);
 
-            if (!done && payload.enableQuestRerolling()) drawRerollSealButton(guiGraphics, buttonX, buttonY, buttonSize, isBtnHovered);
+            if (!done && payload.enableQuestRerolling()) {
+                drawRerollSealButton(guiGraphics, buttonX, buttonY, buttonSize, isBtnHovered);
+            }
 
             String diffIndicator = (quest.difficulty == 0) ? "§2★" : (quest.difficulty == 1 ? "§6★" : "§4★");
             int titleColor = (done && !claimed) ? 0xFF005500 : (canSubmit ? 0xFF0044AA : 0xFF000000);
@@ -243,11 +245,11 @@ public class QuestScreen extends Screen {
         guiGraphics.text(this.font, arrowText, arrowX, arrowY, arrColor, true);
 
         int signX = leftPos + bookWidth - 42;
-        int signY = topPos - 20;
+        int signY = topPos - 25;
         int trophyX = signX + 2;
-        int trophyY = signY + 2;
+        int trophyY = signY + 3;
 
-        boolean trophyHover = mouseX >= signX && mouseX <= signX + 20 && mouseY >= signY && mouseY <= signY + 20;
+        boolean trophyHover = mouseX >= signX && mouseX <= signX + 20 && mouseY >= signY && mouseY <= signY + 25;
 
         drawLeaderboardSign(guiGraphics, signX, signY, trophyHover);
         guiGraphics.item(new ItemStack(Items.MOJANG_BANNER_PATTERN), trophyX, trophyY);
@@ -306,7 +308,6 @@ public class QuestScreen extends Screen {
 
         String[] tooltips = new String[4];
         String[] rewards = new String[4];
-        String[] amountsStr = new String[4];
 
         for (int i = 0; i < 4; i++) {
             String color = milestoneRewards[i].getFormattedColor();
@@ -315,16 +316,13 @@ public class QuestScreen extends Screen {
 
             ItemStack stack = QuestManager.getMilestoneRewardStack(milestoneRewards[i]);
             rewards[i] = "§f" + rewLabel + " " + color + milestoneRewards[i].amount + "x " + stack.getHoverName().getString();
-            amountsStr[i] = color + "x" + milestoneRewards[i].amount;
         }
 
         for (int i = 0; i < 4; i++) {
             int mX = rightTextX + (int)(thresholds[i] / 200.0 * (barWidth - 2));
-            int totalW = 18 + this.font.width(amountsStr[i]);
-            int startX = mX - totalW / 2;
             int startY = lifeY + 28;
 
-            if (mouseX >= startX - 2 && mouseX <= startX + totalW + 2 && mouseY >= startY - 2 && mouseY <= startY + 18) {
+            if (mouseX >= mX - 11 && mouseX <= mX + 11 && mouseY >= startY - 3 && mouseY <= startY + 19) {
                 renderSimpleTooltip(guiGraphics, tooltips[i], rewards[i], mouseX, mouseY);
             }
         }
@@ -516,16 +514,20 @@ public class QuestScreen extends Screen {
     }
 
     private void drawLeaderboardSign(GuiGraphicsExtractor g, int x, int y, boolean isHovered) {
-        g.fill(x, y, x + 20, y + 20, 0xFF1A0E07);
-        g.fill(x + 1, y + 1, x + 19, y + 19, 0xFF4A2B18);
-        g.fill(x + 2, y + 2, x + 18, y + 18, 0xFF633E24);
+        g.fill(x, y, x + 20, y + 25, 0xFF1A0E07);
+        g.fill(x + 1, y + 1, x + 19, y + 24, 0xFF4A2B18);
+        g.fill(x + 2, y + 2, x + 18, y + 23, 0xFF633E24);
+        g.fill(x + 2, y + 2, x + 18, y + 3, 0xFF754B2E);
 
         if (isHovered) {
-            g.fill(x + 2, y + 2, x + 18, y + 18, 0x22FFFFFF);
+            g.fill(x + 2, y + 2, x + 18, y + 23, 0x22FFFFFF);
         }
 
-        g.fill(x + 2, y + 16, x + 4, y + 18, 0xFF26292E);
-        g.fill(x + 16, y + 16, x + 18, y + 18, 0xFF26292E);
+        g.fill(x + 3, y + 20, x + 5, y + 22, 0xFF26292E);
+        g.fill(x + 4, y + 21, x + 5, y + 22, 0xFF6B7280);
+
+        g.fill(x + 15, y + 20, x + 17, y + 22, 0xFF26292E);
+        g.fill(x + 16, y + 21, x + 17, y + 22, 0xFF6B7280);
     }
 
     private void drawRightHangingScroll(GuiGraphicsExtractor g, int x1, int y1, int x2, int y2, int topPos) {
@@ -576,11 +578,8 @@ public class QuestScreen extends Screen {
         };
 
         ItemStack[] icons = new ItemStack[4];
-        String[] amounts = new String[4];
-
         for (int i = 0; i < 4; i++) {
             icons[i] = QuestManager.getMilestoneRewardStack(rewards[i]);
-            amounts[i] = rewards[i].getFormattedColor() + "x" + rewards[i].amount;
         }
 
         long time = System.currentTimeMillis();
@@ -591,37 +590,64 @@ public class QuestScreen extends Screen {
             boolean canClaim = data.totalQuestPoints >= t && !data.claimedPointRewards.contains(t);
             boolean claimed = data.claimedPointRewards.contains(t);
 
-            int totalW = 18 + this.font.width(amounts[i]);
-            int startX = mX - totalW / 2;
             int startY = y + 28;
+            int boxLeft = mX - 11;
+            int boxRight = mX + 11;
 
-            boolean hovered = mouseX >= startX - 2 && mouseX <= startX + totalW + 2 && mouseY >= startY - 2 && mouseY <= startY + 18;
+            boolean hovered = mouseX >= boxLeft && mouseX <= boxRight && mouseY >= startY - 3 && mouseY <= startY + 19;
 
             if (claimed) {
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, 0x33000000);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, 0x33000000);
             } else if (canClaim) {
                 int color = hovered ? 0x66FFFF00 : 0x44FFFF00;
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, color);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, color);
             } else if (hovered) {
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, 0x22000000);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, 0x22000000);
             }
 
-            g.item(icons[i], startX, startY);
-            g.text(this.font, amounts[i], startX + 18, startY + 4, 0xFF000000, false);
+            drawStackedItemPile(g, icons[i], mX, startY, rewards[i].amount);
 
             if (claimed) {
                 g.pose().pushMatrix();
                 g.pose().translate(0, 0);
-                g.text(this.font, "§a✔", startX + 10, startY + 8, 0xFFFFFFFF, true);
+                g.text(this.font, "§a✔", mX + 3, startY + 9, 0xFFFFFFFF, true);
                 g.pose().popMatrix();
             } else if (canClaim) {
                 g.pose().pushMatrix();
-                g.pose().translate(mX, startY + 22);
+                g.pose().translate(mX, startY + 21);
                 g.pose().scale(1.5f, 1.5f);
                 String arrow = (time % 1000 < 500) ? "§e↑" : "§6↑";
                 g.text(this.font, arrow, -this.font.width("↑") / 2, 0, 0xFF000000, true);
                 g.pose().popMatrix();
             }
+        }
+    }
+
+    private int getVisualPileCount(int amount) {
+        if (amount <= 1) return 1;
+        if (amount <= 8) return 2;
+        if (amount <= 16) return 3;
+        return 4;
+    }
+
+    private void drawStackedItemPile(GuiGraphicsExtractor g, ItemStack stack, int centerX, int y, int amount) {
+        int count = getVisualPileCount(amount);
+        int baseX = centerX - 8;
+
+        if (count == 1) {
+            g.item(stack, baseX, y);
+        } else if (count == 2) {
+            g.item(stack, baseX - 3, y - 2);
+            g.item(stack, baseX + 3, y + 1);
+        } else if (count == 3) {
+            g.item(stack, baseX - 4, y - 2);
+            g.item(stack, baseX + 4, y - 2);
+            g.item(stack, baseX, y + 2);
+        } else {
+            g.item(stack, baseX, y - 4);
+            g.item(stack, baseX - 5, y - 1);
+            g.item(stack, baseX + 5, y - 1);
+            g.item(stack, baseX, y + 2);
         }
     }
 
@@ -638,9 +664,9 @@ public class QuestScreen extends Screen {
             int midX = leftPos + (bookWidth / 2);
 
             int signX = leftPos + bookWidth - 42;
-            int signY = topPos - 20;
+            int signY = topPos - 25;
 
-            if (mX >= signX && mX <= signX + 20 && mY >= signY && mY <= signY + 20) {
+            if (mX >= signX && mX <= signX + 20 && mY >= signY && mY <= signY + 25) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(0));
@@ -695,23 +721,12 @@ public class QuestScreen extends Screen {
             int lifeY = topPos + 245;
             int[] thresholds = {50, 100, 150, 200};
 
-            DailyServerConfig.MilestoneReward[] milestoneRewards = {
-                    DailyServerConfig.milestones.point_50,
-                    DailyServerConfig.milestones.point_100,
-                    DailyServerConfig.milestones.point_150,
-                    DailyServerConfig.milestones.point_200
-            };
-
             for (int i = 0; i < 4; i++) {
                 int t = thresholds[i];
-                String amountsStr = milestoneRewards[i].getFormattedColor() + "x" + milestoneRewards[i].amount;
-
-                int iconX = rightTextX + (int)(t / 200.0 * (barWidth - 2));
-                int totalW = 18 + this.font.width(amountsStr);
-                int startX = iconX - totalW / 2;
+                int iconCenterX = rightTextX + (int)(t / 200.0 * (barWidth - 2));
                 int startY = lifeY + 28;
 
-                if (mX >= startX - 2 && mX <= startX + totalW + 2 && mY >= startY - 2 && mY <= startY + 18) {
+                if (mX >= iconCenterX - 11 && mX <= iconCenterX + 11 && mY >= startY - 3 && mY <= startY + 19) {
                     boolean canClaim = data.totalQuestPoints >= t && !data.claimedPointRewards.contains(t);
                     if (canClaim) {
                         if (this.minecraft != null && this.minecraft.player != null) {

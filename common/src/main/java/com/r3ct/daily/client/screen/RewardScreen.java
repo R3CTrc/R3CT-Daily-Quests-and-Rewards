@@ -226,7 +226,6 @@ public class RewardScreen extends Screen {
 
         String[] titles = new String[3];
         String[] rewards = new String[3];
-        String[] amountsStr = new String[3];
 
         for (int i = 0; i < 3; i++) {
             String rewardColor = milestoneRewards[i].getFormattedColor();
@@ -234,17 +233,14 @@ public class RewardScreen extends Screen {
             titles[i] = rewardColor + "§l" + Component.translatable("r3ct_daily.rewards.tooltip.bonus.title", thresholds[i]).getString();
             ItemStack stack = QuestManager.getMilestoneRewardStack(milestoneRewards[i]);
             rewards[i] = "§f" + rewLabel + " " + rewardColor + milestoneRewards[i].amount + "x " + stack.getHoverName().getString();
-            amountsStr[i] = rewardColor + "x" + milestoneRewards[i].amount;
         }
 
         for (int i = 0; i < 3; i++) {
             int threshold = thresholds[i];
             int mX = (threshold == 21) ? (bar2X + barWidth - 1) : (bar2X + (int)(threshold * (barWidth / 21.0)));
-            int totalW = 18 + this.font.width(amountsStr[i]);
-            int startX = mX - totalW / 2;
             int startY = barY + 24;
 
-            if (mouseX >= startX - 2 && mouseX <= startX + totalW + 2 && mouseY >= startY - 2 && mouseY <= startY + 18) {
+            if (mouseX >= mX - 11 && mouseX <= mX + 11 && mouseY >= startY - 3 && mouseY <= startY + 19) {
                 renderSimpleTooltip(guiGraphics, titles[i], rewards[i], mouseX, mouseY);
             }
         }
@@ -277,7 +273,6 @@ public class RewardScreen extends Screen {
         int bayBottom = topPos + 92;
 
         g.fill(bayLeft - 1, bayTop - 1, bayRight + 1, bayBottom + 1, 0xFFD4AF37);
-
         g.fill(bayLeft, bayTop, bayRight, bayBottom, 0xFF2D1219);
 
         for (int i = 1; i < 7; i++) {
@@ -393,11 +388,8 @@ public class RewardScreen extends Screen {
         };
 
         ItemStack[] icons = new ItemStack[3];
-        String[] amounts = new String[3];
-
         for (int i = 0; i < 3; i++) {
             icons[i] = QuestManager.getMilestoneRewardStack(milestoneRewards[i]);
-            amounts[i] = milestoneRewards[i].getFormattedColor() + "x" + milestoneRewards[i].amount;
         }
 
         long time = System.currentTimeMillis();
@@ -415,37 +407,64 @@ public class RewardScreen extends Screen {
             String txtDay = "§8" + threshold;
             g.text(this.font, txtDay, mX - (this.font.width(String.valueOf(threshold)) / 2), y + 12, 0xFFFFFFFF, false);
 
-            int totalW = 18 + this.font.width(amounts[i]);
-            int startX = mX - totalW / 2;
             int startY = y + 24;
+            int boxLeft = mX - 11;
+            int boxRight = mX + 11;
 
-            boolean hovered = mouseX >= startX - 2 && mouseX <= startX + totalW + 2 && mouseY >= startY - 2 && mouseY <= startY + 18;
+            boolean hovered = mouseX >= boxLeft && mouseX <= boxRight && mouseY >= startY - 3 && mouseY <= startY + 19;
 
             if (claimed) {
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, 0x33000000);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, 0x33000000);
             } else if (canClaim) {
                 int color = hovered ? 0x66FFFF00 : 0x44FFFF00;
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, color);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, color);
             } else if (hovered) {
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, 0x22000000);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, 0x22000000);
             }
 
-            g.item(icons[i], startX, startY);
-            g.text(this.font, amounts[i], startX + 18, startY + 4, 0xFF000000, false);
+            drawStackedItemPile(g, icons[i], mX, startY, milestoneRewards[i].amount);
 
             if (claimed) {
                 g.pose().pushMatrix();
                 g.pose().translate(0, 0);
-                g.text(this.font, "§a✔", startX + 10, startY + 8, 0xFFFFFFFF, true);
+                g.text(this.font, "§a✔", mX + 3, startY + 9, 0xFFFFFFFF, true);
                 g.pose().popMatrix();
             } else if (canClaim) {
                 g.pose().pushMatrix();
-                g.pose().translate(mX, startY + 22);
+                g.pose().translate(mX, startY + 21);
                 g.pose().scale(1.5f, 1.5f);
                 String arrow = (time % 1000 < 500) ? "§e↑" : "§6↑";
                 g.text(this.font, arrow, -this.font.width("↑") / 2, 0, 0xFF000000, true);
                 g.pose().popMatrix();
             }
+        }
+    }
+
+    private int getVisualPileCount(int amount) {
+        if (amount <= 1) return 1;
+        if (amount <= 8) return 2;
+        if (amount <= 16) return 3;
+        return 4;
+    }
+
+    private void drawStackedItemPile(GuiGraphicsExtractor g, ItemStack stack, int centerX, int y, int amount) {
+        int count = getVisualPileCount(amount);
+        int baseX = centerX - 8;
+
+        if (count == 1) {
+            g.item(stack, baseX, y);
+        } else if (count == 2) {
+            g.item(stack, baseX - 3, y - 2);
+            g.item(stack, baseX + 3, y + 1);
+        } else if (count == 3) {
+            g.item(stack, baseX - 4, y - 2);
+            g.item(stack, baseX + 4, y - 2);
+            g.item(stack, baseX, y + 2);
+        } else {
+            g.item(stack, baseX, y - 4);
+            g.item(stack, baseX - 5, y - 1);
+            g.item(stack, baseX + 5, y - 1);
+            g.item(stack, baseX, y + 2);
         }
     }
 
@@ -627,23 +646,15 @@ public class RewardScreen extends Screen {
             int bar2X = midX + 16;
             int barWidth = 135;
             int[] thresholds = {7, 14, 21};
-            DailyServerConfig.MilestoneReward[] milestoneRewards = {
-                    DailyServerConfig.bonuses.bonus_7,
-                    DailyServerConfig.bonuses.bonus_14,
-                    DailyServerConfig.bonuses.bonus_21
-            };
 
             int cycle = RewardManager.getActiveBonusCycle(data);
 
             for (int i = 0; i < 3; i++) {
                 int threshold = thresholds[i];
-                String amountsStr = milestoneRewards[i].getFormattedColor() + "x" + milestoneRewards[i].amount;
                 int mX_bonus = (threshold == 21) ? (bar2X + barWidth - 1) : (bar2X + (int)(threshold * (barWidth / 21.0)));
-                int totalW = 18 + this.font.width(amountsStr);
-                int startX = mX_bonus - totalW / 2;
                 int startY = barY + 24;
 
-                if (mX >= startX - 2 && mX <= startX + totalW + 2 && mY >= startY - 2 && mY <= startY + 18) {
+                if (mX >= mX_bonus - 11 && mX <= mX_bonus + 11 && mY >= startY - 3 && mY <= startY + 19) {
                     int absTarget = cycle * 21 + threshold;
                     boolean canClaim = data.totalCollected >= absTarget && !data.claimedBonusRewards.contains(absTarget);
 
