@@ -65,7 +65,7 @@ public class QuestScreen extends Screen {
     @Override
     public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
 
-        float scale = DailyServerConfig.mechanics != null ? DailyClientConfig.getInstance().questScreenScale : 1.0f;
+        float scale = DailyClientConfig.getInstance().questScreenScale;
 
         mouseX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
         mouseY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
