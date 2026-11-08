@@ -1,5 +1,6 @@
 package com.r3ct.daily.client.screen;
 
+import com.r3ct.daily.platform.Services;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -39,7 +40,7 @@ public class ConfigServerScreen extends Screen {
     }
 
     private void openFile(String fileName) {
-        File configFile = Paths.get("config", "r3ct_daily", fileName).toFile();
+        File configFile = Services.PLATFORM.getConfigDir().resolve("r3ct_daily").resolve(fileName).toFile();
         if (configFile.exists()) {
             Util.getPlatform().openUri(configFile.toURI());
         }
