@@ -1,16 +1,26 @@
 package com.r3ct.daily.data;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-public record TopEntry(String name, int totalQuests, int maxQuestStreak, int totalRewards, int maxRewardStreak) {
-    public static void write(FriendlyByteBuf buf, TopEntry entry) {
-        buf.writeUtf(entry.name());
-        buf.writeInt(entry.totalQuests());
-        buf.writeInt(entry.maxQuestStreak());
-        buf.writeInt(entry.totalRewards());
-        buf.writeInt(entry.maxRewardStreak());
+public record TopEntry(String name, int totalQuests, int maxQuestStreak, int totalRewards, int maxRewardStreak, int rank) {
+
+    public static final StreamCodec<FriendlyByteBuf, TopEntry> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.stringUtf8(32767), TopEntry::name,
+            ByteBufCodecs.INT, TopEntry::totalQuests,
+            ByteBufCodecs.INT, TopEntry::maxQuestStreak,
+            ByteBufCodecs.INT, TopEntry::totalRewards,
+            ByteBufCodecs.INT, TopEntry::maxRewardStreak,
+            ByteBufCodecs.INT, TopEntry::rank,
+            TopEntry::new
+    ).cast();
+
+    public static void write(FriendlyByteBuf buffer, TopEntry leaderboardEntry) {
+        STREAM_CODEC.encode(buffer, leaderboardEntry);
     }
-    public static TopEntry read(FriendlyByteBuf buf) {
-        return new TopEntry(buf.readUtf(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt());
+
+    public static TopEntry read(FriendlyByteBuf buffer) {
+        return STREAM_CODEC.decode(buffer);
     }
 }
