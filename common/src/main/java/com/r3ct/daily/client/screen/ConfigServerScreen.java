@@ -1,6 +1,7 @@
 package com.r3ct.daily.client.screen;
 
 import com.mojang.blaze3d.Blaze3D;
+import com.r3ct.daily.platform.Services;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -10,7 +11,6 @@ import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class ConfigServerScreen extends Screen {
     private final Screen parent;
@@ -41,7 +41,7 @@ public class ConfigServerScreen extends Screen {
     }
 
     private void openFile(String fileName) {
-        Path configPath = Paths.get("config", "r3ct_daily", fileName);
+        Path configPath = Services.PLATFORM.getConfigDir().resolve("r3ct_daily").resolve(fileName);
         if (Files.exists(configPath)) {
             Blaze3D.openPath(configPath);
         }
