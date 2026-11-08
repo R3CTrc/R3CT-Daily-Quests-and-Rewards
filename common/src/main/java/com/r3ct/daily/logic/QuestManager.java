@@ -550,7 +550,7 @@ public class QuestManager {
         if (data.questStreak > data.maxQuestStreak) {
             data.maxQuestStreak = data.questStreak;
         }
-        data.lastQuestStreakDate = LocalDate.now().toString();
+        data.lastQuestStreakDate = getCurrentQuestDate().toString();
 
         playSound(player, SoundEvents.FIREWORK_ROCKET_TWINKLE, 1.0F, 1.2F);
 
