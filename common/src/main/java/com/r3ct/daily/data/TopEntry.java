@@ -4,7 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public record TopEntry(String name, int totalQuests, int maxQuestStreak, int totalRewards, int maxRewardStreak) {
+public record TopEntry(String name, int totalQuests, int maxQuestStreak, int totalRewards, int maxRewardStreak, int rank) {
 
     public static final StreamCodec<FriendlyByteBuf, TopEntry> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.stringUtf8(32767), TopEntry::name,
@@ -12,6 +12,7 @@ public record TopEntry(String name, int totalQuests, int maxQuestStreak, int tot
             ByteBufCodecs.INT, TopEntry::maxQuestStreak,
             ByteBufCodecs.INT, TopEntry::totalRewards,
             ByteBufCodecs.INT, TopEntry::maxRewardStreak,
+            ByteBufCodecs.INT, TopEntry::rank,
             TopEntry::new
     ).cast();
 

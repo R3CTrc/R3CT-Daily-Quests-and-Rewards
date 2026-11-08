@@ -86,7 +86,7 @@ public class DailyFabric implements ModInitializer {
 					LeaderboardManager.updateLeaderboardCache(context.server());
 					LeaderboardManager.lastLeaderboardUpdateTick = currentTick;
 				}
-				Services.PLATFORM.sendToPlayer(context.player(), type == 0 ? LeaderboardManager.cachedQuestsBoard : LeaderboardManager.cachedRewardsBoard);
+				Services.PLATFORM.sendToPlayer(context.player(), LeaderboardManager.getBoardForPlayer(context.server(), context.player(), type));
 			});
 		});
 

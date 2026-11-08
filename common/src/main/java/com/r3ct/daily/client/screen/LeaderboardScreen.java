@@ -227,54 +227,20 @@ public class LeaderboardScreen extends Screen {
     private void renderColumn(GuiGraphicsExtractor guiGraphics, List<TopEntry> rawList, int startX, int startY, int mouseX, int mouseY, boolean isLeftColumn, int scrollOffset) {
         String myName = getClientPlayerName();
         TopEntry myEntry = null;
-        int myRank = -1;
+        int myRank = 0;
 
         int top100Count = getTop100Count(rawList, isLeftColumn);
-        int[] ranks = new int[top100Count];
 
-        int currentRank = 1;
-        int previousScore = -1;
-
-        for (int i = 0; i < rawList.size(); i++) {
-            TopEntry entry = rawList.get(i);
-            int score = getScore(entry, isLeftColumn);
-
-            if (i < top100Count) {
-                if (i > 0 && score < previousScore) {
-                    currentRank++;
-                }
-                previousScore = score;
-                ranks[i] = currentRank;
-
-                if (!myName.isEmpty() && entry.name().equalsIgnoreCase(myName)) {
-                    myEntry = entry;
-                    myRank = currentRank;
-                }
-            } else {
-                if (!myName.isEmpty() && entry.name().equalsIgnoreCase(myName)) {
-                    myEntry = entry;
-                }
+        for (TopEntry entry : rawList) {
+            if (!myName.isEmpty() && entry.name().equalsIgnoreCase(myName)) {
+                myEntry = entry;
+                myRank = entry.rank();
+                break;
             }
         }
 
         if (myEntry == null) {
-            for (TopEntry e : this.leftList) {
-                if (e.name().equalsIgnoreCase(myName)) {
-                    myEntry = e;
-                    break;
-                }
-            }
-        }
-        if (myEntry == null) {
-            for (TopEntry e : this.rightList) {
-                if (e.name().equalsIgnoreCase(myName)) {
-                    myEntry = e;
-                    break;
-                }
-            }
-        }
-        if (myEntry == null) {
-            myEntry = new TopEntry(myName.isEmpty() ? "-" : myName, 0, 0, 0, 0);
+            myEntry = new TopEntry(myName.isEmpty() ? "-" : myName, 0, 0, 0, 0, 0);
         }
 
         int maxScroll = Math.max(0, top100Count - VISIBLE_ROWS);
@@ -285,11 +251,11 @@ public class LeaderboardScreen extends Screen {
             if (dataIdx >= top100Count) break;
 
             TopEntry entry = rawList.get(dataIdx);
-            int rank = ranks[dataIdx];
+            int rank = entry.rank();
             int score = getScore(entry, isLeftColumn);
             int rowY = startY + (visIdx * ROW_STEP);
 
-            drawLeaderboardRow(guiGraphics, entry, String.valueOf(rank) + ".", rank, score, startX, rowY, mouseX, mouseY, dataIdx, false);
+            drawLeaderboardRow(guiGraphics, entry, rank + ".", rank, score, startX, rowY, mouseX, mouseY, dataIdx, false);
         }
 
         int scrollbarX = startX + ROW_WIDTH + 3;
