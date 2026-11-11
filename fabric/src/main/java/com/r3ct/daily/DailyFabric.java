@@ -78,7 +78,7 @@ public class DailyFabric implements ModInitializer {
 				}
 
 				FriendlyByteBuf outBuf = PacketByteBufs.create();
-				LeaderboardResponsePayload res = type == 0 ? LeaderboardManager.cachedQuestsBoard : LeaderboardManager.cachedRewardsBoard;
+				LeaderboardResponsePayload res = LeaderboardManager.getBoardForPlayer(server, player, type);
 				res.write(outBuf);
 				Services.PLATFORM.sendToPlayer(player, LeaderboardResponsePayload.ID, outBuf);
 			});

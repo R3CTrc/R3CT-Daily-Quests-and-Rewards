@@ -29,8 +29,11 @@ public class RewardScreen extends Screen {
     private final PlayerData data;
     private final OpenRewardsPayload payload;
 
-    private final int imageWidth = 330;
+    private final int imageWidth = 344;
     private final int imageHeight = 200;
+
+    private static final int COMPARTMENT_WIDTH = 46;
+    private static final int BAY_OFFSET_X = 11;
 
     private static float animatedStreak = 0.0f;
     private static float animatedCollected = 0.0f;
@@ -43,6 +46,11 @@ public class RewardScreen extends Screen {
 
     private String getCurrentQuestDateString() {
         return LocalDateTime.now().minusHours(payload.questRefreshHour()).toLocalDate().toString();
+    }
+
+    private int getSlotX(int leftPos, int dayIndex) {
+        int compartmentLeft = leftPos + BAY_OFFSET_X + (dayIndex - 1) * COMPARTMENT_WIDTH;
+        return compartmentLeft + (COMPARTMENT_WIDTH / 2) - 9;
     }
 
     @Override
@@ -61,38 +69,38 @@ public class RewardScreen extends Screen {
 
         int leftPos = (this.width - imageWidth) / 2;
         int topPos = (this.height - imageHeight) / 2;
+        int midX = leftPos + (imageWidth / 2);
+        long time = System.currentTimeMillis();
 
-        guiGraphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, 0xFF000000);
-        guiGraphics.fill(leftPos + 2, topPos + 2, leftPos + imageWidth - 2, topPos + imageHeight - 2, 0xFFC6C6C6);
-        guiGraphics.fill(leftPos + 2, topPos + 2, leftPos + imageWidth - 2, topPos + 4, 0xFFFFFFFF);
-        guiGraphics.fill(leftPos + 2, topPos + 2, leftPos + 4, topPos + imageHeight - 2, 0xFFFFFFFF);
-        guiGraphics.fill(leftPos + imageWidth - 4, topPos + 2, leftPos + imageWidth - 2, topPos + imageHeight - 2, 0xFF555555);
-        guiGraphics.fill(leftPos + 2, topPos + imageHeight - 4, leftPos + imageWidth - 2, topPos + imageHeight - 2, 0xFF555555);
+        drawTreasureChestCoffer(guiGraphics, leftPos, topPos);
 
         String headerText = "§l" + Component.translatable("r3ct_daily.rewards.header.rewards").getString();
-        guiGraphics.drawString(this.font, headerText, (this.width / 2) - (this.font.width(headerText) / 2), topPos + 12, 0xFF404040, false);
-
-        guiGraphics.fill(leftPos + 12, topPos + 30, leftPos + imageWidth - 12, topPos + 90, 0xFF8B8B8B);
+        int headerW = this.font.width(headerText);
+        int plaqueLeft = midX - (headerW / 2) - 12;
+        int plaqueRight = midX + (headerW / 2) + 12;
+        guiGraphics.fill(plaqueLeft, topPos + 7, plaqueRight, topPos + 23, 0xFF2B170C);
+        guiGraphics.fill(plaqueLeft + 1, topPos + 8, plaqueRight - 1, topPos + 22, 0xFFD4AF37);
+        guiGraphics.fill(plaqueLeft + 2, topPos + 9, plaqueRight - 2, topPos + 21, 0xFFF7E4BE);
+        guiGraphics.drawString(this.font, headerText, midX - (headerW / 2), topPos + 11, 0xFF3E2723, false);
 
         int hoveredDay = -1;
         String dzisiajData = getCurrentQuestDateString();
         boolean juzDzisiajOdebrane = dzisiajData.equals(data.lastRewardDate);
 
         for (int i = 1; i <= 7; i++) {
-            int slotX = leftPos + 27 + (i - 1) * 43;
+            int slotX = getSlotX(leftPos, i);
             int slotY = topPos + 43;
 
             boolean czyOdebrane = juzDzisiajOdebrane ? ((data.rewardDay == 1) || (i < data.rewardDay)) : (i < data.rewardDay);
             boolean czyMoznaOdebrac = (i == data.rewardDay) && !juzDzisiajOdebrane;
+            boolean slotHovered = isMouseOverSlot(mouseX, mouseY, slotX, slotY);
 
-            guiGraphics.fill(slotX, slotY, slotX + 18, slotY + 18, czyMoznaOdebrac ? 0xFFFFAA00 : 0xFF8B8B8B);
-            guiGraphics.fill(slotX, slotY, slotX + 17, slotY + 1, 0xFF373737);
-            guiGraphics.fill(slotX, slotY, slotX + 1, slotY + 17, 0xFF373737);
-            guiGraphics.fill(slotX + 1, slotY + 17, slotX + 18, slotY + 18, 0xFFFFFFFF);
-            guiGraphics.fill(slotX + 17, slotY + 1, slotX + 18, slotY + 18, 0xFFFFFFFF);
+            String dayTxt = Component.translatable("r3ct_daily.rewards.day", i).getString();
+            int dayTextWidth = this.font.width(dayTxt);
 
-            if (isMouseOverSlot(mouseX, mouseY, slotX, slotY)) {
-                guiGraphics.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0x80FFFFFF);
+            drawDayPedestalSlot(guiGraphics, slotX, slotY, i, dayTextWidth, czyOdebrane, czyMoznaOdebrac, slotHovered, time);
+
+            if (slotHovered) {
                 hoveredDay = i;
             }
 
@@ -106,27 +114,30 @@ public class RewardScreen extends Screen {
 
             int kolorTekstu;
             if (czyOdebrane) {
-                kolorTekstu = 0xFF707070;
+                kolorTekstu = 0xFF887A7A;
             } else {
                 if (i <= 4) kolorTekstu = 0xFFFFFF55;
                 else if (i <= 6) kolorTekstu = 0xFF55FFFF;
                 else kolorTekstu = 0xFFFF55FF;
             }
 
-            String dayTxt = Component.translatable("r3ct_daily.rewards.day", i).getString();
-            guiGraphics.drawString(this.font, dayTxt, (slotX + 9) - (this.font.width(dayTxt) / 2), slotY + 25, kolorTekstu, true);
+            guiGraphics.drawString(this.font, dayTxt, (slotX + 9) - (dayTextWidth / 2), slotY + 24, kolorTekstu, true);
 
             if (czyMoznaOdebrac) {
                 String arrow = "▲";
-                guiGraphics.drawString(this.font, arrow, (slotX + 9) - (this.font.width(arrow) / 2), slotY + 37, 0xFF55FF55, true);
+                int arrowColor = (time % 1000 < 500) ? 0xFF55FF55 : 0xFFFFAA00;
+                guiGraphics.drawString(this.font, arrow, (slotX + 9) - (this.font.width(arrow) / 2), slotY + 37, arrowColor, true);
             }
 
-            if (czyOdebrane) guiGraphics.drawString(this.font, "§a✔", slotX + 11, slotY + 11, 0xFFFFFFFF, true);
+            if (czyOdebrane) {
+                guiGraphics.drawString(this.font, "§a✔", slotX + 11, slotY + 11, 0xFFFFFFFF, true);
+            }
         }
 
         int barY = topPos + 140;
-        int bar1X = leftPos + 18;
         int bWidth = 135;
+        int bar1X = leftPos + 21;
+        int bar2X = midX + 16;
 
         int targetStreak = Math.min(data.streak, 7);
         animatedStreak += (targetStreak - animatedStreak) * 0.1f;
@@ -152,8 +163,6 @@ public class RewardScreen extends Screen {
         animatedCollected += (displayCollected - animatedCollected) * 0.1f;
         if (Math.abs(displayCollected - animatedCollected) < 0.05f) animatedCollected = displayCollected;
 
-        int bar2X = leftPos + 173;
-
         String lblBonus = Component.translatable("r3ct_daily.rewards.bar.bonus").getString();
         String valBonus = "§d" + displayCollected + "§0/21";
         GuiUtils.drawRewardStyleBar(guiGraphics, this.font, bar2X, barY, animatedCollected, 21, lblBonus, valBonus, 0xFFFF55FF, bWidth, 1, new int[]{});
@@ -170,14 +179,17 @@ public class RewardScreen extends Screen {
 
         guiGraphics.drawString(this.font, arrowText, arrowX, arrowY, color, true);
 
-        int trophyX = leftPos + imageWidth - 24;
-        int trophyY = topPos + 6;
-        boolean trophyHover = mouseX >= trophyX && mouseX <= trophyX + 16 && mouseY >= trophyY && mouseY <= trophyY + 16;
+        int bayRightEdge = leftPos + imageWidth - BAY_OFFSET_X + 1;
+        int trophyX = bayRightEdge - 18;
+        int trophyY = topPos + 7;
+        boolean trophyHover = mouseX >= trophyX - 2 && mouseX <= trophyX + 18 && mouseY >= trophyY - 1 && mouseY <= trophyY + 17;
 
-        if (trophyHover) guiGraphics.fill(trophyX - 2, trophyY - 2, trophyX + 18, trophyY + 18, 0x44FFFFFF);
+        guiGraphics.fill(trophyX - 2, trophyY - 1, trophyX + 18, trophyY + 17, 0xFF2B170C);
+        guiGraphics.fill(trophyX - 1, trophyY, trophyX + 17, trophyY + 16, trophyHover ? 0xFFFFE066 : 0xFFD4AF37);
+        guiGraphics.fill(trophyX, trophyY + 1, trophyX + 16, trophyY + 15, 0xFF4A2E1B);
+        if (trophyHover) guiGraphics.fill(trophyX, trophyY + 1, trophyX + 16, trophyY + 15, 0x44FFFFFF);
         guiGraphics.renderItem(new ItemStack(Items.MOJANG_BANNER_PATTERN), trophyX, trophyY);
 
-        int midX = leftPos + (imageWidth / 2);
         String backText = Component.translatable("r3ct_daily.quests.button.close").getString();
         int backWidth = this.font.width(backText);
         int backX = midX - (backWidth / 2);
@@ -210,7 +222,6 @@ public class RewardScreen extends Screen {
 
         String[] titles = new String[3];
         String[] rewards = new String[3];
-        String[] amountsStr = new String[3];
 
         for (int i = 0; i < 3; i++) {
             String rewardColor = mr[i].getFormattedColor();
@@ -218,17 +229,14 @@ public class RewardScreen extends Screen {
             titles[i] = rewardColor + "§l" + Component.translatable("r3ct_daily.rewards.tooltip.bonus.title", thresholds[i]).getString();
             ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
             rewards[i] = "§f" + rewLabel + " " + rewardColor + mr[i].amount + "x " + stack.getHoverName().getString();
-            amountsStr[i] = rewardColor + "x" + mr[i].amount;
         }
 
         for (int i = 0; i < 3; i++) {
             int t = thresholds[i];
             int mX = (t == 21) ? (bar2X + bWidth - 1) : (bar2X + (int)(t * (bWidth / 21.0)));
-            int totalW = 18 + this.font.width(amountsStr[i]);
-            int startX = mX - totalW / 2;
             int startY = barY + 24;
 
-            if (mouseX >= startX - 2 && mouseX <= startX + totalW + 2 && mouseY >= startY - 2 && mouseY <= startY + 18) {
+            if (mouseX >= mX - 11 && mouseX <= mX + 11 && mouseY >= startY - 3 && mouseY <= startY + 19) {
                 renderSimpleTooltip(guiGraphics, titles[i], rewards[i], mouseX, mouseY);
             }
         }
@@ -244,6 +252,129 @@ public class RewardScreen extends Screen {
         guiGraphics.pose().popPose();
     }
 
+    private void drawTreasureChestCoffer(GuiGraphics g, int leftPos, int topPos) {
+        int rightPos = leftPos + imageWidth;
+        int bottomPos = topPos + imageHeight;
+        int midX = leftPos + (imageWidth / 2);
+
+        g.fill(leftPos - 3, topPos - 3, rightPos + 3, bottomPos + 3, 0xFF1A0E07);
+        g.fill(leftPos - 2, topPos - 2, rightPos + 2, bottomPos + 2, 0xFF4A2816);
+
+        g.fill(leftPos + 2, topPos + 2, rightPos - 2, bottomPos - 2, 0xFF9E7B22);
+        g.fill(leftPos + 3, topPos + 3, rightPos - 3, bottomPos - 3, 0xFF3B2012);
+
+        int bayLeft = leftPos + BAY_OFFSET_X;
+        int bayTop = topPos + 28;
+        int bayRight = rightPos - BAY_OFFSET_X;
+        int bayBottom = topPos + 92;
+
+        g.fill(bayLeft - 1, bayTop - 1, bayRight + 1, bayBottom + 1, 0xFFD4AF37);
+        g.fill(bayLeft, bayTop, bayRight, bayBottom, 0xFF2D1219);
+
+        for (int i = 1; i < 7; i++) {
+            int seamX = bayLeft + i * COMPARTMENT_WIDTH;
+            g.fill(seamX - 1, bayTop + 2, seamX, bayBottom - 2, 0xFF210B10);
+            g.fill(seamX, bayTop + 2, seamX + 1, bayBottom - 2, 0xFF3B1821);
+        }
+
+        g.fill(bayLeft, bayTop, bayRight, bayTop + 3, 0x77000000);
+        g.fill(bayLeft, bayTop, bayLeft + 3, bayBottom, 0x55000000);
+        g.fill(bayLeft, bayBottom - 2, bayRight, bayBottom, 0x44000000);
+        g.fill(bayRight - 2, bayTop, bayRight, bayBottom, 0x44000000);
+
+        int beamY = topPos + 95;
+        g.fill(leftPos - 2, beamY, rightPos + 2, beamY + 7, 0xFF241209);
+        g.fill(leftPos, beamY + 1, rightPos, beamY + 6, 0xFF5A321C);
+        g.fill(leftPos, beamY + 1, rightPos, beamY + 2, 0xFFB8860B);
+        g.fill(leftPos, beamY + 5, rightPos, beamY + 6, 0xFF8C6D1F);
+
+        int lowerLeft = leftPos + 6;
+        int lowerTop = topPos + 104;
+        int lowerRight = rightPos - 6;
+        int lowerBottom = bottomPos - 5;
+
+        g.fill(lowerLeft - 1, lowerTop - 1, lowerRight + 1, lowerBottom + 1, 0xFFA68B65);
+        g.fill(lowerLeft, lowerTop, lowerRight, lowerBottom, 0xFFF2E0C4);
+        g.fill(lowerLeft + 2, lowerTop + 2, lowerRight - 2, lowerBottom - 2, 0xFFF7E9D2);
+
+        g.fill(midX - 1, lowerTop + 4, midX, lowerBottom - 4, 0xFFB89B72);
+        g.fill(midX, lowerTop + 4, midX + 1, lowerBottom - 4, 0xFFFFF5E4);
+
+        g.fill(midX - 11, beamY - 3, midX + 11, beamY + 11, 0x55000000);
+        g.fill(midX - 10, beamY - 4, midX + 10, beamY + 10, 0xFF7A5914);
+        g.fill(midX - 9, beamY - 3, midX + 9, beamY + 9, 0xFFD4AF37);
+        g.fill(midX - 8, beamY - 2, midX + 8, beamY - 1, 0xFFFFE885);
+
+        g.fill(midX - 2, beamY + 1, midX + 2, beamY + 4, 0xFF241209);
+        g.fill(midX - 1, beamY + 4, midX + 1, beamY + 7, 0xFF241209);
+
+        drawGoldCorner(g, leftPos - 3, topPos - 3, true, true);
+        drawGoldCorner(g, rightPos - 7, topPos - 3, false, true);
+        drawGoldCorner(g, leftPos - 3, bottomPos - 7, true, false);
+        drawGoldCorner(g, rightPos - 7, bottomPos - 7, false, false);
+    }
+
+    private void drawGoldCorner(GuiGraphics g, int x, int y, boolean left, boolean top) {
+        int goldDark = 0xFF8C6D1F;
+        int goldBright = 0xFFE6C259;
+        int rivet = 0xFFFFF2B2;
+
+        int hY = top ? y : y + 6;
+        g.fill(x, hY, x + 10, hY + 4, goldDark);
+        g.fill(x + 1, hY + 1, x + 9, hY + 2, goldBright);
+
+        int vX = left ? x : x + 6;
+        g.fill(vX, y, vX + 4, y + 10, goldDark);
+        g.fill(vX + 1, y + 1, vX + 2, y + 9, goldBright);
+
+        g.fill(vX + 1, hY + 1, vX + 3, hY + 3, rivet);
+    }
+
+    private void drawDayPedestalSlot(GuiGraphics g, int slotX, int slotY, int day, int textWidth, boolean czyOdebrane, boolean czyMoznaOdebrac, boolean isHovered, long time) {
+        int centerX = slotX + 9;
+        int plaqueHalfW = Math.max(20, (textWidth / 2) + 4);
+        int plaqueLeft = centerX - plaqueHalfW;
+        int plaqueRight = centerX + plaqueHalfW;
+
+        g.fill(slotX - 2, slotY - 1, slotX + 20, slotY + 20, 0x44000000);
+        g.fill(plaqueLeft + 1, slotY + 22, plaqueRight + 1, slotY + 36, 0x44000000);
+
+        int trimColor;
+        if (czyOdebrane) {
+            trimColor = 0xFF4A3B3E;
+        } else if (day <= 4) {
+            trimColor = 0xFFA87948;
+        } else if (day <= 6) {
+            trimColor = 0xFF48A0B8;
+        } else {
+            trimColor = 0xFFC85AD4;
+        }
+
+        if (czyMoznaOdebrac) {
+            int pulseAlpha = (int) (130 + 80 * Math.sin(time / 160.0));
+            int glow = (pulseAlpha << 24) | 0xFFAA00;
+            g.fill(slotX - 3, slotY - 3, slotX + 21, slotY + 21, glow);
+            trimColor = 0xFFFFD700;
+        }
+
+        g.fill(plaqueLeft, slotY + 21, plaqueRight, slotY + 35, 0xFF1A090D);
+        g.fill(plaqueLeft + 1, slotY + 22, plaqueRight - 1, slotY + 34, czyOdebrane ? 0xFF2B1A1E : 0xFF3E1923);
+        g.fill(plaqueLeft + 1, slotY + 22, plaqueRight - 1, slotY + 23, trimColor);
+
+        g.fill(slotX - 1, slotY - 1, slotX + 19, slotY + 19, 0xFF1A090D);
+        g.fill(slotX, slotY, slotX + 18, slotY + 18, trimColor);
+
+        int innerColor = czyOdebrane ? 0xFF1F1719 : (czyMoznaOdebrac ? 0xFF4A3210 : 0xFF26121A);
+        g.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, innerColor);
+
+        g.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 2, 0x55000000);
+        g.fill(slotX + 1, slotY + 1, slotX + 2, slotY + 17, 0x55000000);
+
+        if (isHovered) {
+            g.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0x55FFFFFF);
+        }
+    }
+
     private void renderBonusMilestones(GuiGraphics g, int x, int y, int bWidth, int mouseX, int mouseY) {
         int[] thresholds = {7, 14, 21};
         DailyServerConfig.MilestoneReward[] mr = {
@@ -253,15 +384,11 @@ public class RewardScreen extends Screen {
         };
 
         ItemStack[] icons = new ItemStack[3];
-        String[] amounts = new String[3];
-
         for (int i = 0; i < 3; i++) {
             icons[i] = QuestManager.getMilestoneRewardStack(mr[i]);
-            amounts[i] = mr[i].getFormattedColor() + "x" + mr[i].amount;
         }
 
         long time = System.currentTimeMillis();
-
         int cycle = RewardManager.getActiveBonusCycle(data);
 
         for (int i = 0; i < 3; i++) {
@@ -276,37 +403,64 @@ public class RewardScreen extends Screen {
             String txtDay = "§8" + t;
             g.drawString(this.font, txtDay, mX - (this.font.width(String.valueOf(t)) / 2), y + 12, 0xFFFFFFFF, false);
 
-            int totalW = 18 + this.font.width(amounts[i]);
-            int startX = mX - totalW / 2;
             int startY = y + 24;
+            int boxLeft = mX - 11;
+            int boxRight = mX + 11;
 
-            boolean hovered = mouseX >= startX - 2 && mouseX <= startX + totalW + 2 && mouseY >= startY - 2 && mouseY <= startY + 18;
+            boolean hovered = mouseX >= boxLeft && mouseX <= boxRight && mouseY >= startY - 3 && mouseY <= startY + 19;
 
             if (claimed) {
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, 0x44000000);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, 0x33000000);
             } else if (canClaim) {
                 int color = hovered ? 0x66FFFF00 : 0x44FFFF00;
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, color);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, color);
             } else if (hovered) {
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, 0x22000000);
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, 0x22000000);
             }
 
-            g.renderItem(icons[i], startX, startY);
-            g.drawString(this.font, amounts[i], startX + 18, startY + 4, 0xFF000000, false);
+            drawStackedItemPile(g, icons[i], mX, startY, mr[i].amount);
 
             if (claimed) {
                 g.pose().pushPose();
                 g.pose().translate(0, 0, 0f);
-                g.drawString(this.font, "§a✔", startX + 10, startY + 8, 0xFFFFFFFF, true);
+                g.drawString(this.font, "§a✔", mX + 3, startY + 9, 0xFFFFFFFF, true);
                 g.pose().popPose();
             } else if (canClaim) {
                 g.pose().pushPose();
-                g.pose().translate(mX, startY + 22, 0f);
+                g.pose().translate(mX, startY + 21, 0f);
                 g.pose().scale(1.5f, 1.5f, 1f);
                 String arrow = (time % 1000 < 500) ? "§e↑" : "§6↑";
                 g.drawString(this.font, arrow, -this.font.width("↑") / 2, 0, 0xFF000000, true);
                 g.pose().popPose();
             }
+        }
+    }
+
+    private int getVisualPileCount(int amount) {
+        if (amount <= 1) return 1;
+        if (amount <= 8) return 2;
+        if (amount <= 16) return 3;
+        return 4;
+    }
+
+    private void drawStackedItemPile(GuiGraphics g, ItemStack stack, int centerX, int y, int amount) {
+        int count = getVisualPileCount(amount);
+        int baseX = centerX - 8;
+
+        if (count == 1) {
+            g.renderItem(stack, baseX, y);
+        } else if (count == 2) {
+            g.renderItem(stack, baseX - 3, y - 2);
+            g.renderItem(stack, baseX + 3, y + 1);
+        } else if (count == 3) {
+            g.renderItem(stack, baseX - 4, y - 2);
+            g.renderItem(stack, baseX + 4, y - 2);
+            g.renderItem(stack, baseX, y + 2);
+        } else {
+            g.renderItem(stack, baseX, y - 4);
+            g.renderItem(stack, baseX - 5, y - 1);
+            g.renderItem(stack, baseX + 5, y - 1);
+            g.renderItem(stack, baseX, y + 2);
         }
     }
 
@@ -437,11 +591,13 @@ public class RewardScreen extends Screen {
 
             int leftPos = (this.width - imageWidth) / 2;
             int topPos = (this.height - imageHeight) / 2;
+            int midX = leftPos + (imageWidth / 2);
 
-            int trophyX = leftPos + imageWidth - 24;
-            int trophyY = topPos + 6;
+            int bayRightEdge = leftPos + imageWidth - BAY_OFFSET_X + 1;
+            int trophyX = bayRightEdge - 18;
+            int trophyY = topPos + 7;
 
-            if (mX >= trophyX && mX <= trophyX + 16 && mY >= trophyY && mY <= trophyY + 16) {
+            if (mX >= trophyX - 2 && mX <= trophyX + 18 && mY >= trophyY - 1 && mY <= trophyY + 17) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
@@ -468,7 +624,7 @@ public class RewardScreen extends Screen {
             boolean juzDzisiajOdebrane = dzisiajData.equals(data.lastRewardDate);
 
             for (int i = 1; i <= 7; i++) {
-                int slotX = leftPos + 27 + (i - 1) * 43;
+                int slotX = getSlotX(leftPos, i);
                 int slotY = topPos + 43;
 
                 if (isMouseOverSlot(mX, mY, slotX, slotY) && i == data.rewardDay && !juzDzisiajOdebrane) {
@@ -481,24 +637,17 @@ public class RewardScreen extends Screen {
             }
 
             int barY = topPos + 140;
-            int bar2X = leftPos + 173;
+            int bar2X = midX + 16;
             int bWidth = 135;
             int[] thresholds = {7, 14, 21};
-            DailyServerConfig.MilestoneReward[] mr = {
-                    DailyServerConfig.bonuses.bonus_7,
-                    DailyServerConfig.bonuses.bonus_14,
-                    DailyServerConfig.bonuses.bonus_21
-            };
             int cycle = RewardManager.getActiveBonusCycle(data);
+
             for (int i = 0; i < 3; i++) {
                 int t = thresholds[i];
-                String amountsStr = mr[i].getFormattedColor() + "x" + mr[i].amount;
                 int mX_bonus = (t == 21) ? (bar2X + bWidth - 1) : (bar2X + (int)(t * (bWidth / 21.0)));
-                int totalW = 18 + this.font.width(amountsStr);
-                int startX = mX_bonus - totalW / 2;
                 int startY = barY + 24;
 
-                if (mX >= startX - 2 && mX <= startX + totalW + 2 && mY >= startY - 2 && mY <= startY + 18) {
+                if (mX >= mX_bonus - 11 && mX <= mX_bonus + 11 && mY >= startY - 3 && mY <= startY + 19) {
                     int absTarget = cycle * 21 + t;
                     boolean canClaim = data.totalCollected >= absTarget && !data.claimedBonusRewards.contains(absTarget);
 
@@ -512,7 +661,6 @@ public class RewardScreen extends Screen {
                 }
             }
 
-            int midX = leftPos + (imageWidth / 2);
             String backText = Component.translatable("r3ct_daily.quests.button.close").getString();
             int backWidth = this.font.width(backText);
             int backX = midX - (backWidth / 2);
