@@ -2,15 +2,16 @@ package com.r3ct.daily.data;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-public record TopEntry(String name, int totalQuests, int maxQuestStreak, int totalRewards, int maxRewardStreak) {
+public record TopEntry(String name, int totalQuests, int maxQuestStreak, int totalRewards, int maxRewardStreak, int rank) {
     public static void write(FriendlyByteBuf buf, TopEntry entry) {
         buf.writeUtf(entry.name());
         buf.writeInt(entry.totalQuests());
         buf.writeInt(entry.maxQuestStreak());
         buf.writeInt(entry.totalRewards());
         buf.writeInt(entry.maxRewardStreak());
+        buf.writeInt(entry.rank());
     }
     public static TopEntry read(FriendlyByteBuf buf) {
-        return new TopEntry(buf.readUtf(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt());
+        return new TopEntry(buf.readUtf(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt());
     }
 }
