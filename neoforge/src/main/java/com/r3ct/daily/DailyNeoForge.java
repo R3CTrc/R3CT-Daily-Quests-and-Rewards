@@ -88,7 +88,7 @@ public class DailyNeoForge {
                         LeaderboardManager.updateLeaderboardCache(player.level().getServer());
                         LeaderboardManager.lastLeaderboardUpdateTick = currentTick;
                     }
-                    Services.PLATFORM.sendToPlayer(player, type == 0 ? LeaderboardManager.cachedQuestsBoard : LeaderboardManager.cachedRewardsBoard);
+                    Services.PLATFORM.sendToPlayer(player, LeaderboardManager.getBoardForPlayer(player.level().getServer(), player, type));
                 }
             });
         });
