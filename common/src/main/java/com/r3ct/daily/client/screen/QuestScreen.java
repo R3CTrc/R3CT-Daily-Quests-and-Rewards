@@ -39,6 +39,7 @@ public class QuestScreen extends Screen {
     private final int bookHeight = 340;
 
     private static final int STAR_COLUMN_WIDTH = 11;
+    private static final int[] CARD_X_OFFSETS = {-2, 3, -3, 2, -1};
 
     private static float animatedDaily = 0.0f;
     private static float animatedStreak = 0.0f;
@@ -50,10 +51,20 @@ public class QuestScreen extends Screen {
         this.payload = payload;
     }
 
+    private int getCardLeft(int leftPos, int index) {
+        int offset = (index >= 0 && index < CARD_X_OFFSETS.length) ? CARD_X_OFFSETS[index] : 0;
+        return leftPos + 16 + offset;
+    }
+
+    private int getCardRight(int midX, int index) {
+        int offset = (index >= 0 && index < CARD_X_OFFSETS.length) ? CARD_X_OFFSETS[index] : 0;
+        return midX - 4 + offset;
+    }
+
     @Override
     public void render(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 
-        float scale = DailyServerConfig.mechanics != null ? DailyClientConfig.getInstance().questScreenScale : 1.0f;
+        float scale = DailyClientConfig.getInstance().questScreenScale;
 
         mouseX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
         mouseY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
@@ -67,14 +78,12 @@ public class QuestScreen extends Screen {
         int topPos = (this.height - bookHeight) / 2;
         int midX = leftPos + (bookWidth / 2);
 
-        guiGraphics.fill(leftPos - 3, topPos - 3, leftPos + bookWidth + 3, topPos + bookHeight + 3, 0xFF3E2723);
-        guiGraphics.fill(leftPos, topPos, midX - 1, topPos + bookHeight, 0xFFF5DEB3);
-        guiGraphics.fill(midX + 1, topPos, leftPos + bookWidth, topPos + bookHeight, 0xFFF5DEB3);
-        guiGraphics.fill(midX - 1, topPos, midX + 1, topPos + bookHeight, 0xFF8D6E63);
+        drawMedievalNoticeBoard(guiGraphics, leftPos, topPos);
 
-        int leftTextX = leftPos + 20;
-        guiGraphics.drawString(this.font, "§0§l" + Component.translatable("r3ct_daily.quests.header.daily_quests").getString(), leftTextX, topPos + 20, 0xFF000000, false);
-        guiGraphics.fill(leftTextX, topPos + 33, midX - 20, topPos + 34, 0xFF8D6E63);
+        drawLeftHeaderPlaque(guiGraphics, leftPos + 22, topPos + 12, midX - 10, topPos + 34);
+        String leftHeaderTitle = "§0§l" + Component.translatable("r3ct_daily.quests.header.daily_quests").getString();
+        int leftPlaqueCenterX = (leftPos + 22 + midX - 10) / 2;
+        guiGraphics.drawString(this.font, leftHeaderTitle, leftPlaqueCenterX - (this.font.width(leftHeaderTitle) / 2), topPos + 19, 0xFF000000, false);
 
         int hoveredQuestIndex = -1;
         int hoveredRerollIndex = -1;
@@ -95,38 +104,29 @@ public class QuestScreen extends Screen {
             String name = (locName != null && !locName.isEmpty()) ? locName.toUpperCase() : locDesc.split(" ")[0].toUpperCase();
             int qY = topPos + 45 + (i * 55);
 
-            if ((done && !claimed) || canSubmit) {
-                int alpha = (int) (127 + 60 * Math.sin(time / 150.0));
-                int rgb = (done && !claimed) ? 0x00AA00 : 0x00AAFF;
-                int glowColor = (alpha << 24) | rgb;
-                guiGraphics.fill(leftTextX - 2, qY - 3, midX - 12, qY + 45, glowColor);
-            }
+            int cardLeft = getCardLeft(leftPos, i);
+            int cardRight = getCardRight(midX, i);
+            int cardTop = qY - 4;
+            int cardBottom = qY + 45;
+            int leftTextX = cardLeft + 6;
 
             int btnSize = 14;
-            int btnX = midX - 30;
-            int btnY = qY + 22;
-            boolean isBtnHovered = false;
+            int btnX = cardRight - 18;
+            int btnY = qY + 23;
+            boolean isBtnHovered = !done && payload.enableQuestRerolling()
+                    && mouseX >= btnX && mouseX <= btnX + btnSize
+                    && mouseY >= btnY && mouseY <= btnY + btnSize;
+
+            boolean isCardHovered = mouseX >= cardLeft && mouseX <= cardRight
+                    && mouseY >= cardTop && mouseY <= cardBottom && !isBtnHovered;
+
+            if (isBtnHovered) hoveredRerollIndex = i;
+            if (isCardHovered) hoveredQuestIndex = i;
+
+            drawQuestNoteCard(guiGraphics, cardLeft, cardTop, cardRight, cardBottom, i, q.difficulty, done, claimed, canSubmit, isCardHovered, time);
 
             if (!done && payload.enableQuestRerolling()) {
-                isBtnHovered = mouseX >= btnX && mouseX <= btnX + btnSize && mouseY >= btnY && mouseY <= btnY + btnSize;
-                if (isBtnHovered) hoveredRerollIndex = i;
-
-                int btnBorder = isBtnHovered ? 0xFFFFFFFF : 0xFF555555;
-                int btnFill = isBtnHovered ? 0xFF555555 : 0xFF333333;
-
-                guiGraphics.fill(btnX, btnY, btnX + btnSize, btnY + btnSize, btnBorder);
-                guiGraphics.fill(btnX + 1, btnY + 1, btnX + btnSize - 1, btnY + btnSize - 1, btnFill);
-
-                String arrow = "⇄";
-                int arrowColor = isBtnHovered ? 0xFFFFFFFF : 0xFFAAAAAA;
-                guiGraphics.drawCenteredString(this.font, arrow, btnX + btnSize / 2, btnY + 4, arrowColor);
-            }
-
-            if (mouseX >= leftTextX && mouseX <= midX - 10 && mouseY >= qY - 2 && mouseY <= qY + 45) {
-                if (!isBtnHovered) {
-                    hoveredQuestIndex = i;
-                    guiGraphics.fill(leftTextX - 2, qY - 3, midX - 12, qY + 45, 0x20000000);
-                }
+                drawRerollSealButton(guiGraphics, btnX, btnY, btnSize, isBtnHovered);
             }
 
             String diffIndicator = (q.difficulty == 0) ? "§2★" : (q.difficulty == 1 ? "§6★" : "§4★");
@@ -139,28 +139,32 @@ public class QuestScreen extends Screen {
                 } else {
                     mark = "§c" + Component.translatable("r3ct_daily.quests.status.incomplete").getString();
                 }
+            } else if (claimed) {
+                mark = "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString();
+            } else {
+                mark = (time % 1000 < 500) ? "§e" + Component.translatable("r3ct_daily.quests.status.claim").getString() : "§6" + Component.translatable("r3ct_daily.quests.status.claim").getString();
             }
-            else if (claimed) mark = "§a" + Component.translatable("r3ct_daily.quests.status.claimed").getString();
-            else mark = (time % 1000 < 500) ? "§e" + Component.translatable("r3ct_daily.quests.status.claim").getString() : "§6" + Component.translatable("r3ct_daily.quests.status.claim").getString();
 
             int markWidth = this.font.width(mark);
-            int markX = midX - markWidth - 15;
+            int markX = cardRight - markWidth - 5;
 
             int titleStartX = leftTextX + STAR_COLUMN_WIDTH;
             int maxTitleWidth = markX - titleStartX - 5;
 
             String displayName = name;
             if (this.font.width(displayName) > maxTitleWidth) {
-                displayName = this.font.plainSubstrByWidth(displayName, maxTitleWidth - this.font.width("...")) + "...";
+                displayName = this.font.plainSubstrByWidth(displayName, Math.max(0, maxTitleWidth - this.font.width("..."))) + "...";
             }
 
-            guiGraphics.drawString(this.font, diffIndicator, leftTextX, qY, titleColor, false);
-            guiGraphics.drawString(this.font, "§0" + displayName, titleStartX, qY, titleColor, false);
-            guiGraphics.drawString(this.font, mark, markX, qY, 0xFF000000, false);
+            guiGraphics.drawString(this.font, diffIndicator, leftTextX, qY + 1, titleColor, false);
+            guiGraphics.drawString(this.font, "§0" + displayName, titleStartX, qY + 1, titleColor, false);
+            guiGraphics.drawString(this.font, mark, markX, qY + 1, 0xFF000000, false);
 
-            int color = done ? 0xFF555555 : (q.difficulty == 0 ? 0xFF00AA00 : (q.difficulty == 1 ? 0xFFFFAA00 : 0xFFAA0000));
+            guiGraphics.fill(leftTextX, qY + 10, cardRight - 5, qY + 11, 0x338D6E63);
+
+            int color = done ? 0xFF555555 : (q.difficulty == 0 ? 0xFF008800 : (q.difficulty == 1 ? 0xFFD97700 : 0xFFAA0000));
             String progressText = " (" + progress + "/" + q.requiredAmount + ")";
-            int maxTextWidth = (midX - 45) - (leftTextX + STAR_COLUMN_WIDTH);
+            int maxTextWidth = (cardRight - 35) - (leftTextX + STAR_COLUMN_WIDTH);
 
             String displayDesc = locDesc;
             List<FormattedCharSequence> lines = this.font.split(Component.literal(displayDesc + progressText), maxTextWidth);
@@ -179,15 +183,21 @@ public class QuestScreen extends Screen {
             }
 
             for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-                guiGraphics.drawString(this.font, lines.get(lineIdx), leftTextX + STAR_COLUMN_WIDTH, qY + 11 + (lineIdx * 10), color, false);
+                guiGraphics.drawString(this.font, lines.get(lineIdx), leftTextX + STAR_COLUMN_WIDTH, qY + 13 + (lineIdx * 10), color, false);
             }
         }
 
-        int rightTextX = midX + 25;
+        int rightSheetLeft = midX + 14;
+        int rightSheetRight = leftPos + bookWidth - 18;
+        int rightSheetTop = topPos + 22;
+        int rightSheetBottom = topPos + bookHeight - 18;
+        drawRightHangingScroll(guiGraphics, rightSheetLeft, rightSheetTop, rightSheetRight, rightSheetBottom, topPos);
+
+        int rightTextX = midX + 26;
         int barW = 160;
 
-        guiGraphics.drawString(this.font, "§0§l" + Component.translatable("r3ct_daily.quests.header.progress").getString(), rightTextX, topPos + 20, 0xFF000000, false);
-        guiGraphics.fill(rightTextX, topPos + 33, leftPos + bookWidth - 25, topPos + 34, 0xFF8D6E63);
+        guiGraphics.drawString(this.font, "§0§l" + Component.translatable("r3ct_daily.quests.header.progress").getString(), rightTextX, topPos + 32, 0xFF000000, false);
+        guiGraphics.fill(rightTextX, topPos + 44, rightSheetRight - 12, topPos + 45, 0xFF8D6E63);
 
         int dailyY = topPos + 80;
         int targetDaily = Math.min(data.dailyQuestsCompletedToday, 3);
@@ -207,7 +217,7 @@ public class QuestScreen extends Screen {
         int streakBarColor = (targetStreak < 3) ? 0xFF006400 : (targetStreak < 7 ? 0xFFFFAA00 : 0xFFFF5555);
         GuiUtils.drawRewardStyleBar(guiGraphics, this.font, rightTextX, streakY, animatedStreak, 7, Component.translatable("r3ct_daily.quests.bar.streak").getString(), streakText, streakBarColor, barW, 1, new int[]{});
 
-        String qMultiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.questStreak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : Component.translatable("r3ct_daily.gui.inactive").getString());
+        String qMultiText = "§8" + Component.translatable("r3ct_daily.gui.streak_bonus").getString() + (data.questStreak >= 7 ? "§a" + Component.translatable("r3ct_daily.gui.active").getString() : "§8" + Component.translatable("r3ct_daily.gui.inactive").getString());
         guiGraphics.drawString(this.font, qMultiText, rightTextX, streakY + 14, 0xFF000000, false);
 
         int maxQuestShields = payload.maxStoredQuestShields();
@@ -233,11 +243,14 @@ public class QuestScreen extends Screen {
         int arrColor = isHovered ? 0xFFFFFFFF : 0xFFAAAAAA;
         guiGraphics.drawString(this.font, arrowText, arrowX, arrowY, arrColor, true);
 
-        int trophyX = leftPos + bookWidth - 18;
-        int trophyY = topPos + 2;
-        boolean trophyHover = mouseX >= trophyX && mouseX <= trophyX + 16 && mouseY >= trophyY && mouseY <= trophyY + 16;
+        int signX = leftPos + bookWidth - 42;
+        int signY = topPos - 25;
+        int trophyX = signX + 2;
+        int trophyY = signY + 3;
 
-        if (trophyHover) guiGraphics.fill(trophyX - 2, trophyY - 2, trophyX + 18, trophyY + 18, 0x44000000);
+        boolean trophyHover = mouseX >= signX && mouseX <= signX + 20 && mouseY >= signY && mouseY <= signY + 25;
+
+        drawLeaderboardSign(guiGraphics, signX, signY, trophyHover);
         guiGraphics.renderItem(new ItemStack(Items.MOJANG_BANNER_PATTERN), trophyX, trophyY);
 
         String backText = Component.translatable("r3ct_daily.quests.button.close").getString();
@@ -294,7 +307,6 @@ public class QuestScreen extends Screen {
 
         String[] tooltips = new String[4];
         String[] rewards = new String[4];
-        String[] amountsStr = new String[4];
 
         for (int i = 0; i < 4; i++) {
             String color = mr[i].getFormattedColor();
@@ -303,16 +315,13 @@ public class QuestScreen extends Screen {
 
             ItemStack stack = QuestManager.getMilestoneRewardStack(mr[i]);
             rewards[i] = "§f" + rewLabel + " " + color + mr[i].amount + "x " + stack.getHoverName().getString();
-            amountsStr[i] = color + "x" + mr[i].amount;
         }
 
         for (int i = 0; i < 4; i++) {
             int mX = rightTextX + (int)(thresholds[i] / 200.0 * (barW - 2));
-            int totalW = 18 + this.font.width(amountsStr[i]);
-            int startX = mX - totalW / 2;
             int startY = lifeY + 28;
 
-            if (mouseX >= startX - 2 && mouseX <= startX + totalW + 2 && mouseY >= startY - 2 && mouseY <= startY + 18) {
+            if (mouseX >= mX - 11 && mouseX <= mX + 11 && mouseY >= startY - 3 && mouseY <= startY + 19) {
                 renderSimpleTooltip(guiGraphics, tooltips[i], rewards[i], mouseX, mouseY);
             }
         }
@@ -332,6 +341,232 @@ public class QuestScreen extends Screen {
         guiGraphics.pose().popMatrix();
     }
 
+    private void drawRerollSealButton(GuiGraphics g, int x, int y, int size, boolean isHovered) {
+        int ribbonColor = isHovered ? 0xFFB71C1C : 0xFF8E1B1B;
+        g.fill(x + 3, y + size - 1, x + 5, y + size + 2, ribbonColor);
+        g.fill(x + size - 5, y + size - 1, x + size - 3, y + size + 2, ribbonColor);
+
+        g.fill(x + 2, y + 2, x + size - 1, y + size, 0x3A000000);
+        g.fill(x + 1, y + 3, x + size, y + size - 1, 0x3A000000);
+
+        int outerRim = isHovered ? 0xFF7A5216 : 0xFF5C3D18;
+        int ringHighlight = isHovered ? 0xFFFFE57F : 0xFFD4A349;
+        int innerRecess = isHovered ? 0xFFC68A2E : 0xFF966827;
+        int innerShadow = isHovered ? 0xFF8C5B14 : 0xFF6B4716;
+        int iconColor = isHovered ? 0xFFFFFFFF : 0xFFFFF3D1;
+
+        g.fill(x + 2, y, x + size - 2, y + size, outerRim);
+        g.fill(x, y + 2, x + size, y + size - 2, outerRim);
+        g.fill(x + 1, y + 1, x + size - 1, y + size - 1, outerRim);
+
+        g.fill(x + 2, y + 1, x + size - 2, y + size - 1, ringHighlight);
+        g.fill(x + 1, y + 2, x + size - 1, y + size - 2, ringHighlight);
+
+        g.fill(x + 3, y + 2, x + size - 3, y + size - 2, innerRecess);
+        g.fill(x + 2, y + 3, x + size - 2, y + size - 3, innerRecess);
+        g.fill(x + 3, y + 2, x + size - 3, y + 3, innerShadow);
+
+        String arrow = "⇄";
+        int textX = x + (size - this.font.width(arrow)) / 2 + 1;
+        int textY = y + 3;
+        g.drawString(this.font, arrow, textX, textY + 1, outerRim, false);
+        g.drawString(this.font, arrow, textX, textY, iconColor, false);
+    }
+
+    private void drawMedievalNoticeBoard(GuiGraphics g, int leftPos, int topPos) {
+        int rightPos = leftPos + bookWidth;
+        int bottomPos = topPos + bookHeight;
+
+        drawSupportPost(g, leftPos - 8, topPos - 10, leftPos + 6, bottomPos + 10);
+        drawSupportPost(g, rightPos - 6, topPos - 10, rightPos + 8, bottomPos + 10);
+
+        int innerLeft = leftPos + 6;
+        int innerTop = topPos + 5;
+        int innerRight = rightPos - 6;
+        int innerBottom = bottomPos - 5;
+
+        g.fill(innerLeft - 1, innerTop - 1, innerRight + 1, innerBottom + 1, 0xFF1E1008);
+
+        int[] plankColors = {0xFF5D3A22, 0xFF54331D, 0xFF633E24, 0xFF4E2F1A};
+        int plankHeight = 28;
+        int plankIdx = 0;
+
+        for (int py = innerTop; py < innerBottom; py += plankHeight) {
+            int pBottom = Math.min(py + plankHeight, innerBottom);
+            int baseColor = plankColors[plankIdx % plankColors.length];
+
+            g.fill(innerLeft, py, innerRight, pBottom, baseColor);
+
+            g.fill(innerLeft, py, innerRight, py + 1, 0xFF72492C);
+            g.fill(innerLeft, pBottom - 1, innerRight, pBottom, 0xFF2B180C);
+
+            int grainY = py + (plankHeight / 2);
+            if (grainY < pBottom - 2) {
+                int grainStart = innerLeft + ((plankIdx * 53) % 90);
+                int grainEnd = grainStart + 70 + ((plankIdx * 31) % 80);
+                g.fill(grainStart, grainY, Math.min(grainEnd, innerRight - 10), grainY + 1, 0x332B180C);
+            }
+
+            int joint1 = innerLeft + 75 + ((plankIdx * 97) % 140);
+            int joint2 = innerLeft + 240 + ((plankIdx * 67) % 150);
+            g.fill(joint1, py, joint1 + 1, pBottom, 0xFF2B180C);
+            g.fill(joint1 + 1, py + 1, joint1 + 2, pBottom - 1, 0xFF6E472B);
+            if (joint2 < innerRight - 20) {
+                g.fill(joint2, py, joint2 + 1, pBottom, 0xFF2B180C);
+                g.fill(joint2 + 1, py + 1, joint2 + 2, pBottom - 1, 0xFF6E472B);
+            }
+
+            plankIdx++;
+        }
+
+        g.fill(innerLeft, innerTop, innerRight, innerTop + 6, 0x66000000);
+        g.fill(innerLeft, innerTop, innerLeft + 4, innerBottom, 0x55000000);
+        g.fill(innerRight - 4, innerTop, innerRight, innerBottom, 0x55000000);
+        g.fill(innerLeft, innerBottom - 3, innerRight, innerBottom, 0x44000000);
+
+        g.fill(leftPos - 12, topPos - 7, rightPos + 12, topPos + 6, 0xFF1A0E07);
+        g.fill(leftPos - 11, topPos - 6, rightPos + 11, topPos + 5, 0xFF3E2414);
+        g.fill(leftPos - 11, topPos - 6, rightPos + 11, topPos - 3, 0xFF59351F);
+        g.fill(leftPos - 11, topPos + 3, rightPos + 11, topPos + 5, 0xFF28160C);
+
+        g.fill(leftPos - 9, bottomPos - 5, rightPos + 9, bottomPos + 5, 0xFF1A0E07);
+        g.fill(leftPos - 8, bottomPos - 4, rightPos + 8, bottomPos + 4, 0xFF3E2414);
+        g.fill(leftPos - 8, bottomPos - 4, rightPos + 8, bottomPos - 2, 0xFF59351F);
+
+        drawIronStrap(g, leftPos - 8, topPos + 10, 14);
+        drawIronStrap(g, rightPos - 6, topPos + 10, 14);
+        drawIronStrap(g, leftPos - 8, bottomPos - 15, 14);
+        drawIronStrap(g, rightPos - 6, bottomPos - 15, 14);
+    }
+
+    private void drawSupportPost(GuiGraphics g, int x1, int y1, int x2, int y2) {
+        g.fill(x1, y1, x2, y2, 0xFF180D06);
+        g.fill(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0xFF3A2112);
+        g.fill(x1 + 2, y1 + 1, x1 + 4, y2 - 1, 0xFF52301B);
+        g.fill(x2 - 3, y1 + 1, x2 - 1, y2 - 1, 0xFF26150B);
+
+        g.fill(x1, y1, x2, y1 + 3, 0xFF3B3F46);
+        g.fill(x1 + 1, y1 + 1, x2 - 1, y1 + 2, 0xFF686E78);
+    }
+
+    private void drawIronStrap(GuiGraphics g, int x, int y, int width) {
+        g.fill(x, y, x + width, y + 5, 0xFF26292E);
+        g.fill(x + 1, y + 1, x + width - 1, y + 4, 0xFF484D56);
+        g.fill(x + 1, y + 1, x + width - 1, y + 2, 0xFF6B7280);
+
+        g.fill(x + 2, y + 2, x + 4, y + 4, 0xFFAAB2BD);
+        g.fill(x + width - 4, y + 2, x + width - 2, y + 4, 0xFFAAB2BD);
+    }
+
+    private void drawLeftHeaderPlaque(GuiGraphics g, int x1, int y1, int x2, int y2) {
+        g.fill(x1 + 2, y1 + 2, x2 + 2, y2 + 2, 0x66000000);
+
+        g.fill(x1 - 2, y1 - 1, x2 + 2, y2 + 1, 0xFF2B170C);
+        g.fill(x1 - 1, y1, x2 + 1, y2, 0xFF4A2B18);
+
+        g.fill(x1 + 2, y1 + 1, x2 - 2, y2 - 1, 0xFFE6CEAA);
+        g.fill(x1 + 3, y1 + 2, x2 - 3, y1 + 3, 0xFFF7E7C8);
+
+        int midY = (y1 + y2) / 2;
+        g.fill(x1 + 5, midY - 1, x1 + 7, midY + 1, 0xFF3B3F46);
+        g.fill(x2 - 7, midY - 1, x2 - 5, midY + 1, 0xFF3B3F46);
+    }
+
+    private void drawQuestNoteCard(GuiGraphics g, int x1, int y1, int x2, int y2, int index, int difficulty, boolean done, boolean claimed, boolean canSubmit, boolean isHovered, long time) {
+        g.fill(x1 + 3, y1 + 3, x2 + 3, y2 + 3, 0x70000000);
+
+        int borderColor = claimed ? 0xFF7D6852 : 0xFFA88B63;
+        int paperColor = claimed ? 0xFFD4C09E : ((index % 2 == 0) ? 0xFFF5E4C0 : 0xFFEEDBB4);
+        int paperHighlight = claimed ? 0xFFE0CEAE : 0xFFFFF3D9;
+
+        g.fill(x1, y1, x2, y2, borderColor);
+        g.fill(x1 + 1, y1 + 1, x2 - 1, y2 - 1, paperColor);
+        g.fill(x1 + 1, y1 + 1, x2 - 1, y1 + 2, paperHighlight);
+
+        g.fill(x2 - 5, y2 - 5, x2, y2, 0xFF4A2E1B);
+        g.fill(x2 - 5, y2 - 5, x2 - 1, y2 - 1, 0xFFC7AF87);
+
+        if ((done && !claimed) || canSubmit) {
+            int alpha = (int) (95 + 50 * Math.sin(time / 150.0));
+            int rgb = (done && !claimed) ? 0x00AA00 : 0x00AAFF;
+            int glowColor = (alpha << 24) | rgb;
+            g.fill(x1 + 1, y1 + 1, x2 - 1, y2 - 1, glowColor);
+        }
+
+        if (isHovered) {
+            g.fill(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0x1A000000);
+            g.fill(x1, y1, x2, y1 + 1, 0xFFFFFFFF);
+            g.fill(x1, y2 - 1, x2, y2, 0xFFFFFFFF);
+            g.fill(x1, y1, x1 + 1, y2, 0xFFFFFFFF);
+            g.fill(x2 - 1, y1, x2, y2, 0xFFFFFFFF);
+        }
+
+        int nailOffset = (index % 2 == 0) ? -6 : 6;
+        int pinX = (x1 + x2) / 2 + nailOffset;
+        int pinY = y1 - 2;
+        g.fill(pinX + 1, pinY + 1, pinX + 5, pinY + 5, 0x66000000);
+        g.fill(pinX, pinY, pinX + 4, pinY + 4, 0xFF3B3F46);
+        g.fill(pinX + 1, pinY + 1, pinX + 3, pinY + 2, 0xFF9EA6B2);
+
+        int sealColor = (difficulty == 0) ? 0xFF2E7D32 : (difficulty == 1 ? 0xFFD97706 : 0xFFB91C1C);
+        g.fill(x1 - 1, y1 + 4, x1 + 3, y1 + 12, sealColor);
+    }
+
+    private void drawLeaderboardSign(GuiGraphics g, int x, int y, boolean isHovered) {
+        g.fill(x, y, x + 20, y + 25, 0xFF1A0E07);
+        g.fill(x + 1, y + 1, x + 19, y + 24, 0xFF4A2B18);
+        g.fill(x + 2, y + 2, x + 18, y + 23, 0xFF633E24);
+        g.fill(x + 2, y + 2, x + 18, y + 3, 0xFF754B2E);
+
+        if (isHovered) {
+            g.fill(x + 2, y + 2, x + 18, y + 23, 0x22FFFFFF);
+        }
+
+        g.fill(x + 3, y + 20, x + 5, y + 22, 0xFF26292E);
+        g.fill(x + 4, y + 21, x + 5, y + 22, 0xFF6B7280);
+
+        g.fill(x + 15, y + 20, x + 17, y + 22, 0xFF26292E);
+        g.fill(x + 16, y + 21, x + 17, y + 22, 0xFF6B7280);
+    }
+
+    private void drawRightHangingScroll(GuiGraphics g, int x1, int y1, int x2, int y2, int topPos) {
+        int centerX = (x1 + x2) / 2;
+
+        int nailY = y1 - 12;
+        for (int step = 0; step < 8; step++) {
+            g.fill(centerX - (step * 4), nailY + step + 2, centerX - (step * 4) + 2, nailY + step + 3, 0xFF8C7355);
+            g.fill(centerX + (step * 4), nailY + step + 2, centerX + (step * 4) + 2, nailY + step + 3, 0xFF8C7355);
+        }
+        g.fill(centerX - 2, nailY, centerX + 3, nailY + 4, 0xFF26292E);
+        g.fill(centerX - 1, nailY + 1, centerX + 2, nailY + 2, 0xFF9EA6B2);
+
+        g.fill(x1 + 4, y1 + 3, x2 + 5, y2 + 6, 0x77000000);
+
+        g.fill(x1, y1, x2, y2, 0xFF9E825C);
+        g.fill(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0xFFF2DCBA);
+        g.fill(x1 + 3, y1 + 3, x2 - 3, y2 - 3, 0x338D6E63);
+        g.fill(x1 + 4, y1 + 4, x2 - 4, y2 - 4, 0xFFF7E6C6);
+
+        drawScrollRoller(g, x1 - 5, y1 - 4, x2 + 5, y1 + 3);
+        drawScrollRoller(g, x1 - 5, y2 - 2, x2 + 5, y2 + 5);
+
+        int divLeft = x1 + 12;
+        int divRight = x2 - 12;
+        g.fill(divLeft, topPos + 122, divRight, topPos + 123, 0x448D6E63);
+        g.fill(divLeft, topPos + 212, divRight, topPos + 213, 0x448D6E63);
+    }
+
+    private void drawScrollRoller(GuiGraphics g, int x1, int y1, int x2, int y2) {
+        g.fill(x1 + 2, y1 + 2, x2 + 2, y2 + 2, 0x55000000);
+        g.fill(x1 + 4, y1, x2 - 4, y2, 0xFF2B170C);
+        g.fill(x1 + 5, y1 + 1, x2 - 5, y2 - 1, 0xFF52301B);
+        g.fill(x1 + 5, y1 + 1, x2 - 5, y1 + 2, 0xFF70452A);
+        g.fill(x1, y1 - 1, x1 + 6, y2 + 1, 0xFF7A5914);
+        g.fill(x1 + 1, y1, x1 + 5, y2, 0xFFD4AF37);
+        g.fill(x2 - 6, y1 - 1, x2, y2 + 1, 0xFF7A5914);
+        g.fill(x2 - 5, y1, x2 - 1, y2, 0xFFD4AF37);
+    }
+
     private void renderPointMilestones(GuiGraphics g, int x, int y, int bWidth, int mouseX, int mouseY) {
         int[] thresholds = {50, 100, 150, 200};
         DailyServerConfig.MilestoneReward[] rewards = {
@@ -342,11 +577,8 @@ public class QuestScreen extends Screen {
         };
 
         ItemStack[] icons = new ItemStack[4];
-        String[] amounts = new String[4];
-
         for (int i = 0; i < 4; i++) {
             icons[i] = QuestManager.getMilestoneRewardStack(rewards[i]);
-            amounts[i] = rewards[i].getFormattedColor() + "x" + rewards[i].amount;
         }
 
         long time = System.currentTimeMillis();
@@ -357,32 +589,64 @@ public class QuestScreen extends Screen {
             boolean canClaim = data.totalQuestPoints >= t && !data.claimedPointRewards.contains(t);
             boolean claimed = data.claimedPointRewards.contains(t);
 
-            int totalW = 18 + this.font.width(amounts[i]);
-            int startX = mX - totalW / 2;
             int startY = y + 28;
+            int boxLeft = mX - 11;
+            int boxRight = mX + 11;
 
-            boolean hovered = mouseX >= startX - 2 && mouseX <= startX + totalW + 2 && mouseY >= startY - 2 && mouseY <= startY + 18;
+            boolean hovered = mouseX >= boxLeft && mouseX <= boxRight && mouseY >= startY - 3 && mouseY <= startY + 19;
 
-            if (hovered) {
-                g.fill(startX - 2, startY - 2, startX + totalW + 2, startY + 18, 0x44000000);
+            if (claimed) {
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, 0x33000000);
+            } else if (canClaim) {
+                int color = hovered ? 0x66FFFF00 : 0x44FFFF00;
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, color);
+            } else if (hovered) {
+                g.fill(boxLeft, startY - 3, boxRight, startY + 19, 0x22000000);
             }
 
-            g.renderItem(icons[i], startX, startY);
-            g.drawString(this.font, amounts[i], startX + 18, startY + 4, 0xFF000000, false);
+            drawStackedItemPile(g, icons[i], mX, startY, rewards[i].amount);
 
             if (claimed) {
                 g.pose().pushMatrix();
                 g.pose().translate(0, 0);
-                g.drawString(this.font, "§a✔", startX + 10, startY + 8, 0xFFFFFFFF, true);
+                g.drawString(this.font, "§a✔", mX + 3, startY + 9, 0xFFFFFFFF, true);
                 g.pose().popMatrix();
             } else if (canClaim) {
                 g.pose().pushMatrix();
-                g.pose().translate(mX, startY + 22);
+                g.pose().translate(mX, startY + 21);
                 g.pose().scale(1.5f, 1.5f);
                 String arrow = (time % 1000 < 500) ? "§e↑" : "§6↑";
                 g.drawString(this.font, arrow, -this.font.width("↑") / 2, 0, 0xFF000000, true);
                 g.pose().popMatrix();
             }
+        }
+    }
+
+    private int getVisualPileCount(int amount) {
+        if (amount <= 1) return 1;
+        if (amount <= 8) return 2;
+        if (amount <= 16) return 3;
+        return 4;
+    }
+
+    private void drawStackedItemPile(GuiGraphics g, ItemStack stack, int centerX, int y, int amount) {
+        int count = getVisualPileCount(amount);
+        int baseX = centerX - 8;
+
+        if (count == 1) {
+            g.renderItem(stack, baseX, y);
+        } else if (count == 2) {
+            g.renderItem(stack, baseX - 3, y - 2);
+            g.renderItem(stack, baseX + 3, y + 1);
+        } else if (count == 3) {
+            g.renderItem(stack, baseX - 4, y - 2);
+            g.renderItem(stack, baseX + 4, y - 2);
+            g.renderItem(stack, baseX, y + 2);
+        } else {
+            g.renderItem(stack, baseX, y - 4);
+            g.renderItem(stack, baseX - 5, y - 1);
+            g.renderItem(stack, baseX + 5, y - 1);
+            g.renderItem(stack, baseX, y + 2);
         }
     }
 
@@ -398,10 +662,10 @@ public class QuestScreen extends Screen {
             int topPos = (this.height - bookHeight) / 2;
             int midX = leftPos + (bookWidth / 2);
 
-            int trophyX = leftPos + bookWidth - 18;
-            int trophyY = topPos + 2;
+            int signX = leftPos + bookWidth - 42;
+            int signY = topPos - 25;
 
-            if (mX >= trophyX && mX <= trophyX + 16 && mY >= trophyY && mY <= trophyY + 16) {
+            if (mX >= signX && mX <= signX + 20 && mY >= signY && mY <= signY + 25) {
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     Services.PLATFORM.sendToServer(new RequestLeaderboardPayload(0));
@@ -409,19 +673,21 @@ public class QuestScreen extends Screen {
                 }
             }
 
-            int leftTextX = leftPos + 20;
             for (int i = 0; i < data.activeQuests.size(); i++) {
                 int qY = topPos + 45 + (i * 55);
                 Quest q = QuestManager.getQuestById(data.activeQuests.get(i));
                 if (q == null) continue;
+
+                int cardLeft = getCardLeft(leftPos, i);
+                int cardRight = getCardRight(midX, i);
 
                 int currentProgress = data.questProgress.get(i);
                 boolean done = currentProgress >= q.requiredAmount;
                 boolean claimed = data.questRewardsClaimed.size() > i && data.questRewardsClaimed.get(i);
 
                 int btnSize = 14;
-                int btnX = midX - 30;
-                int btnY = qY + 22;
+                int btnX = cardRight - 18;
+                int btnY = qY + 23;
 
                 if (!done && payload.enableQuestRerolling() && mX >= btnX && mX <= btnX + btnSize && mY >= btnY && mY <= btnY + btnSize) {
                     if (this.minecraft != null && this.minecraft.player != null) {
@@ -430,7 +696,7 @@ public class QuestScreen extends Screen {
                     }
                 }
 
-                if (mX >= leftTextX && mX <= midX - 10 && mY >= qY - 2 && mY <= qY + 45) {
+                if (mX >= cardLeft && mX <= cardRight && mY >= qY - 4 && mY <= qY + 45) {
                     if (done && !claimed) {
                         if (this.minecraft != null && this.minecraft.player != null) {
                             this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
@@ -449,28 +715,17 @@ public class QuestScreen extends Screen {
                 }
             }
 
-            int rightTextX = midX + 25;
+            int rightTextX = midX + 26;
             int barW = 160;
             int lifeY = topPos + 245;
             int[] thresholds = {50, 100, 150, 200};
 
-            DailyServerConfig.MilestoneReward[] mr = {
-                    DailyServerConfig.milestones.point_50,
-                    DailyServerConfig.milestones.point_100,
-                    DailyServerConfig.milestones.point_150,
-                    DailyServerConfig.milestones.point_200
-            };
-
             for (int i = 0; i < 4; i++) {
                 int t = thresholds[i];
-                String amountsStr = mr[i].getFormattedColor() + "x" + mr[i].amount;
-
                 int iconX = rightTextX + (int)(t / 200.0 * (barW - 2));
-                int totalW = 18 + this.font.width(amountsStr);
-                int startX = iconX - totalW / 2;
                 int startY = lifeY + 28;
 
-                if (mX >= startX - 2 && mX <= startX + totalW + 2 && mY >= startY - 2 && mY <= startY + 18) {
+                if (mX >= iconX - 11 && mX <= iconX + 11 && mY >= startY - 3 && mY <= startY + 19) {
                     boolean canClaim = data.totalQuestPoints >= t && !data.claimedPointRewards.contains(t);
                     if (canClaim) {
                         if (this.minecraft != null && this.minecraft.player != null) {
