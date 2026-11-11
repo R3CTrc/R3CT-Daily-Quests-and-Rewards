@@ -15,17 +15,27 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class LeaderboardScreen extends Screen {
+    private static final int MAX_TOP_PLAYERS = 100;
+    private static final int VISIBLE_ROWS = 10;
+    private static final int ROW_STEP = 18;
+    private static final int ROW_WIDTH = 166;
+
     private final int boardType;
     private final List<TopEntry> leftList;
     private final List<TopEntry> rightList;
 
-    private final int boardWidth = 400;
-    private final int boardHeight = 240;
+    private final int boardWidth = 412;
+    private final int boardHeight = 268;
     private TopEntry hoveredEntry = null;
+
+    private int leftScrollOffset = 0;
+    private int rightScrollOffset = 0;
+    private int draggingScrollbar = 0;
 
     public LeaderboardScreen(int boardType, List<TopEntry> leftList, List<TopEntry> rightList) {
         super(Component.translatable("r3ct_daily.leaderboard.title"));
@@ -34,8 +44,33 @@ public class LeaderboardScreen extends Screen {
         this.rightList = rightList;
     }
 
+    private int getScore(TopEntry entry, boolean isLeftColumn) {
+        if (this.boardType == 0 && isLeftColumn) return entry.totalQuests();
+        if (this.boardType == 0) return entry.maxQuestStreak();
+        if (this.boardType == 1 && isLeftColumn) return entry.totalRewards();
+        return entry.maxRewardStreak();
+    }
+
+    private int getTop100Count(List<TopEntry> rawList, boolean isLeftColumn) {
+        int count = 0;
+        for (int i = 0; i < rawList.size() && count < MAX_TOP_PLAYERS; i++) {
+            if (getScore(rawList.get(i), isLeftColumn) > 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private String getClientPlayerName() {
+        if (this.minecraft != null && this.minecraft.player != null) {
+            return this.minecraft.player.getGameProfile().getName();
+        }
+        return "";
+    }
+
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         float scale = DailyClientConfig.getInstance().leaderboardScreenScale;
 
@@ -51,23 +86,20 @@ public class LeaderboardScreen extends Screen {
         int topPos = (this.height - boardHeight) / 2;
         int midX = leftPos + (boardWidth / 2);
 
-        guiGraphics.fill(leftPos, topPos, leftPos + boardWidth, topPos + boardHeight, 0xFF000000);
-        guiGraphics.fill(leftPos + 2, topPos + 2, leftPos + boardWidth - 2, topPos + boardHeight - 2, 0xFF333333);
-        guiGraphics.fill(leftPos + 2, topPos + 2, leftPos + boardWidth - 2, topPos + 25, 0xFF1A1A1A);
-        guiGraphics.fill(midX - 1, topPos + 25, midX + 1, topPos + boardHeight - 2, 0xFF1A1A1A);
+        drawHallOfFameBoard(guiGraphics, leftPos, topPos, midX);
 
         String title = "§6§l" + Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.title.quests" : "r3ct_daily.leaderboard.title.rewards").getString();
-        guiGraphics.drawCenteredString(this.font, title, midX, topPos + 8, 0xFFFFFFFF);
+        guiGraphics.drawCenteredString(this.font, title, midX, topPos + 9, 0xFFFFFFFF);
 
         String leftTitle = "§f" + Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.left.quests" : "r3ct_daily.leaderboard.left.rewards").getString();
         String rightTitle = "§f" + Component.translatable("r3ct_daily.leaderboard.right.streak").getString();
 
-        guiGraphics.drawCenteredString(this.font, leftTitle, leftPos + (boardWidth / 4), topPos + 32, 0xFFFFFFFF);
-        guiGraphics.drawCenteredString(this.font, rightTitle, leftPos + (3 * boardWidth / 4), topPos + 32, 0xFFFFFFFF);
+        guiGraphics.drawCenteredString(this.font, leftTitle, leftPos + (boardWidth / 4) + 1, topPos + 33, 0xFFFFFFFF);
+        guiGraphics.drawCenteredString(this.font, rightTitle, leftPos + (3 * boardWidth / 4) - 1, topPos + 33, 0xFFFFFFFF);
 
         hoveredEntry = null;
-        renderList(guiGraphics, leftList, leftPos + 15, topPos + 50, mouseX, mouseY);
-        renderList(guiGraphics, rightList, midX + 15, topPos + 50, mouseX, mouseY);
+        renderColumn(guiGraphics, leftList, leftPos + 14, topPos + 52, mouseX, mouseY, true, leftScrollOffset);
+        renderColumn(guiGraphics, rightList, midX + 12, topPos + 52, mouseX, mouseY, false, rightScrollOffset);
 
         String switchText = Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.button.rewards_next" : "r3ct_daily.leaderboard.button.quests_prev").getString();
         int switchWidth = this.font.width(switchText);
@@ -86,8 +118,6 @@ public class LeaderboardScreen extends Screen {
         boolean backHover = mouseX >= backX - 2 && mouseX <= backX + backWidth + 2 && mouseY >= backY - 2 && mouseY <= backY + 10;
         int backColor = backHover ? 0xFFFF5555 : 0xFFAAAAAA;
         guiGraphics.drawString(this.font, backText, backX, backY, backColor, true);
-
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (hoveredEntry != null) {
             java.util.List<Component> tt = new java.util.ArrayList<>();
@@ -115,6 +145,260 @@ public class LeaderboardScreen extends Screen {
         guiGraphics.pose().popPose();
     }
 
+    private void drawHallOfFameBoard(GuiGraphics g, int leftPos, int topPos, int midX) {
+        int rightPos = leftPos + boardWidth;
+        int bottomPos = topPos + boardHeight;
+
+        g.fill(leftPos - 3, topPos - 3, rightPos + 3, bottomPos + 3, 0xFF1A0E07);
+        g.fill(leftPos - 2, topPos - 2, rightPos + 2, bottomPos + 2, 0xFF4A2B18);
+        g.fill(leftPos - 2, topPos - 2, rightPos + 2, topPos - 1, 0xFF6B4226);
+        g.fill(leftPos + 2, topPos + 2, rightPos - 2, bottomPos - 2, 0xFFB8860B);
+        g.fill(leftPos + 3, topPos + 3, rightPos - 3, bottomPos - 3, 0xFF2B180D);
+
+        g.fill(leftPos + 6, topPos + 5, rightPos - 6, topPos + 22, 0xFF8C6D1F);
+        g.fill(leftPos + 7, topPos + 6, rightPos - 7, topPos + 21, 0xFF33131A);
+        g.fill(leftPos + 7, topPos + 6, rightPos - 7, topPos + 8, 0x55000000);
+
+        g.fill(leftPos + 12, topPos + 12, leftPos + 15, topPos + 15, 0xFFFFE066);
+        g.fill(rightPos - 15, topPos + 12, rightPos - 12, topPos + 15, 0xFFFFE066);
+
+        g.fill(leftPos + 2, topPos + 23, rightPos - 2, topPos + 26, 0xFF1E1008);
+        g.fill(leftPos + 3, topPos + 24, rightPos - 3, topPos + 25, 0xFF5A351E);
+
+        drawColumnBay(g, leftPos + 8, topPos + 28, midX - 5, bottomPos - 7);
+        drawColumnBay(g, midX + 5, topPos + 28, rightPos - 8, bottomPos - 7);
+
+        g.fill(midX - 4, topPos + 25, midX + 4, bottomPos - 3, 0xFF1E1008);
+        g.fill(midX - 3, topPos + 26, midX + 3, bottomPos - 4, 0xFF4A2B18);
+        g.fill(midX - 1, topPos + 28, midX + 1, bottomPos - 6, 0xFF9E7B22);
+
+        int medalY = topPos + 142;
+        g.fill(midX - 5, medalY - 5, midX + 5, medalY + 5, 0xFF241209);
+        g.fill(midX - 4, medalY - 4, midX + 4, medalY + 4, 0xFFD4AF37);
+        g.fill(midX - 2, medalY - 2, midX + 2, medalY + 2, 0xFFFFF2B2);
+
+        drawCornerBracket(g, leftPos - 3, topPos - 3, true, true);
+        drawCornerBracket(g, rightPos - 9, topPos - 3, false, true);
+        drawCornerBracket(g, leftPos - 3, bottomPos - 9, true, false);
+        drawCornerBracket(g, rightPos - 9, bottomPos - 9, false, false);
+    }
+
+    private void drawColumnBay(GuiGraphics g, int x1, int y1, int x2, int y2) {
+        g.fill(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 0xFF6E551C);
+        g.fill(x1, y1, x2, y2, 0xFF1D1418);
+
+        g.fill(x1 + 2, y1 + 2, x2 - 2, y1 + 18, 0xFF8C6D1F);
+        g.fill(x1 + 3, y1 + 3, x2 - 3, y1 + 17, 0xFF3A2218);
+        g.fill(x1 + 4, y1 + 4, x2 - 4, y1 + 5, 0xFF593728);
+        g.fill(x1 + 6, y1 + 9, x1 + 8, y1 + 11, 0xFFD4AF37);
+        g.fill(x2 - 8, y1 + 9, x2 - 6, y1 + 11, 0xFFD4AF37);
+
+        g.fill(x1, y1 + 19, x2, y1 + 22, 0x66000000);
+        g.fill(x1, y1 + 19, x1 + 2, y2, 0x44000000);
+        g.fill(x2 - 2, y1 + 19, x2, y2, 0x44000000);
+
+        int sepY = y1 + 207;
+        g.fill(x1 + 2, sepY - 1, x2 - 2, sepY + 3, 0x55000000);
+        g.fill(x1 + 3, sepY, x2 - 3, sepY + 1, 0xFF8C6D1F);
+        g.fill(x1 + 3, sepY + 1, x2 - 3, sepY + 2, 0xFF3A2218);
+    }
+
+    private void drawCornerBracket(GuiGraphics g, int x, int y, boolean left, boolean top) {
+        int goldDark = 0xFF8C6D1F;
+        int goldBright = 0xFFE6C259;
+        int rivet = 0xFFFFF2B2;
+
+        int hY = top ? y : y + 8;
+        g.fill(x, hY, x + 12, hY + 4, goldDark);
+        g.fill(x + 1, hY + 1, x + 11, hY + 2, goldBright);
+
+        int vX = left ? x : x + 8;
+        g.fill(vX, y, vX + 4, y + 12, goldDark);
+        g.fill(vX + 1, y + 1, vX + 2, y + 11, goldBright);
+
+        g.fill(vX + 1, hY + 1, vX + 3, hY + 3, rivet);
+    }
+
+    private void renderColumn(GuiGraphics guiGraphics, List<TopEntry> rawList, int startX, int startY, int mouseX, int mouseY, boolean isLeftColumn, int scrollOffset) {
+        String myName = getClientPlayerName();
+        TopEntry myEntry = null;
+        int myRank = 0;
+
+        int top100Count = getTop100Count(rawList, isLeftColumn);
+
+        for (TopEntry entry : rawList) {
+            if (!myName.isEmpty() && entry.name().equalsIgnoreCase(myName)) {
+                myEntry = entry;
+                myRank = entry.rank();
+                break;
+            }
+        }
+
+        if (myEntry == null) {
+            myEntry = new TopEntry(myName.isEmpty() ? "-" : myName, 0, 0, 0, 0, 0);
+        }
+
+        int maxScroll = Math.max(0, top100Count - VISIBLE_ROWS);
+        int clampedScroll = Math.max(0, Math.min(scrollOffset, maxScroll));
+
+        for (int visIdx = 0; visIdx < VISIBLE_ROWS; visIdx++) {
+            int dataIdx = clampedScroll + visIdx;
+            if (dataIdx >= top100Count) break;
+
+            TopEntry entry = rawList.get(dataIdx);
+            int rank = entry.rank();
+            int score = getScore(entry, isLeftColumn);
+            int rowY = startY + (visIdx * ROW_STEP);
+
+            drawLeaderboardRow(guiGraphics, entry, rank + ".", rank, score, startX, rowY, mouseX, mouseY, dataIdx, false);
+        }
+
+        int scrollbarX = startX + ROW_WIDTH + 3;
+        int trackTop = startY;
+        int trackHeight = (VISIBLE_ROWS * ROW_STEP) - 1;
+        drawScrollbar(guiGraphics, scrollbarX, trackTop, trackHeight, clampedScroll, maxScroll, top100Count, mouseX, mouseY);
+
+        int pinnedY = startY + (VISIBLE_ROWS * ROW_STEP) + 10;
+        String myRankLabel = (myRank > 0) ? (myRank + ".") : "-";
+        int myScore = getScore(myEntry, isLeftColumn);
+        drawLeaderboardRow(guiGraphics, myEntry, myRankLabel, -1, myScore, startX, pinnedY, mouseX, mouseY, 0, true);
+    }
+
+    private void drawLeaderboardRow(GuiGraphics guiGraphics, TopEntry entry, String rankLabel, int rank, int scoreToDisplay, int startX, int y, int mouseX, int mouseY, int stripeIdx, boolean isPinnedSelf) {
+        boolean isRowHovered = mouseX >= startX - 2 && mouseX <= startX + ROW_WIDTH && mouseY >= y && mouseY <= y + 16;
+        if (isRowHovered) {
+            hoveredEntry = entry;
+        }
+
+        int rowBorder;
+        int rowBg;
+        String nameColor;
+        String valColor;
+
+        if (isPinnedSelf) {
+            rowBorder = isRowHovered ? 0xFF88FFFF : 0xFF2E7D8C;
+            rowBg = 0xFF17282E;
+            nameColor = "§b§l";
+            valColor = "§b";
+        } else if (rank == 1) {
+            rowBorder = isRowHovered ? 0xFFFF6666 : 0xFFB71C1C;
+            rowBg = 0xFF331416;
+            nameColor = "§c§l";
+            valColor = "§c";
+        } else if (rank == 2) {
+            rowBorder = isRowHovered ? 0xFFFF88FF : 0xFF8E3A9E;
+            rowBg = 0xFF2D1934;
+            nameColor = "§d§l";
+            valColor = "§d";
+        } else if (rank == 3) {
+            rowBorder = isRowHovered ? 0xFFFFE57F : 0xFFA67C1E;
+            rowBg = 0xFF2E2416;
+            nameColor = "§e§l";
+            valColor = "§e";
+        } else {
+            rowBorder = isRowHovered ? 0xFF8D6E63 : 0xFF332428;
+            rowBg = (stripeIdx % 2 == 0) ? 0xFF251A1E : 0xFF20161A;
+            nameColor = "§7";
+            valColor = "§f";
+        }
+
+        guiGraphics.fill(startX - 2, y, startX + ROW_WIDTH, y + 17, rowBorder);
+        guiGraphics.fill(startX - 1, y + 1, startX + ROW_WIDTH - 1, y + 16, rowBg);
+
+        guiGraphics.fill(startX - 1, y + 1, startX + 17, y + 16, 0x44000000);
+        guiGraphics.fill(startX + 17, y + 1, startX + 18, y + 16, rowBorder);
+
+        if (isRowHovered) {
+            guiGraphics.fill(startX - 1, y + 1, startX + ROW_WIDTH - 1, y + 16, 0x22FFFFFF);
+        }
+
+        ItemStack head = new ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
+        head.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(entry.name()), Optional.empty(), new PropertyMap()));
+        guiGraphics.renderItem(head, startX, y);
+
+        String rankAndName = "§6" + rankLabel + " " + nameColor + entry.name();
+        String scoreTxt = valColor + scoreToDisplay;
+        int scoreWidth = this.font.width(scoreTxt);
+
+        int maxNameWidth = (ROW_WIDTH - 28) - scoreWidth;
+        if (this.font.width(rankAndName) > maxNameWidth && maxNameWidth > 15) {
+            rankAndName = this.font.plainSubstrByWidth(rankAndName, maxNameWidth - this.font.width("...")) + "...";
+        }
+
+        guiGraphics.drawString(this.font, rankAndName, startX + 21, y + 5, 0xFFFFFFFF, true);
+        guiGraphics.drawString(this.font, scoreTxt, startX + ROW_WIDTH - 5 - scoreWidth, y + 5, 0xFFFFFFFF, true);
+    }
+
+    private void drawScrollbar(GuiGraphics g, int x, int y, int height, int scrollOffset, int maxScroll, int totalCount, int mouseX, int mouseY) {
+        g.fill(x, y, x + 6, y + height, 0xFF120B0E);
+        g.fill(x + 1, y + 1, x + 5, y + height - 1, 0xFF261A1E);
+
+        if (maxScroll <= 0 || totalCount <= VISIBLE_ROWS) {
+            g.fill(x + 1, y + 1, x + 5, y + height - 1, 0xFF4A3525);
+            return;
+        }
+
+        int thumbHeight = Math.max(18, (int)((float) VISIBLE_ROWS / totalCount * (height - 2)));
+        int scrollableTrack = (height - 2) - thumbHeight;
+        int thumbY = y + 1 + (int)((float) scrollOffset / maxScroll * scrollableTrack);
+
+        boolean hovered = mouseX >= x && mouseX <= x + 6 && mouseY >= thumbY && mouseY <= thumbY + thumbHeight;
+        int thumbBorder = hovered ? 0xFFFFE066 : 0xFFB8860B;
+        int thumbFill = hovered ? 0xFFD4AF37 : 0xFF8C6D1F;
+
+        g.fill(x + 1, thumbY, x + 5, thumbY + thumbHeight, thumbBorder);
+        g.fill(x + 2, thumbY + 1, x + 4, thumbY + thumbHeight - 1, thumbFill);
+    }
+
+    private void updateScrollbarDrag(double rawMouseY, boolean isLeft) {
+        float scale = DailyClientConfig.getInstance().leaderboardScreenScale;
+        int mY = (int)((rawMouseY - this.height / 2f) / scale + this.height / 2f);
+        int topPos = (this.height - boardHeight) / 2;
+        int trackTop = topPos + 52;
+        int trackHeight = (VISIBLE_ROWS * ROW_STEP) - 1;
+
+        int top100Count = getTop100Count(isLeft ? leftList : rightList, isLeft);
+        int maxScroll = Math.max(0, top100Count - VISIBLE_ROWS);
+        if (maxScroll <= 0) return;
+
+        float ratio = (float)(mY - trackTop) / (float) trackHeight;
+        ratio = Math.max(0.0f, Math.min(1.0f, ratio));
+        int newScroll = Math.round(ratio * maxScroll);
+
+        if (isLeft) {
+            leftScrollOffset = newScroll;
+        } else {
+            rightScrollOffset = newScroll;
+        }
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrollY == 0) return false;
+
+        float scale = DailyClientConfig.getInstance().leaderboardScreenScale;
+        int mX = (int)((mouseX - this.width / 2f) / scale + this.width / 2f);
+        int mY = (int)((mouseY - this.height / 2f) / scale + this.height / 2f);
+
+        int leftPos = (this.width - boardWidth) / 2;
+        int topPos = (this.height - boardHeight) / 2;
+        int midX = leftPos + (boardWidth / 2);
+
+        if (mY >= topPos + 48 && mY <= topPos + 52 + (VISIBLE_ROWS * ROW_STEP)) {
+            int delta = (scrollY > 0) ? -1 : 1;
+            if (mX >= leftPos && mX < midX) {
+                int maxLeft = Math.max(0, getTop100Count(leftList, true) - VISIBLE_ROWS);
+                leftScrollOffset = Math.max(0, Math.min(maxLeft, leftScrollOffset + delta));
+                return true;
+            } else if (mX >= midX && mX <= leftPos + boardWidth) {
+                int maxRight = Math.max(0, getTop100Count(rightList, false) - VISIBLE_ROWS);
+                rightScrollOffset = Math.max(0, Math.min(maxRight, rightScrollOffset + delta));
+                return true;
+            }
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
@@ -126,6 +410,24 @@ public class LeaderboardScreen extends Screen {
             int leftPos = (this.width - boardWidth) / 2;
             int topPos = (this.height - boardHeight) / 2;
             int midX = leftPos + (boardWidth / 2);
+
+            int trackTop = topPos + 52;
+            int trackBottom = trackTop + (VISIBLE_ROWS * ROW_STEP) - 1;
+            int leftScrollbarX = leftPos + 14 + ROW_WIDTH + 3;
+            int rightScrollbarX = midX + 12 + ROW_WIDTH + 3;
+
+            if (mY >= trackTop && mY <= trackBottom) {
+                if (mX >= leftScrollbarX - 2 && mX <= leftScrollbarX + 8) {
+                    draggingScrollbar = 1;
+                    updateScrollbarDrag(mouseY, true);
+                    return true;
+                }
+                if (mX >= rightScrollbarX - 2 && mX <= rightScrollbarX + 8) {
+                    draggingScrollbar = 2;
+                    updateScrollbarDrag(mouseY, false);
+                    return true;
+                }
+            }
 
             String switchText = Component.translatable(boardType == 0 ? "r3ct_daily.leaderboard.button.rewards_next" : "r3ct_daily.leaderboard.button.quests_prev").getString();
             int switchWidth = this.font.width(switchText);
@@ -157,6 +459,24 @@ public class LeaderboardScreen extends Screen {
     }
 
     @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (button == 0 && draggingScrollbar != 0) {
+            updateScrollbarDrag(mouseY, draggingScrollbar == 1);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && draggingScrollbar != 0) {
+            draggingScrollbar = 0;
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
             if (this.minecraft != null && this.minecraft.player != null) {
@@ -175,38 +495,6 @@ public class LeaderboardScreen extends Screen {
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    private void renderList(GuiGraphics guiGraphics, List<TopEntry> list, int startX, int startY, int mouseX, int mouseY) {
-        for (int i = 0; i < list.size(); i++) {
-            TopEntry entry = list.get(i);
-            int y = startY + (i * 18);
-
-            String nameColor = (i == 0) ? "§d§l" : (i == 1) ? "§e§l" : (i == 2) ? "§b§l" : "§7";
-
-            int scoreToDisplay = 0;
-            if (this.boardType == 0 && startX < this.width / 2) scoreToDisplay = entry.totalQuests();
-            else if (this.boardType == 0) scoreToDisplay = entry.maxQuestStreak();
-            else if (this.boardType == 1 && startX < this.width / 2) scoreToDisplay = entry.totalRewards();
-            else scoreToDisplay = entry.maxRewardStreak();
-
-            String valColor = (i == 0) ? "§d" : (i == 1) ? "§e" : (i == 2) ? "§b" : "§f";
-
-            ItemStack head = new ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
-            head.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(entry.name()), Optional.empty(), new PropertyMap()));
-            guiGraphics.renderItem(head, startX, y);
-
-            guiGraphics.drawString(this.font, "§6" + (i + 1) + ". " + nameColor + entry.name(), startX + 20, y + 4, 0xFFFFFFFF, true);
-
-            String scoreTxt = valColor + scoreToDisplay;
-            int scoreWidth = this.font.width(scoreTxt);
-            guiGraphics.drawString(this.font, scoreTxt, startX + 165 - scoreWidth, y + 4, 0xFFFFFFFF, true);
-
-            if (mouseX >= startX && mouseX <= startX + 165 && mouseY >= y && mouseY <= y + 16) {
-                hoveredEntry = entry;
-                guiGraphics.fill(startX - 2, y - 2, startX + 167, y + 18, 0x22FFFFFF);
-            }
-        }
     }
 
     @Override
