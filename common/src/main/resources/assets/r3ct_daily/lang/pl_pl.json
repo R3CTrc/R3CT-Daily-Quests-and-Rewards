@@ -825,5 +825,13 @@
   "r3ct_daily.quest.brzeg_nicosci.name": "Brzeg nicości",
   "r3ct_daily.quest.brzeg_nicosci.desc": "Odwiedź biom: Wyspy Endu (End Islands).",
   "r3ct_daily.quest.fioletowe_fortece.name": "Fioletowe fortece",
-  "r3ct_daily.quest.fioletowe_fortece.desc": "Odwiedź biom: Wyżyny Endu (End Highlands)."
+  "r3ct_daily.quest.fioletowe_fortece.desc": "Odwiedź biom: Wyżyny Endu (End Highlands).",
+  "r3ct_daily.quest.gra_swiatla.name": "Gra światła",
+  "r3ct_daily.quest.gra_swiatla.desc": "Odwiedź biom: Topolowy las (Dappled Forest).",
+  "r3ct_daily.quest.wysoka_topola.name": "Wysoka topola",
+  "r3ct_daily.quest.wysoka_topola.desc": "Zetnij 32 kłody topoli w topolowym lesie.",
+  "r3ct_daily.quest.spanie_na_sianie.name": "Spanie na sianie",
+  "r3ct_daily.quest.spanie_na_sianie.desc": "Stwórz słomiane łóżko.",
+  "r3ct_daily.quest.chwila_odpoczynku.name": "Chwila odpoczynku",
+  "r3ct_daily.quest.chwila_odpoczynku.desc": "Usiądź na dowolnej poduszce."
 }

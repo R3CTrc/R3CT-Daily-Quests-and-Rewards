@@ -94,6 +94,8 @@ public class QuestEventHandlers {
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:cherry_logs", -1);
                 else if (state.is(BlockTags.PALE_OAK_LOGS))
                     QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:pale_oak_logs", -1);
+                else if (state.is(BlockItemTags.POPLAR_LOGS.block()))
+                    QuestManager.handleAction(serverPlayer, "PLACE_BLOCK", "r3ct_daily:poplar_logs", -1);
 
                 return;
             }
@@ -104,6 +106,10 @@ public class QuestEventHandlers {
         if (state.is(BlockTags.BEDS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:beds", 1);
         if (state.is(BlockTags.WOOL)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:wool", 1);
 
+        if (blockId.equals("minecraft:red_mushroom") || blockId.equals("minecraft:brown_mushroom") || blockId.equals("minecraft:shelf_mushroom")) {
+            QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:mushrooms", 1);
+        }
+
         if (state.is(BlockItemTags.OAK_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:oak_logs", 1);
         else if (state.is(BlockItemTags.BIRCH_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:birch_logs", 1);
         else if (state.is(BlockItemTags.SPRUCE_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:spruce_logs", 1);
@@ -113,6 +119,7 @@ public class QuestEventHandlers {
         else if (state.is(BlockItemTags.MANGROVE_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:mangrove_logs", 1);
         else if (state.is(BlockItemTags.CHERRY_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:cherry_logs", 1);
         else if (state.is(BlockTags.PALE_OAK_LOGS)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:pale_oak_logs", 1);
+        else if (state.is(BlockItemTags.POPLAR_LOGS.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:poplar_logs", 1);
 
         if (state.is(BlockItemTags.COAL_ORES.block())) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:coal_ores", 1);
         if (state.is(BlockTags.IRON_ORES)) QuestManager.handleAction(serverPlayer, "BREAK_BLOCK", "r3ct_daily:iron_ores", 1);

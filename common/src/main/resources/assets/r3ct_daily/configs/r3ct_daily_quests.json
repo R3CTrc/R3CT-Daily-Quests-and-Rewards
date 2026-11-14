@@ -390,6 +390,18 @@
       "reward_amount": 8
     },
     {
+      "id": "wysoka_topola",
+      "name": "r3ct_daily.quest.wysoka_topola.name",
+      "description": "r3ct_daily.quest.wysoka_topola.desc",
+      "difficulty": 1,
+      "action_type": "BREAK_BLOCK",
+      "target": "r3ct_daily:poplar_logs",
+      "amount": 32,
+      "required_location": "biome:minecraft:dappled_forest",
+      "reward_item": "minecraft:poplar_sapling",
+      "reward_amount": 2
+    },
+    {
       "id": "do_kopalni",
       "name": "r3ct_daily.quest.do_kopalni.name",
       "description": "r3ct_daily.quest.do_kopalni.desc",
@@ -1000,6 +1012,18 @@
       "required_location": "any",
       "reward_item": "minecraft:sponge",
       "reward_amount": 2
+    },
+    {
+      "id": "spanie_na_sianie",
+      "name": "r3ct_daily.quest.spanie_na_sianie.name",
+      "description": "r3ct_daily.quest.spanie_na_sianie.desc",
+      "difficulty": 0,
+      "action_type": "CRAFT_ITEM",
+      "target": "minecraft:straw_bed",
+      "amount": 1,
+      "required_location": "any",
+      "reward_item": "minecraft:campfire",
+      "reward_amount": 1
     },
     {
       "id": "krytyczne_uderzenie",
@@ -2958,6 +2982,18 @@
       "reward_amount": 4
     },
     {
+      "id": "gra_swiatla",
+      "name": "r3ct_daily.quest.gra_swiatla.name",
+      "description": "r3ct_daily.quest.gra_swiatla.desc",
+      "difficulty": 1,
+      "action_type": "VISIT_BIOME",
+      "target": "dappled_forest",
+      "amount": 1,
+      "required_location": "any",
+      "reward_item": "minecraft:shelf_mushroom",
+      "reward_amount": 4
+    },
+    {
       "id": "spacerowicz",
       "name": "r3ct_daily.quest.spacerowicz.name",
       "description": "r3ct_daily.quest.spacerowicz.desc",
@@ -2980,6 +3016,18 @@
       "required_location": "any",
       "reward_item": "minecraft:compass",
       "reward_amount": 1
+    },
+    {
+      "id": "chwila_odpoczynku",
+      "name": "r3ct_daily.quest.chwila_odpoczynku.name",
+      "description": "r3ct_daily.quest.chwila_odpoczynku.desc",
+      "difficulty": 0,
+      "action_type": "SIT_ON_CUSHION",
+      "target": "any",
+      "amount": 1,
+      "required_location": "any",
+      "reward_item": "minecraft:feather",
+      "reward_amount": 8
     }
   ],
   "nether_quests": [

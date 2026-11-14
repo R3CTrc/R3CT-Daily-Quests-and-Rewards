@@ -336,7 +336,7 @@ public class QuestManager {
         if (invId.equals(target) || target.equals("any")) return true;
 
         if (target.startsWith("r3ct_daily:")) {
-            if (target.equals("r3ct_daily:mushrooms") && (invId.equals("minecraft:red_mushroom") || invId.equals("minecraft:brown_mushroom"))) return true;
+            if (target.equals("r3ct_daily:mushrooms") && (invId.equals("minecraft:red_mushroom") || invId.equals("minecraft:brown_mushroom") || invId.equals("minecraft:shelf_mushroom"))) return true;
             if (target.equals("r3ct_daily:sniffer_seeds") && (invId.equals("minecraft:torchflower_seeds") || invId.equals("minecraft:pitcher_pod"))) return true;
             if (target.equals("r3ct_daily:flowers") && stack.is(BlockItemTags.FLOWERS.item())) return true;
             if (target.equals("r3ct_daily:leaves") && stack.is(ItemTags.LEAVES)) return true;
@@ -346,6 +346,7 @@ public class QuestManager {
 
             if (target.equals("r3ct_daily:beds") && stack.is(ItemTags.BEDS)) return true;
             if (target.equals("r3ct_daily:wool") && stack.is(ItemTags.WOOL)) return true;
+            if (target.equals("r3ct_daily:cushions") && stack.is(ItemTags.CUSHIONS)) return true;
 
             if (target.equals("r3ct_daily:oak_logs") && stack.is(ItemTags.OAK_LOGS)) return true;
             if (target.equals("r3ct_daily:birch_logs") && stack.is(ItemTags.BIRCH_LOGS)) return true;
@@ -356,6 +357,7 @@ public class QuestManager {
             if (target.equals("r3ct_daily:mangrove_logs") && stack.is(ItemTags.MANGROVE_LOGS)) return true;
             if (target.equals("r3ct_daily:cherry_logs") && stack.is(ItemTags.CHERRY_LOGS)) return true;
             if (target.equals("r3ct_daily:pale_oak_logs") && stack.is(ItemTags.PALE_OAK_LOGS)) return true;
+            if (target.equals("r3ct_daily:poplar_logs") && stack.is(ItemTags.POPLAR_LOGS)) return true;
 
             if (target.equals("r3ct_daily:coal_ores") && stack.is(ItemTags.COAL_ORES)) return true;
             if (target.equals("r3ct_daily:iron_ores") && stack.is(ItemTags.IRON_ORES)) return true;

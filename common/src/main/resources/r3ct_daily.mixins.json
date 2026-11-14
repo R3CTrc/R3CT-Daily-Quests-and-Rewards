@@ -13,6 +13,7 @@
     "ComposterBlockMixin",
     "CowMixin",
     "CuredZombieVillagerMixin",
+    "CushionMixin",
     "EnchantItemMixin",
     "EnderPearlMixin",
     "FishingTriggerMixin",

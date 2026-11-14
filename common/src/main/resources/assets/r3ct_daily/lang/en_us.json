@@ -825,5 +825,13 @@
   "r3ct_daily.quest.brzeg_nicosci.name": "Edge of Nothingness",
   "r3ct_daily.quest.brzeg_nicosci.desc": "Visit biome: End Islands.",
   "r3ct_daily.quest.fioletowe_fortece.name": "Purple Fortresses",
-  "r3ct_daily.quest.fioletowe_fortece.desc": "Visit biome: End Highlands."
+  "r3ct_daily.quest.fioletowe_fortece.desc": "Visit biome: End Highlands.",
+  "r3ct_daily.quest.gra_swiatla.name": "Play of Light",
+  "r3ct_daily.quest.gra_swiatla.desc": "Visit biome: Dappled Forest.",
+  "r3ct_daily.quest.wysoka_topola.name": "Tall Poplar",
+  "r3ct_daily.quest.wysoka_topola.desc": "Chop 32 Poplar Logs in a dappled forest.",
+  "r3ct_daily.quest.spanie_na_sianie.name": "Sleeping on Straw",
+  "r3ct_daily.quest.spanie_na_sianie.desc": "Craft a straw bed.",
+  "r3ct_daily.quest.chwila_odpoczynku.name": "A Moment of Rest",
+  "r3ct_daily.quest.chwila_odpoczynku.desc": "Sit on any cushion."
 }
